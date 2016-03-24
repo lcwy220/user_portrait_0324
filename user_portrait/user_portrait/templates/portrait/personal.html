@@ -78,10 +78,11 @@
 		</ul>
 		<ul style="float:left;border-top:1px solid #ccc;width:245px;padding-top:20px;">
 			<li style="float:left;margin-left:20px;">用户备注</li>
-			<li style="float:left;margin-left:40px;">暂无</li>
-        
+            <li style="float:left;margin-left:40px;" id="extraDetail">暂无</li>
 		</ul>
+		<!--
 		<span style="float:right;margin-right:15px;width:50px;height:30px;margin-bottom:10px;" class="portrait_button"><span id="modify_tag" style="padding-left:10px;line-height:30px;cursor:pointer;">修改</span></span>
+	    -->
 	</div>
 </div>
 <div class="" style="float:left;margin-left:22px;">
@@ -686,7 +687,19 @@ Personal.prototype = {   //群组搜索
 		}
 		$('#group_tag').append(html);
     },
-
+    remarkData:function(data){
+        //console.log(data);
+        if (data == ''){
+            $('#extraDetail').html('暂无');
+        }
+        else{
+            $('#extraDetail').html(data);
+        }
+    },
+    historyData:function(data){
+        //console.log(data);
+        histData = data;
+    },
 	socialData:function(data){
 		Draw(data.top_retweet_comment,'retweet');
         Draw(data.top_be_retweet_comment,'tweeted');
@@ -1032,6 +1045,61 @@ Personal.call_sync_ajax_request(url, Personal.ajax_method, Personal.attentionDat
 var url = "/attribute/new_user_social/?uid=" + uid;
 Personal.call_sync_ajax_request(url, Personal.ajax_method, Personal.socialData);
 var sort_type;
+
+function bind_remark_edit(Personal){
+    $('#extraDetail').click(function(){
+        var td = $(this);
+        var txt = td.html();
+        var input = "<input id='editremark' style='width:100px;' type='text' value='" + txt + "'/>";
+        td.html(input);
+        $('#editremark').click(function(){
+            return false;
+        });
+        $('#editremark').trigger('focus');
+        $('#editremark').bind('keyup', function(e){
+            var ev = document.all?window.event:e;
+            if (ev.keyCode == 13){
+                var newtxt = $(this).val();
+                if (newtxt == ''){
+                    td.html('暂无');
+                }
+                else{    
+                    td.html(newtxt);
+                }
+                if (newtxt != txt){
+                    var url = '/attribute/edit_remark/?uid=' + uid + '&remark=' + newtxt;
+                    Personal.call_sync_ajax_request(url, Personal.ajax_method, confirm_edit);
+                    //console.log('diff');
+                }
+            }
+        }).bind('keydown', function(e){
+            var ev = document.all?window.event:e;
+            if (ev.keyCode == 13){
+                return false;
+            }
+        });
+        $('#editremark').blur(function(){
+            var newtxt = $(this).val();
+            if (newtxt == ''){
+                td.html('暂无');
+            }
+            else{    
+                td.html(newtxt);
+            }
+            if (newtxt != txt){
+                var url = '/attribute/edit_remark/?uid=' + uid + '&remark=' + newtxt;
+                Personal.call_sync_ajax_request(url, Personal.ajax_method, confirm_edit);
+                //console.log('diff');
+            }
+        });
+        function confirm_edit(data){
+            //alert(data);
+        }
+    });
+}
+bind_remark_edit(Personal);
+
+
 $(function(){
 	$('#modechoose').click(function(){
 	var box = document.getElementsByName('mode_choose');
