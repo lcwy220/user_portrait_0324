@@ -1,0 +1,332 @@
+{% extends "tbase.html" %}
+    {% block title %}群体分析{% endblock title%}
+      {% block css %}
+      {{ super() }}	    
+	    <link href="/static/bootstrap/css/bootstrap-cerulean.min.css" rel="stylesheet">
+	    <link href="/static/css/charisma-app.css" rel="stylesheet">
+	    <link href="/static/personal/css/activity.css" rel="stylesheet" type="text/css">
+	    <link href="/static/css/timeline.css" rel="stylesheet" type="text/css">
+	    <link rel="stylesheet" type="text/css" href="/static/css/jquery.datetimepicker.css"/>
+	    <style type="text/css">
+    body {
+  font-family: '微软雅黑';
+  font-size: 14px;
+	}
+	ul,li{
+	  list-style:none;
+	}
+	#accordion > .panel-default{
+		border-bottom: :1px solid #A09D9D;
+		border-color:#A09D9D;
+	}
+/*	#accordion .penel-default > .panel-heading{
+		border-color:#5D9AFF;
+	}*/
+	.panel-color{
+		background-color:#BCBCBC!important;
+		border-color:#A09D9D!important;
+	}
+	.panel-group .panel-heading{border-bottom: 1px solid;}
+/*	div[id^="heading"]{
+		background-color:#5D9AFF;
+	}*/
+	#accordion h4{
+		color:#555555;
+	}
+	.gs_ul{
+	  overflow:hidden;
+	  padding:3em;
+	}
+	#stickynote ul li a{
+	  text-decoration:none;
+	  color:#000;
+	  background:#ffc;
+	  display:block;
+	  padding:1em;
+	}
+    #stickynote ul li a{
+	  -webkit-transform: rotate(-6deg);
+	  -o-transform: rotate(-6deg);
+	  -moz-transform:rotate(-6deg);
+	}
+	#stickynote ul li a:hover, #stickynote ul li a:focus{
+	  box-shadow:10px 10px 7px rgba(0,0,0,.7);
+	  -moz-box-shadow:10px 10px 7px rgba(0,0,0,.7);
+	  -webkit-box-shadow: 10px 10px 7px rgba(0,0,0,.7);
+	  -webkit-transform: scale(1.15);
+	  -moz-transform: scale(1.15);
+	  -o-transform: scale(1.15);
+	  position:relative;
+	  z-index:5;
+	}
+	.dataTables_filter{text-align:right;margin-bottom:5px;}
+    .dataTables_paginate{margin-top:-50px;margin-bottom:-20px;}
+	ul,li {margin:0;padding:0} 
+	ol,ul {list-style:none}
+	#pageGro{ width:400px; height:25px; margin:0px auto; padding-top:30px;}
+	#pageGro div,#pageGro div ul li{ font-size:12px; color:#999; line-height:23px; float:left; margin-left:5px;}
+	#pageGro div ul li{ width:22px; text-align:center; border:1px solid #999; cursor:pointer;}
+	#pageGro div ul li.on{ color:#fff; background:#3c90d9; border:1px solid #3c90d9;}
+	#pageGro .pageUp{ border:1px solid #999; cursor:pointer;}
+	#pageGro .pageDown{ width:63px; border:1px solid #999; cursor:pointer;}
+	#pageGro .pageUp{ text-indent:23px;background:url(/static/img/pageUp.png) 5px 7px no-repeat;}
+	#pageGro .pageDown{ text-indent:5px;background:url(/static/img/pageDown.png) 46px 6px no-repeat;}
+	#group_weibo_font{ 
+	font-family: '微软雅黑';
+    font-size: 14px; }
+ 	</style>
+ {% endblock css %}
+
+ {% block head_js %}
+  {{ super() }}
+	<script type="text/javascript" src="/static/js/highstock.js" charset="utf-8"></script>  
+	<script type="text/javascript" src="/static/js/exporting.js" charset="utf-8"></script>
+	<script type="text/javascript" src="/static/js/emoticon.js" charset="utf-8"></script>
+    <script type="text/javascript" src='/static/js/esl.js'></script>
+	<script type="text/javascript" src='/static/js/echarts-all.js'></script>
+	<script type="text/javascript" src='/static/js/echarts.js'></script>
+    <script type="text/javascript" src="/static/js/jquery.datetimepicker.js"></script>
+   	<script type="text/javascript" src="/static/js/portrait/group_table.js"></script>
+
+  {% endblock head_js %}
+
+
+    {% block main %}
+    <div id="page">
+         <div id="mainBubble">
+        </div>
+        <div id="content">
+        	<div style='height:190px;width:100%' id='overview'>        	
+			</div>
+
+			<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+			  <div class="panel panel-default">
+			    <div class="panel-heading panel-color" role="tab" id="headingOne">
+			      <h4 class="panel-title">
+			        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+			          基本特征
+			        </a>
+			      </h4>
+			    </div>
+			    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+			      <div class="panel-body">
+			         {% include "portrait/group_analysis/group_basic.html"%}
+			      </div>
+			    </div>
+			  </div>
+
+
+			  <div class="panel panel-default">
+			    <div class="panel-heading panel-color" role="tab" id="headingTwo">
+			      <h4 class="panel-title">
+			        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+			          活动特征
+			        </a>
+			      </h4>
+			    </div>
+			    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+			      <div class="panel-body">
+			         {% include "portrait/group_analysis/group_activity.html"%}
+			      </div>
+			    </div>
+			  </div>
+
+
+
+			  <div class="panel panel-default">
+			    <div class="panel-heading panel-color" role="tab" id="headingThree">
+			      <h4 class="panel-title">
+			        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+			          偏好特征
+			        </a>
+			      </h4>
+			    </div>
+			    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+			      <div class="panel-body">
+			         {% include "portrait/group_analysis/group_preference.html"%}
+			      </div>
+			    </div>
+			  </div>
+
+			  <div class="panel panel-default">
+			    <div class="panel-heading panel-color" role="tab" id="headingFour">
+			      <h4 class="panel-title">
+			        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+			          传播特征
+			        </a>
+			      </h4>
+			    </div>
+			    <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+			      <div class="panel-body">
+			      	{% include "portrait/group_analysis/group_spread.html"%}
+			      </div>
+			    </div>
+			  </div>
+
+			  <div class="panel panel-default">
+			    <div class="panel-heading panel-color" role="tab" id="headingSix">
+			      <h4 class="panel-title">
+			        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+			          社交特征
+			        </a>
+			      </h4>
+			    </div>
+			    <div id="collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
+			      <div class="panel-body">
+ 					{% include "portrait/group_analysis/group_social.html"%}
+			      </div>
+			    </div>
+			  </div>
+
+
+			  <div class="panel panel-default">
+			    <div class="panel-heading panel-color" role="tab" id="headingSeven">
+			      <h4 class="panel-title">
+			        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+			          思想特征
+			        </a>
+			      </h4>
+			    </div>
+			    <div id="collapseSeven" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSeven">
+			      <div class="panel-body">
+			      	{% include "portrait/group_analysis/group_psy.html"%}
+			      </div>
+			    </div>
+			  </div>
+
+
+				<div class="modal fade" id="myModal_group" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+				  <div class="modal-dialog" role="document" style="width:950px">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title" style="font-size:18px">群组成员</h4>
+				      </div>
+				      <div class="modal-body">
+			      	    <div style="font-size:18px;margin-bottom:10px">选择用户添加标签</div>
+						<div>
+							<span>选择类别：</span><span id='attribute_name' style="min-width:75px;margin-left:10px" ></span>
+							<span style='margin-left:20px'>选择标签：</span><span id='attribute_value' style="min-width:75px;margin-left:10px"></span><span style="margin-left:10px"><button class="btn btn-primary btn-sm" style="width:80px;height:30px" id="add_group_tag_button" title="确定选择" onclick="add_group_tag()">添加</button></span>
+				      	<div id= "group_member_user" style="margin-top:14px"></div>
+				      </div>
+				    </div>
+				    </div>
+				  </div>
+				</div>
+               
+				<div class="modal fade" id="group_tag2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+				  <div class="modal-dialog" role="document">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title" style="font-size:18px" id="myModalLabel">群组标签</h4>
+				      </div>
+				      <div class="modal-body" id='group_tag_vector'>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+             
+        </div>
+    </div>			
+    {% endblock main %}
+
+    {% block Own_js %}
+    {{ super() }}
+
+    <script>
+        var name = "{{ name }}";
+        //console.log('dddd', name);
+        $(document).ready(function(){
+            $("#closeness_tooltip").tooltip();
+            $("#weibo_tooltip").tooltip();
+            $("#join_tooltip").tooltip(); 
+            $("#node_tooltip").tooltip(); 
+            $("#tag_tooltip").tooltip();          
+        })
+	//var myChart = echarts.init(document.getElementById('relation_picture'));
+
+//点击跳转页面
+function pageGroup(pageNum,pageCount){
+	switch(pageNum){
+		case 1:
+			page_icon(1,5,0);
+		break;
+		case 2:
+			page_icon(1,5,1);
+		break;
+		case pageCount-1:
+			page_icon(pageCount-4,pageCount,3);
+		break;
+		case pageCount:
+			page_icon(pageCount-4,pageCount,4);
+		break;
+		default:
+			page_icon(pageNum-2,pageNum+2,2);
+		break;
+	}
+}
+
+//根据当前选中页生成页面点击按钮
+function page_icon(page,count,eq){
+	var ul_html = "";
+	for(var i=page; i<=count; i++){
+		ul_html += "<li>"+i+"</li>";
+	}
+	$("#pageGro ul").html(ul_html);
+	$("#pageGro ul li").eq(eq).addClass("on");
+}
+
+//上一页
+function pageUp(pageNum,pageCount){
+	switch(pageNum){
+		case 1:
+		break;
+		case 2:
+			page_icon(1,5,0);
+		break;
+		case pageCount-1:
+			page_icon(pageCount-4,pageCount,2);
+		break;
+		case pageCount:
+			page_icon(pageCount-4,pageCount,3);
+		break;
+		default:
+			page_icon(pageNum-2,pageNum+2,1);
+		break;
+	}
+}
+
+//下一页
+function pageDown(pageNum,pageCount){
+	switch(pageNum){
+		case 1:
+			page_icon(1,5,1);
+		break;
+		case 2:
+			page_icon(1,5,2);
+		break;
+		case pageCount-1:
+			page_icon(pageCount-4,pageCount,4);
+		break;
+		case pageCount:
+		break;
+		default:
+			page_icon(pageNum-2,pageNum+2,3);
+		break;
+	}
+}
+
+    </script>
+    <script type="text/javascript" src="/static/js/portrait/group_analysis.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=aBrX8X2tEjcqiKwL78DLmanZ"></script>
+    <script type="text/javascript" src="/static/js/portrait/group_activity.js"></script>
+	<script type="text/javascript" src="/static/js/portrait/group_spread.js"></script>
+	<script type="text/javascript" src="/static/js/portrait/group_social.js"></script>
+	<script type="text/javascript" src="/static/js/portrait/group_psy.js"></script>
+    <!--
+	<script type="text/javascript" src="/static/js/portrait/group_basic.js"></script>
+	<script type="text/javascript" src="/static/js/portrait/group_preference.js"></script>
+    -->
+    {% endblock Own_js %}
+
