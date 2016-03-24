@@ -41,29 +41,29 @@ function activity_call_ajax_request(url, callback){
 }
 function geo_track(data){
     var geo_data = data.week_geo_track;
-	var date = [];
-	var citys = [];
-	for(var key in geo_data){
-		date.push(getDate_zh(key));
+        var date = [];
+        var citys = [];
+        for(var key in geo_data){
+                date.push(getDate_zh(key));
         citys.push(geo_data[key][0]);
-	}
-	for(i=0;i<date.length;i++){
-		document.getElementById('d'+(i+1)).innerHTML = date[i];
+        }
+        for(i=0;i<date.length;i++){
+                document.getElementById('d'+(i+1)).innerHTML = date[i];
     }
     for(i=0;i<citys.length;i++){
-		if(citys[i]){
-			document.getElementById('city'+(i+1)).innerHTML = citys[i][0];
-		}else{
-			$('#city'+(i+1)).addClass('gray');
-			document.getElementById('city'+(i+1)).innerHTML = '未发布微博';
-		}
-	}
+                if(citys[i]){
+                        document.getElementById('city'+(i+1)).innerHTML = citys[i][0];
+                }else{
+                        $('#city'+(i+1)).addClass('gray');
+                        document.getElementById('city'+(i+1)).innerHTML = '未>发布微博';
+                }
+        }
 
     $('#more_t_list').empty();
     var html = '';
     var i = 0;
     for(var key in geo_data){
-   //for(t=0;t<citys.length;t++){ 
+   //for(t=0;t<citys.length;t++){
         if(i == 0){
         html += '<div style="width:110px;text-align:center;float:left;">'
         }
@@ -74,20 +74,18 @@ function geo_track(data){
       if(geo_data[key][0]!=undefined){
         for( var i in geo_data[key]){
             //if(geo_data[key][i][0].length>1){
-	    html += '<div>'+geo_data[key][i][0]+' </div>';
-	    //html += '<div>未发布微博 </div>';
-	}}else{
-	   // html += '<div>'+geo_data[key][i][0]+' </div>';
-	    html += '<div style="color:grey">未发布微博 </div>';
-	}
-        
+            html += '<div>'+geo_data[key][i][0]+' </div>';
+            //html += '<div>未发布微博 </div>';
+        }}else{
+           // html += '<div>'+geo_data[key][i][0]+' </div>';
+            html += '<div style="color:grey">未发布微博 </div>';
+        }
+
         html +=  '</div>'
         i += 1;
     }
     $('#more_t_list').append(html);
 }
-
-
 function  active_chart(data){
     global_active_data = data;
     var tag_vector = data.tag_vector;
@@ -107,8 +105,7 @@ function  active_chart(data){
    global_tag_vector.push([name, value]);
    //active type
    global_tag_vector.push(tag_vector[1]);
-
-    var this_desc= '';
+        var this_desc= '';
     this_desc += "<span>" + data.description[0] + "</span><span style='color:red;'>" + data.description[1] + "</span>"; //description
     this_desc += "<span>" + data.description[2] + "</span><span style='color:red;'>" + data.description[3] + "</span>。"; //description
     $('#saysay').html(this_desc);
@@ -128,7 +125,6 @@ function week_chart(trend_data){
     if (global_time_type == 'day'){
         for(i=0;i<trend.length;i++){
             var time = getDate(pre_time+trend[i][0]);
-            //console.log(pre_time);
             var count = trend[i][1];
             var date_zh =getYearDate(pre_time+trend[i][0]);
             data_time.push(time);
@@ -148,7 +144,7 @@ function week_chart(trend_data){
         for(i=0;i<trend.length;i++){
             var time = getDate(trend[i][0]);
             var count = trend[i][1];
-            var date_zh =getYearDate(trend[i][0])
+            var date_zh =getYearDate(trend[i][0]);
             data_time.push(time);
             data_count.push(count);
             date_zhang.push(date_zh);
@@ -161,8 +157,8 @@ function week_chart(trend_data){
         //console.log(url);
         activity_call_ajax_request(url, draw_content); // draw_weibo
     }
-	//Draw_trend:
-	 $('#Activezh').highcharts({
+        //Draw_trend:
+         $('#Activezh').highcharts({
         chart: {
             type: 'spline',// line,
             animation: Highcharts.svg, // don't animate in old IE
@@ -172,8 +168,8 @@ function week_chart(trend_data){
             }},
         title: {
             text: '',
-			align:'left',
-			fontSize:'20',
+                        align:'left',
+                        fontSize:'20',
         },
         lang: {
                 printChart: "打印",
@@ -201,7 +197,7 @@ function week_chart(trend_data){
             }
         },
         yAxis: {
-			min:0,
+                        min:0,
             allowDecimals: false,
             title: {
                 text: '微博总量 (条)'
@@ -213,7 +209,7 @@ function week_chart(trend_data){
             }]
         },
         plotOptions:{
-            series:{            
+            series:{
                 cursor:'pointer',
                 events:{
                     click:function(event){
@@ -343,12 +339,12 @@ function draw_daily_ip_table(ip_data){
         daily_map_data.push(['top'+(i+1),location_geo[i][2]]);
         var re_ip = location_geo[i][0].split('.');
         var ip_city = location_geo[i][2].split('\t').pop();
-	if ($('#d_useremail').text()=='admin@qq.com'){
+        if ($('#d_useremail').text()=='admin@qq.com'){
             html += '<th style="text-align:center">' + location_geo[i][0] + '<br>(' + ip_city + ',' + location_geo[i][1] + ')</th>';
         }else{
-         var re_ip0=re_ip[0]+'.'+re_ip[1]+'.'+re_ip[2]+'.*';   
+         var re_ip0=re_ip[0]+'.'+re_ip[1]+'.'+re_ip[2]+'.*';
          html += '<th style="text-align:center">' + re_ip0 + '<br>(' + ip_city + ',' + location_geo[i][1] + ')</th>';
-	}
+        }
     }
     while (i < 5){
         html += '<th style="text-align:center">-</th>';
@@ -365,11 +361,12 @@ function draw_daily_ip_table(ip_data){
         weekly_map_data.push(['top'+(i+1),location_geo[i][2]]);
         var re_ip = location_geo[i][0].split('.');
         var ip_city = location_geo[i][2].split('\t').pop();
-	if ($('#d_useremail').text()=='admin@qq.com'){
+        if ($('#d_useremail').text()=='admin@qq.com'){
             html += '<th style="text-align:center">' + location_geo[i][0] + '<br>(' + ip_city + ',' + location_geo[i][1] + ')</th>';
         }else{
-         var re_ip0=re_ip[0]+'.'+re_ip[1]+'.'+re_ip[2]+'.*';   
-        html += '<th style="text-align:center">' + location_geo[i][0] + '<br>(' + ip_city + ',' + location_geo[i][1] + ')</th>';
+         var re_ip0=re_ip[0]+'.'+re_ip[1]+'.'+re_ip[2]+'.*';
+        html += '<th style="text-align:center">' +re_ip0 + '<br>(' + ip_city + ',' + location_geo[i][1] + ')</th>';
+       }
     }
     while (i < 5){
         html += '<th style="text-align:center">-</th>';
@@ -377,7 +374,7 @@ function draw_daily_ip_table(ip_data){
     }
     html += '<th style="text-align:center"><a id="total_weekly_ip_map" href="#map">查看地图</a></th>';
     html += '</tr>';
-    html += '</table>'; 
+    html += '</table>';
     $('#total_IP_rank').append(html);
     // span ip
     $('#span_ip').empty();
@@ -400,10 +397,15 @@ function draw_daily_ip_table(ip_data){
        if ((i in location_geo) && (location_geo[i].length != 0)){
            top_two = location_geo[i];
            span_daily_map_data.push(['时段'+(i+1),location_geo[i][0][2]]);
-           for (var j = 0;j < top_two.length;j++){
-//console.log(top_two[j][2]);
+       for (var j = 0;j < top_two.length;j++){
+               var re_ip = top_two[j][0].split('.');
                var ip_city = top_two[j][2].split('\t').pop();
-               html += top_two[j][0] + '<br>(' + ip_city + ',' + top_two[j][1] + ')';
+        if ($('#d_useremail').text()=='admin@qq.com'){
+            html += top_two[j][0] + '<br>(' + ip_city + ',' + top_two[j][1] + ')';
+        }else{
+         var re_ip0=re_ip[0]+'.'+re_ip[1]+'.'+re_ip[2]+'.*';
+        html += re_ip0 + '<br>(' + ip_city + ',' + top_two[j][1] + ')';
+       }
            }
        }
        else{
@@ -422,9 +424,15 @@ function draw_daily_ip_table(ip_data){
        if ((i in location_geo) && (location_geo[i].length != 0)){
            top_two = location_geo[i];
            span_weekly_map_data.push(['时段'+(i+1),location_geo[i][0][2]]);
-           for (var j = 0;j < top_two.length;j++){
-               var ip_city = top_two[j][2].split('\t').pop();
-               html += top_two[j][0] + '<br>(' + ip_city + ',' + top_two[j][1] + ')';
+       for (var j = 0;j < top_two.length;j++){
+               var re_ip = top_two[j][0].split('.');
+              var ip_city = top_two[j][2].split('\t').pop();
+        if ($('#d_useremail').text()=='admin@qq.com'){
+            html += top_two[j][0] + '<br>(' + ip_city + ',' + top_two[j][1] + ')';
+        }else{
+         var re_ip0=re_ip[0]+'.'+re_ip[1]+'.'+re_ip[2]+'.*';
+        html += re_ip0 + '<br>(' + ip_city + ',' + top_two[j][1] + ')';
+       }
            }
        }
        else{
@@ -434,11 +442,10 @@ function draw_daily_ip_table(ip_data){
     };
     html += '<th style="text-align:center"><a href="#map" id="span_weekly_ip_map">查看地图</a></th>';
     html += '</tr>';
-    html += '</table>'; 
-    $('#span_ip').append(html);                  
+    html += '</table>';
+    $('#span_ip').append(html);
 
 }
-
 function draw_online_pattern(data){
     if ('sort_result' in data){
         var online_data = data.sort_result;
@@ -454,11 +461,10 @@ function draw_online_pattern(data){
            html += '</th><th style="text-align:center">' + online_data[i][1];
            html +='</th></tr>';
         };
-        html += '</table>'; 
-        $('#online_pattern').append(html);                  
+        html += '</table>';
+        $('#online_pattern').append(html);
     }
 }
-
 function draw_activeness_chart(data){
     //$('#activeness_desc').html("<span>" + data.description[0] + "</span><span style='color:red;'>" + data.description[1] + "</span>。");
     //global_tag_vector.push(['活跃类型', data.tag_vector]);
@@ -484,8 +490,8 @@ function draw_activeness_chart(data){
             }},
         title: {
             text: '',
-			align:'left',
-			fontSize:'20',
+                        align:'left',
+                        fontSize:'20',
         },
         lang: {
                 printChart: "打印",
@@ -501,11 +507,11 @@ function draw_activeness_chart(data){
                 rotation: 0,
                 step: 1,
                 x:0,
-                y:30,
+               y:30,
             }
         },
         yAxis: {
-			min:0,
+                        min:0,
             title: {
                 text: '活跃度',
             },
@@ -533,8 +539,8 @@ function draw_activeness_chart(data){
 }
 
 function get_unix_time(dateStr){
-    var newstr = dateStr.replace(/-/g,'/'); 
-    var date =  new Date(newstr); 
+    var newstr = dateStr.replace(/-/g,'/');
+    var date =  new Date(newstr);
     var time_str = date.getTime().toString();
     return time_str.substr(0, 10);
 }
@@ -564,4 +570,3 @@ var span_daily_map_data = new Array();
 var span_weekly_map_data = new Array();
 var url = '/attribute/ip/?uid=' + uid;
 tag_call_ajax_request(url, draw_daily_ip_table);
-
