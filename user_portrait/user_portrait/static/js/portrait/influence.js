@@ -609,11 +609,12 @@ function click_action(){
     });
 
 }
+
 function influence_load(){
     click_action();
     var influence_url = '/attribute/influence_trend/?uid='+uid + '&time_segment=7';
     Influence.call_async_ajax_request(influence_url, Influence.ajax_method, Influence.Draw_influence);
-
+    console.log(date_str);
     var user_influence_detail_url = '/attribute/user_influence_detail/?uid='+parent.personalData.uid+'&date='+date_str;
     Influence.call_async_ajax_request(user_influence_detail_url, Influence.ajax_method, Influence.Draw_user_influence_detail);
 

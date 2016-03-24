@@ -214,7 +214,7 @@ var option = {
             symbolSize: 30,
             itemStyle: {
                 normal: {
-                    color: '#4883b4',
+                    color: '#FF7F50',
                     label: {
                         show: true,
                         position: 'right',
