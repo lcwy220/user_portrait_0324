@@ -26,6 +26,179 @@ from social_sensing_utils import show_social_sensing_task, show_important_users
 
 mod = Blueprint('detect', __name__, url_prefix='/detect')
 
+#use to deal seed_user info string
+def deal_seed_user_string(seed_info_string, seed_info_type):
+    if seed_infor_type == 'uid':
+        uid_list = seed_info_string.split(',')
+    elif seed_info_type == 'uname':
+        uid_list = []
+        uname_list = seed_info_string.split(',')
+        portrait_exist_result = es_user_portrait.search(index=portrait_index_name, doc_type=portrait_index_type,\
+            body={'query':{'uname':{'terms': uname_list}}}, _source=False)['hits']['hits']
+        if portrait_exist_result:
+            for portrait_item in portrait_exist_result:
+                uid_list.append(portrait_item['_id'])
+    elif seed_info_type == 'url':
+        uid_list = []
+        url_list = seed_info_string.split(',')
+        for url_item in url_list:
+            url_item_list = url_item.split('/')
+            url_uid = url_item_list[2][-10:]
+            uid_list.append(uid)
+    return uid_list
+
+#use to deal seed_user info file
+def deal_seed_user_file(upload_data, seed_info_type):
+    if seed_info_type == 'uid':
+        uid_list = []
+        line_list = upload_data.split('\n')
+        for line in line_list:
+            uid = line[:10]
+            if len(uid)==10:
+                uid_list.append(uid)
+    elif seed_info_type == 'uname':
+        uid_list = []
+        line_list = upload_data.split('\n')
+        uname_list = [line_item for line_item in line_list]
+        #get uid by es_user_portrait
+        portrait_exist_result = es_user_portrait.search(index=portrait_index_name, doc_type=portrait_index_type,\
+                body={'query':{'terms':{'uname': uname_list}}}, _source=False)['hits']['hits']
+        if portrait_exist_result:
+            for portrait_exist_item in portrait_exist_result:
+                uid = portrait_exist_item['_id']
+                uid_list.append(uid)
+    elif seed_info_type == 'url':
+        uid_list = []
+        line_list = upload_data.split('\n')
+        uid_list = [line_item.split('/')[2][-10:] for line_item in line_list]
+    return uid_list
+
+# use to submit user string for group detection
+@mod.route('/user_string/')
+def ajax_user_string():
+    status = False
+    task_information_dict = {}
+    query_dict = {}
+    input_dict = {}
+    #identify the seed user info and user_string(split by '/')
+    seed_info_type = request.args.get('seed_user_type', 'uid') # seed_user_type=uid/uname/url
+    seed_info_string = request.args.get('seed_user_string', '') # split by '/'
+    seed_uid_list = deal_seed_user_string(seed_info_string, seed_info_type)
+    if not seed_uid_list:
+        return 'no valid seed user'
+    #get task information
+    task_information_dict['task_name'] = request.args.get('task_name', '')
+    task_information_dict['submit_date'] = int(time.time())
+    task_information_dict['submit_user'] = request.args.get('submit_user', '')
+    task_information_dict['state'] = request.args.get('state', '')
+    #identify whether to extend
+    extend_mark = request.args.get('extend_mark', '0') #extend_mark=0/1 means analysis/detect
+    if extend_mark == '0':
+        task_information_dict['task_type'] = 'analysis'
+        task_information_dict['status'] = 0
+        task_information_dict['uid_list'] = uid_list
+        input_dict['task_information'] = task_information_dict
+        print 'no extend save'
+        results = save_detct_multi_task(input_dict, extend_mark)
+    elif extend_mark == '1':
+        task_information_dict['task_type'] = 'detect'
+        print 'extend save'
+        #get query dict: attribute
+        attribute_list = []
+        attribute_condition_num = 0
+        for attribute_item in DETECT_QUERY_ATTRIBUTE:
+            attribute_mark = request.args.get(attribute_item, DETECT_DEFAULT_MARK) # '0':not select '1':select
+            if attribute_mark == '1':
+                attribute_list.append(attribute_item)
+                attribute_condition_num += 1
+        attribute_condition_num = len(attribute_list)
+        attribute_weight = request.args.get('attribute_weight', DETECT_DEFAULT_WEIGHT)
+        attribute_weight = float(attribute_weight)
+        if attribute_condition_num==0:
+            attribute_weight = 0
+        query_dict['attribute'] = attribute_list
+        query_dict['attribute_weight'] = attribute_weight
+        #get query dict: structure
+        structure_condition_num = 0
+        structure_list = {}
+        for structure_item in DETECT_QUERY_STRUCTURE:
+            structure_mark =request.args.get(structure_item, DETECT_DEFAULT_MARK)
+            structure_list[structure_item] = structure_mark
+            if structure_mark != '0':
+                structure_condition_num += 1
+        structure_weight = request.args.get('structure_weight', DETECT_DEFAULT_WEIGHT)
+        structure_weight = float(structure_weight)
+        if structure_condition_num == 0:
+            structure_weight = 0
+        query_dict['structure'] = structure_list
+        query_dict['structure_weight'] = structure_weight
+        #get query dict: text
+        text_query_list = []
+        for text_item in DETECT_TEXT_FUZZ_ITEM:
+            item_value_string = request.args.get(text_item, '') # a string joint by ' '
+            item_value_list = item_value_string.split(' ')
+            if len(item_value_list) > 0 and item_value_string != '':
+                nest_body_list = []
+                for item_value in item_value_list:
+                    nest_body_list.append({'wildcard': {text_item: '*' + item_value + '*'}})
+                text_query_list.append({'bool':{'should': nest_body_list}})
+        for text_item in DETECT_TEXT_RANGE_ITEM:
+            item_value_from = request.args.get(text_item+'_from', '')
+            item_value_to = request.args.get(text_item+'_to', '')
+            if item_value_from != '' and item_value_to != '':
+                if int(item_value_from) > int(item_value_to):
+                    return 'invalid input for range'
+                else:
+                    text_query_list.append({'range':{text_item:{'gte':int(item_value_from), 'lt':int(item_value_to)}}})
+        query_dict['text'] = text_query_list
+        #identify the query condition num at least one
+        if attribute_condition_num + structure_condition_num == 0:
+            return 'no query condition'
+        #get query dict: filter
+        filter_dict = {} # filter_dict = {'count':100, 'influence':{'from':0, 'to':50}, 'importance':{'from':0, 'to':50}}
+        for filter_item in DETECT_QUERY_FILTER:
+            if filter_item == 'count':
+                filter_item_value = request.args.get(filter_item, DETECT_DEFAULT_COUNT)
+                filter_item_value = int(filter_item_value)
+            else:
+                filter_item_from = request.args.get(filter_item+'_from', DETECT_FILTER_VALUE_FROM)
+                filter_item_to = request.args.get(filter_item+'_to', DETECT_FILTER_VALUE_TO)
+                if int(filter_item_from) > int(filter_item_to):
+                    return 'invalid input for filter'
+                filter_item_value = {'gte':int(filter_item_from), 'lt':int(filter_item_to)}
+            filter_dict[filter_item] = filter_item_value
+        if filter_dict['count'] == 0:
+            return 'invalid input for count'
+        query_dict['filter'] = filter_dict
+        #identify the task type---single/multi
+        if len(seed_uid_list) == 1:
+            query_dict['seed_user'] = {'uid': seed_uid_list[0]}
+            task_information_dict['detect_type'] = 'single'
+            task_information_dict['detect_process'] = 0
+            input_dict['task_information'] = task_information_dict
+            input_dict['query_condition'] = query_dict
+            results = save_detect_single_task(input_dict)
+        else:
+            task_information_dict['uid_list'] = seed_uid_list
+            task_information_dict['detect_type'] = 'multi'
+            task_information_dict['detect_process'] = 0
+            input_dict['task_information'] = task_information_dict
+            input_dict['query_condition'] = query_dict
+            results = save_detect_multi_task(input_dict, extend_mark)
+
+    return json.dumps(results)
+
+# use to submit user file for group detection
+@mod.route('/user_file/')
+def ajax_user_file():
+    status = False
+    query_dict = {}
+    task_information_dict = {}
+    input_dict = {}
+    #identify the seed user info and user_file
+    #get json
+    return json.dumps(status)
+
 # use to submit parameter single-person group detection
 @mod.route('/single_person/')
 def ajax_single_person():
