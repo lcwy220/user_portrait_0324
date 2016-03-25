@@ -208,7 +208,7 @@ var option = {
             name:'树图',
             type:'tree',
             orient: 'horizontal',  // vertical horizontal
-            rootLocation: {x: 50, y: 'center'}, // 根节点位置  {x: 'center',y: 10}
+            rootLocation: {x: 240, y: 'center'}, // 根节点位置  {x: 'center',y: 10}
             nodePadding: 50,
             symbol: 'circle',
             symbolSize: 30,
@@ -232,7 +232,7 @@ var option = {
                     }
                 },
                 emphasis: {
-                    color: '#4883b4',
+                    color: '#FF7F50',
                     label: {
                         show: false
                     },

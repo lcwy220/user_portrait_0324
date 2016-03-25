@@ -64,22 +64,41 @@ Search_weibo.prototype = {
 Draw_overview: function(data){
     //画星星
     var importance_star = '';
-    for(var i=0;i<data.importance_star;i++){
-        importance_star += '<img src="/static/img/star-yellow.png" style="width:25px">'
-    };
-    var activeness_star = '';
-    for(var i=0;i<data.activeness_star;i++){
-        activeness_star += '<img src="/static/img/star-yellow.png" style="width:25px">'
-    };
-    var density_star = '';
-    for(var i=0;i<data.density_star;i++){
-        density_star += '<img src="/static/img/star-yellow.png" style="width:25px" >'
-    };
-    var influence_star = '';
-    for(var i=0;i<data.influence_star;i++){
-        influence_star += '<img src="/static/img/star-yellow.png" style="width:25px" >'
-    };
-
+    // for(var i=0;i<data.importance_star;i++){
+    //     importance_star += '<img src="/static/img/star-yellow.png" style="width:25px">'
+    // };
+     var activeness_star = '';
+    // for(var i=0;i<data.activeness_star;i++){
+    //     activeness_star += '<img src="/static/img/star-yellow.png" style="width:25px">'
+    // };
+     var density_star = '';
+    // for(var i=0;i<data.density_star;i++){
+    //     density_star += '<img src="/static/img/star-yellow.png" style="width:25px" >'
+    // };
+     var influence_star = '';
+    // for(var i=0;i<data.influence_star;i++){
+    //     influence_star += '<img src="/static/img/star-yellow.png" style="width:25px" >'
+    // };
+    if(data.importance_star==undefined){
+        importance_star = '无此数据';
+    }else{
+        importance_star = data.importance_star;
+    }
+    if(data.activeness_star==undefined){
+        activeness_star = '无此数据';
+    }else{
+        activeness_star = data.activeness_star;
+    }
+    if(data.density_star==undefined){
+        density_star = '无此数据';
+    }else{
+        density_star = data.density_star;
+    }
+    if(data.influence_star==undefined){
+        influence_star = '无此数据';
+    }else{
+        influence_star = data.influence_star;
+    }
     group_tag_vector(data.tag_vector);
 
     var task_name_2;
@@ -104,25 +123,33 @@ Draw_overview: function(data){
     };
     $('#overview').empty();
     html = '';
-    html += '<p style="font-size:13px">群体名称：' + name +'</p><p style="font-size:13px">成立时间：' + submit_date +'</p><p style="font-size:13px">' + state +'</p><p style="font-size:13px">' + submit_user +'</p>';
+    html += '<p style="font-size:13px;padding: 5px 5px 5px 5px;">群体名称：' + name +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">创建时间：' + submit_date +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">群体备注：' + state +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">创建人员：' + submit_user +'</p>';
     html += '<p><span style="font-size:13px;cursor:pointer;text-decoration:underline" onclick="show_members();">群组成员</span>&nbsp;&nbsp;';
     html += '<span style="float:right;cursor:pointer;font-size:13px;" type="button"data-toggle="modal" data-target="#group_tag2"><u>群组标签</u></span></p>';
     html += '</a></li></ul></div>';
     $('#overview').append(html);
     $('#g_tag').empty();
     var html = '';
-    html += '<table style="height:150px;width:750px;float:right">';
-    html += '<tr><td style="text-align:center;vertical-align:middle"><img src="/static/img/closeness.png" style="height:80px"></td>';
-    html += '<td style="text-align:center;vertical-align:middle"><img src="/static/img/activeness.png" style="height:80px"></td>';
-    html += '<td style="text-align:center;vertical-align:middle"><img src="/static/img/importance.png" style="height:80px"></td>';
-    html += '<td style="text-align:center;vertical-align:middle"><img src="/static/img/influence.png" style="height:80px"></td></tr>';
-    html += '<tr><td style="text-align:center;vertical-align:middle">' + density_star + '</td><td style="text-align:center;vertical-align:middle">' + activeness_star + '</td>';
-    html += '<td style="text-align:center;vertical-align:middle">' + importance_star + '</td><td style="text-align:center;vertical-align:middle">' + influence_star + '</td></tr>';
-    html += '<tr><td style="font-size:13px;text-align:center;vertical-align:middle"><b>&nbsp;&nbsp;&nbsp;&nbsp;紧密度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员相互转发行为的多少程度，通过聚类系数、微博转发频率及参与转发的成员比例计算得到"></i>&nbsp;&nbsp;</b></td>';
-    html += '<td style="font-size:13px;text-align:center;vertical-align:middle"><b>&nbsp;&nbsp;&nbsp;&nbsp;活跃度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员线上线下的活跃程度，通过发布微博综述、活跃地区数、发布微博的时间走势计算得到"></i>&nbsp;&nbsp;</b></td>';
-    html += '<td style="font-size:13px;text-align:center;vertical-align:middle"><b>&nbsp;&nbsp;&nbsp;&nbsp;重要度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员对社会网络安全业务的重要程度，通过群体成员的所属领域和偏好话题计算得到"></i>&nbsp;&nbsp;</b></td>';
-    html += '<td style="font-size:13px;text-align:center;vertical-align:middle"><b>&nbsp;&nbsp;&nbsp;&nbsp;影响力<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员整体的影响力，通过群体成员原创微博、转发微博的评论和转发的最高值、均值、总量计算得到"></i>&nbsp;&nbsp;</b></td></tr>';
+    html += '<table style="height:100px;width:100%;border-bottom:1px solid #ccc;">';
+    // html += '<tr><td style="text-align:center;vertical-align:middle"><img src="/static/img/closeness.png" style="height:80px"></td>';
+    // html += '<td style="text-align:center;vertical-align:middle"><img src="/static/img/activeness.png" style="height:80px"></td>';
+    // html += '<td style="text-align:center;vertical-align:middle"><img src="/static/img/importance.png" style="height:80px"></td>';
+    // html += '<td style="text-align:center;vertical-align:middle"><img src="/static/img/influence.png" style="height:80px"></td></tr>';
+    // html += '<tr><td style="text-align:center;vertical-align:middle">' + density_star + '</td><td style="text-align:center;vertical-align:middle">' + activeness_star + '</td>';
+    // html += '<td style="text-align:center;vertical-align:middle">' + importance_star + '</td><td style="text-align:center;vertical-align:middle">' + influence_star + '</td></tr>';
+    html += '<tr style="padding:2px;"><td><span style="color:red;margin-left:20px;font-size:13px;">紧密度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员相互转发行为的多少程度，通过聚类系数、微博转发频率及参与转发的成员比例计算得到"></i></span><span>&nbsp;'+importance_star+'</span></td>';
+    html += '<td><span style="color:red;margin-left:20px;font-size:13px;">活跃度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员线上线下的活跃程度，通过发布微博综述、活跃地区数、发布微博的时间走势计算得到"></i></span><span>&nbsp;'+activeness_star+'</span></td>';
+    html += '<tr><td><span style="color:red;margin-left:20px;font-size:13px;">重要度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员对社会网络安全业务的重要程度，通过群体成员的所属领域和偏好话题计算得到"></i></span><span>&nbsp;'+density_star+'</span></td>';
+    html += '<td ><span style="color:red;margin-left:20px;font-size:13px;">影响力<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员整体的影响力，通过群体成员原创微博、转发微博的评论和转发的最高值、均值、总量计算得到"></i></span><span>&nbsp;'+influence_star+'</span></td></tr>';
+
+    //html += '<td style="font-size:13px;text-align:center;vertical-align:middle"><b>&nbsp;&nbsp;&nbsp;&nbsp;活跃度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员线上线下的活跃程度，通过发布微博综述、活跃地区数、发布微博的时间走势计算得到"></i>&nbsp;&nbsp;</b></td>';
+    //html += '<td style="font-size:13px;text-align:center;vertical-align:middle"><b>&nbsp;&nbsp;&nbsp;&nbsp;重要度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员对社会网络安全业务的重要程度，通过群体成员的所属领域和偏好话题计算得到"></i>&nbsp;&nbsp;</b></td>';
+    //html += '<td style="font-size:13px;text-align:center;vertical-align:middle"><b>&nbsp;&nbsp;&nbsp;&nbsp;影响力<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员整体的影响力，通过群体成员原创微博、转发微博的评论和转发的最高值、均值、总量计算得到"></i>&nbsp;&nbsp;</b></td></tr>';
     html += '</table>';
+    html += '<table style="width:100%;">';   
+    html += '<tr><td><span style="color:red;margin-left:20px;font-size:13px;">身份：</span><span>'+density_star+'</span></td>';
+    html += '<td ><span style="color:red;margin-left:20px;font-size:13px;">话题：</span><span>'+influence_star+'</span></td></tr>';
+    html += '</table>';   
     $('#g_tag').append(html);
 },
 
@@ -274,11 +301,11 @@ function add_group_tag(){
         s=i.toString();
         select_uids_string += select_uids[s] + ',';
     };
-    console.log(select_uids_string);
+    //console.log(select_uids_string);
     add_tag_attribute_name = $("#select_attribute_name").val();
     add_tag_attribute_value = $("#select_attribute_value").val();
     add_group_tag_url = '/tag/add_group_tag/?uid_list=' + select_uids + "&attribute_name=" + add_tag_attribute_name + "&attribute_value=" + add_tag_attribute_value;
-    console.log(add_group_tag_url);
+    //console.log(add_group_tag_url);
     if(select_uids.length!=0){
         Search_weibo.call_sync_ajax_request(add_group_tag_url, Search_weibo.ajax_method, Search_weibo.Draw_add_group_tag);
     }else{

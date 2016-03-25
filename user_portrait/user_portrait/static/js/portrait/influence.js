@@ -27,9 +27,7 @@ Influence.prototype = {   //获取数据，重新画表
   //var item_y = data.influence;
 	var item_y = data.evaluate_index;
   // var conclusion = data.description;
-
-	// document.getElementById('saysth').innerHTML = conclusion[0];
-	// document.getElementById('sayimportant').innerHTML = conclusion[1];
+if(data.evaluate_index){
 	var dataFixed = [];
 	for(i=0;i<item_y.length;i++){
 		dataFixed.push(parseFloat(item_y[i].toFixed(2)));
@@ -88,7 +86,11 @@ Influence.prototype = {   //获取数据，重新画表
     };
         // 为echarts对象加载数据 
         myChart.setOption(option); 
-  },
+  }
+else{
+  $('#influence_chart').append('<h4 style="text-align:center;margin-top:50%;">暂无数据</h4>')
+}
+},
 
  Draw_get_top_weibo1:function(data){
   var div_name = 'influence_weibo1';
