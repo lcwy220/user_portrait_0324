@@ -118,7 +118,7 @@ UPDATE_MONTH_REDIS_KEY = 'update_month'
 es_user_profile = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
 es_user_portrait = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 6000)
 es_flow_text = Elasticsearch(FLOW_TEXT_ES_HOST, timeout=600)
-es_group_result = Elasticsearch(USER_PORTRAIT_ES_HOST, time_out=600)
+es_group_result = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout=600)
 es_retweet = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
 es_comment = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
 es_copy_portrait = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
