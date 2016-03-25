@@ -1,3 +1,24 @@
+// Date format
+Date.prototype.format = function(format){
+    var o = {
+        "M+" : this.getMonth()+1, //month
+        "d+" : this.getDate(), //day
+        "h+" : this.getHours(), //hour
+        "m+" : this.getMinutes(), //minute
+        "s+" : this.getSeconds(), //second
+        "q+" : Math.floor((this.getMonth()+3)/3), //quarter
+        "S" : this.getMilliseconds() //millisecond
+    }
+    if(/(y+)/.test(format)){
+        format=format.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    }
+    for(var k in o){
+        if(new RegExp("("+ k +")").test(format)){
+            format = format.replace(RegExp.$1, RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
+        }
+    }
+    return format;
+}
 function Search_weibo_recommend(url, div){
   that = this;
   this.ajax_method = 'GET';
@@ -165,7 +186,14 @@ function bindOption(){
                   alert('请选择文件上传！');
                   return false;
               }
-              handleFileSelect();
+
+              var upload_job = {};
+              var admin = $('#useremail').text();
+              upload_job['user'] = admin;
+              upload_job['type'] = $('#file_type').val();
+              upload_job['date'] = new Date().format('yyyy-MM-dd');
+              //upload_job['date'] = '2013-09-06';
+              handleFileSelect(upload_job);
           }
           else{
 		  var cur_uids = [];
@@ -270,30 +298,39 @@ bindOption();
 draw_table_recommend = new Search_weibo_recommend(url_recommend, '#recommend');
 draw_table_recommend.call_sync_ajax_request(url_recommend, draw_table_recommend.ajax_method, draw_table_recommend.Re_Draw_table);
 
-function handleFileSelect(){
+function handleFileSelect(upload_job){
     var files = seed_user_files;
-    var upload_job = {};
     for(var i=0,f;f=files[i];i++){
         var reader = new FileReader();
         reader.onload = function (oFREvent) {
             var a = oFREvent.target.result;
             upload_job['upload_data'] = a;
-            alert('iiiiiiii');
-            //console.log(upload_job);
-            /*
+            console.log(upload_job);
             $.ajax({   
                 type:"POST",  
-                url:"/detect/multi_person/",
+                url:"/recommentation/submit_identify_in/",
                 contentType:"application/json",
                 data:JSON.stringify(upload_job),
                 dataType: "json",
-                success: seed_multi_user_callback
+                success: file_callback,
             });
-            */
         };            
         reader.readAsText(f,'GB2312');                                                        
     }
 }
+function file_callback(data){
+    console.log(data);
+    if (data == 'uname list all in'){
+        alert('用户已入库！');
+    }
+    else if(data == 'uname list valid'){
+        alert('用户名不合法！');
+    }
+    else{
+        alert('入库成功！');
+    }
+}
+
 function date_initial(){
   var recommend_date = [];
   for(var i=0;i<7;i++){
