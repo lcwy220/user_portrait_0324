@@ -595,7 +595,7 @@ $('#detect_choose').change(function(){
         date_init();
 
         var html = '';
-        html += '<input id="keyword_hashtag" type="text" class="form-control" style="width:145px;height:25px;" placeholder="请输入关键词">';
+        html += '<input id="keyword_hashtag" type="text" class="form-control" style="width:275px;height:25px;" placeholder="请输入关键词，多个词用英文逗号分开">';
 
     };
     $('#detect_choose_detail').append(html);

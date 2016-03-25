@@ -36,6 +36,7 @@
 {% block main %}
 <!-- 	<h3></h3>
 	<hr> -->
+	<span id="username" style='display:none'>{{ g.user }}</span>
 	<div id=''>
 		<h4>排序设置</h4>
 		<table class="shadow" style="margin:30px;width:900px; height:150px;border: 2px solid #cccccc;">
@@ -69,16 +70,14 @@
 				<th  style="width:150px;height:50px;background-color: #E4E4E4;text-align: center;">排序指标</th>
 				<td>
 					<span id="sort_select">
-						<select id="sort_select_2" class="type_sub">
-							<option value="imp">身份敏感度</option>
-							<option value="act">活跃度</option>
-							<option value="bci">影响力</option>
-							<option value="ses">敏感度</option>
-							<option value="im_change">突发重要度变动</option>
-							<option value="acr_change">突发活跃度变动</option>
+						<select id="sort_select_2">
+							<option value="fans">粉丝数</option>
+							<option value="weibo_count">发帖数</option>
+							<option value="bci">身份敏感度</option>
+							<option value="ses">言论敏感度</option>
 							<option value="bci_change">突发影响力变动</option>
-							<option value="ses_change">突发敏感度变动</option>
-						</select>	
+							<option value="ses_change">突发敏感度变动</option>		
+						</select>
 					</span>
 					<span id="rank_submit" onclick="submit_rank()" class="portrait_button" style='float:right;cursor:pointer;margin-right:20px;width: 45px;height: 25px;text-align: center;line-height: 25px;'>提交</span>	
 				</td>

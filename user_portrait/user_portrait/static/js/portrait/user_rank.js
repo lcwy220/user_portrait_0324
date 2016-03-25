@@ -47,7 +47,7 @@ function draw_rank_table(data){
 	html += '<th style="text-align:center;">昵称</th>';
 	html += '<th style="text-align:center;">注册地</th>';
 	html += '<th style="text-align:center;">敏感度</th>';
-	html += '<th style="text-align:center;">影响力</th></thead>';
+	html += '<th style="text-align:center;">身份敏感度</th></thead>';
 	for(var i=0;i<data.length;i++){
 		html += '<tr>';
 		html += '<td style="text-align:center;">'+(i+1)+'</td>';
@@ -79,7 +79,7 @@ $('#range_choose').change(function(){
 		$('#sort_select').empty();
 		var sort_select = '';
 		sort_select += '<select  id="sort_select_2">';
-		sort_select += '<option value="imp">身份敏感度</option>';
+		sort_select += '<option value="imp">重要度</option>';
 		sort_select += '<option value="act">活跃度</option>';
 		sort_select += '<option value="bci">影响力</option>';
 		sort_select += '<option value="ses">言论敏感度</option>';
@@ -102,9 +102,9 @@ $('#range_choose').change(function(){
 		$('#sort_select').empty();
 		var sort_select = '';
 		sort_select += '<select id="sort_select_2">';
-		sort_select += '<option value="imp">身份敏感度</option>';
+		sort_select += '<option value="imp">重要度</option>';
 		sort_select += '<option value="act">活跃度</option>';
-		sort_select += '<option value="bci">影响力</option>';
+		sort_select += '<option value="bci">身份敏感度</option>';
 		sort_select += '<option value="ses">言论敏感度</option>';
 		sort_select += '<option value="im_change">突发重要度变动</option>';
 		sort_select += '<option value="acr_change">突发活跃度变动</option>';
@@ -142,9 +142,9 @@ $('#range_choose').change(function(){
 		$('#sort_select').empty();
 		var sort_select = '';
 		sort_select += '<select id="sort_select_2">';
-		sort_select += '<option value="imp">身份敏感度</option>';
+		sort_select += '<option value="imp">重要度</option>';
 		sort_select += '<option value="act">活跃度</option>';
-		sort_select += '<option value="bci">影响力</option>';
+		sort_select += '<option value="bci">身份敏感度</option>';
 		sort_select += '<option value="ses">言论敏感度</option>';
 		sort_select += '<option value="im_change">突发重要度变动</option>';
 		sort_select += '<option value="acr_change">突发活跃度变动</option>';
@@ -188,9 +188,9 @@ $('#range_choose').change(function(){
 		$('#sort_select').empty();
 		var sort_select = '';
 		sort_select += '<select id="sort_select_2">';
-		sort_select += '<option value="imp">身份敏感度</option>';
+		sort_select += '<option value="imp">重要度</option>';
 		sort_select += '<option value="act">活跃度</option>';
-		sort_select += '<option value="bci">影响力</option>';
+		sort_select += '<option value="bci">身份敏感度</option>';
 		sort_select += '<option value="ses">言论敏感度</option>';
 		sort_select += '<option value="im_change">突发重要度变动</option>';
 		sort_select += '<option value="acr_change">突发活跃度变动</option>';
@@ -207,16 +207,16 @@ $('#range_choose').change(function(){
 		date_init();
 
 		var html = '';
-	    html += '<input id="keyword_hashtag" type="text" class="form-control" style="width:145px;height:25px;" placeholder="请输入关键词">';
+	    html += '<input id="keyword_hashtag" type="text" class="form-control" style="width:275px;height:25px;" placeholder="请输入关键词，多个词用英文逗号分开">';
 	};
 	//hashtag库内
 	if($('#range_choose').val() == 'in_limit_hashtag') {
 		$('#sort_select').empty();
 		var sort_select = '';
 		sort_select += '<select id="sort_select_2">';
-		sort_select += '<option value="imp">身份敏感度</option>';
+		sort_select += '<option value="imp">重要度</option>';
 		sort_select += '<option value="act">活跃度</option>';
-		sort_select += '<option value="bci">影响力</option>';
+		sort_select += '<option value="bci">身份敏感度</option>';
 		sort_select += '<option value="ses">言论敏感度</option>';
 		sort_select += '<option value="im_change">突发重要度变动</option>';
 		sort_select += '<option value="acr_change">突发活跃度变动</option>';
@@ -233,16 +233,16 @@ $('#range_choose').change(function(){
 		date_init();
 
 		var html = '';
-	    html += '<input id="keyword_hashtag" type="text" class="form-control" style="width:145px;height:25px;" placeholder="请输入微话题">';
+	    html += '<input id="keyword_hashtag" type="text" class="form-control" style="width:275px;height:25px;" placeholder="请输入微话题，多个话题用英文逗号分隔">';
 	};
 	//地理位置-库内
 	if($('#range_choose').val() == 'in_limit_geo') {
 		$('#sort_select').empty();
 		var sort_select = '';
 		sort_select += '<select id="sort_select_2">';
-		sort_select += '<option value="imp">身份敏感度</option>';
+		sort_select += '<option value="imp">重要度</option>';
 		sort_select += '<option value="act">活跃度</option>';
-		sort_select += '<option value="bci">影响力</option>';
+		sort_select += '<option value="bci">身份敏感度</option>';
 		sort_select += '<option value="ses">言论敏感度</option>';
 		sort_select += '<option value="im_change">突发重要度变动</option>';
 		sort_select += '<option value="acr_change">突发活跃度变动</option>';
@@ -294,7 +294,7 @@ $('#range_choose').change(function(){
 		html += '<option value="台湾">台湾省</option>';
 		html += '<option value="香港">香港</option>';
 		html += '<option value="澳门">澳门</option>';
-		html += '<option value="国外">国外</option>';
+		//html += '<option value="海外">海外</option>';
 		html += '</select>';
 	};
 	//全网-all
@@ -303,10 +303,11 @@ $('#range_choose').change(function(){
 		var sort_select = '';
 		sort_select += '<select id="sort_select_2">';
 		sort_select += '<option value="fans">粉丝数</option>';
-		sort_select += '<option value="act">发帖数</option>';
-		sort_select += '<option value="imp">身份敏感度</option>';
+		sort_select += '<option value="weibo_count">发帖数</option>';
+		sort_select += '<option value="bci">身份敏感度</option>';
 		sort_select += '<option value="ses">言论敏感度</option>';
 		sort_select += '<option value="bci_change">突发影响力变动</option>';
+		sort_select += '<option value="ses_change">突发敏感度变动</option>';
 		sort_select += '</select>';
 		$('#sort_select').append(sort_select);
 
@@ -321,15 +322,16 @@ $('#range_choose').change(function(){
 	//全网-关键词
 	if($('#range_choose').val() == 'all_limit_keyword') {
 		var html = '';
-	    html += '<input id="keyword_hashtag" type="text" class="form-control" style="width:145px;height:25px;" placeholder="请输入关键词">';
+	    html += '<input id="keyword_hashtag" type="text" class="form-control" style="width:275px;height:25px;" placeholder="请输入关键词，多个词用英文逗号分开">';
 	    $('#sort_select').empty();
 		var sort_select = '';
 		sort_select += '<select id="sort_select_2">';
 		sort_select += '<option value="fans">粉丝数</option>';
-		sort_select += '<option value="act">发帖数</option>';
-		sort_select += '<option value="imp">身份敏感度</option>';
+		sort_select += '<option value="weibo_count">发帖数</option>';
+		sort_select += '<option value="bci">身份敏感度</option>';
 		sort_select += '<option value="ses">言论敏感度</option>';
 		sort_select += '<option value="bci_change">突发影响力变动</option>';
+		sort_select += '<option value="ses_change">突发敏感度变动</option>';
 		sort_select += '</select>';
 		$('#sort_select').append(sort_select);
 
@@ -341,7 +343,7 @@ $('#range_choose').change(function(){
 		date_init();
 
 		var html = '';
-	    html += '<input id="keyword_hashtag" type="text" class="form-control" style="width:145px;height:25px;" placeholder="请输入关键词">';
+	    html += '<input id="keyword_hashtag" type="text" class="form-control" style="width:275px;height:25px;" placeholder="请输入关键词，多个词用英文逗号分开">';
 
 	};
 	$('#range_choose_detail').append(html);
@@ -382,7 +384,7 @@ function submit_rank(){
 		alert('请输入关键词！');
 	}else{
 		if(keyword == undefined){  //没有输入的时候，更新表格及文字
-			var url = 'time='+day_select+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope;
+			var url = '/user_rank/user_sort/?&username='+username+'&time='+day_select+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope;
 			var data = [['111关键词：两会','111状态：正在计算'],['关键词：两会','状态：正在计算'],['关键词：两会','状态：正在计算']];
 			//task_status(data);
 			draw_rank_table(data);
@@ -391,7 +393,6 @@ function submit_rank(){
 			$('#rec_rank_by').empty();
 			$('#rec_time_range').empty();
 			$('#rec_range').append(show_scope);
-			console.log(arg);
 			if(sort_scope != 'in_nolimit' && sort_scope != 'all_nolimit' ){  // 参数是可选的时候，加上详细条件
 				$('#rec_detail').append('-');
 				$('#rec_detail').append(show_arg);
@@ -413,6 +414,9 @@ function submit_rank(){
 			}
 			console.log(url);
 		}else{ //输入参数的时候，更新任务状态表格
+			var keyword_array = [];
+			var keyword_array = keyword.split(',');
+			var keyword_string = keyword_array.join(',');
 			var time_from = user_rank_timepicker($('#time_choose #weibo_from').val());
 			console.log(time_from)
 			var time_to = user_rank_timepicker($('#time_choose #weibo_to').val());
@@ -421,7 +425,7 @@ function submit_rank(){
 			time_from_after = time_from_after.format('yyyy-MM-dd')
 			time_to_after = time_to_after.format('yyyy-MM-dd')
 			console.log(time_from_after)
-			var url = 'time='+time_from_after +','+time_to_after+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope+'&arg='+keyword;
+			var url = '/user_rank/search_task/?time=-1&username='+username+'&st='+time_from_after +'&et='+time_to_after+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope+'&arg='+keyword;
 			var data = [['121关键词：两会','121状态：正在计算'],['关键词：两会','状态：正在计算'],['关键词：两会','状态：正在计算']];
 			task_status(data);
 			console.log(url);
@@ -430,6 +434,11 @@ function submit_rank(){
 }
 
 //结果分析默认值
+var username = $('#username').text();
+var sort_scope = $('#range_choose option:selected').val();
+var sort_norm = $('#sort_select_2 option:selected').val();
+var arg = $('#range_choose_detail_2 option:selected').text();
+var day_select = $("input[name='time_range']:checked").val();
 $('#rec_range').append($('#range_choose option:selected').text());
 // $('#rec_detail').append('：');
 // $('#rec_detail').append($('#range_choose option:selected').text());
@@ -446,5 +455,9 @@ if(day_select == "30"){
 }
 
 var data = [['关键词：两会','状态：正在计算'],['关键词：两会','状态：正在计算'],['关键词：两会','状态：正在计算']];
+//默认时间是？？
+//var task_url = '/user_rank/search_task/?time=-1&username='+username+'&st='+time_from_after +'&et='+time_to_after+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope+'&arg='+keyword;
+var rank_url = '/user_rank/user_sort/?username='+username+'&time='+day_select+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope;
+console.log(rank_url);
 task_status(data);
 draw_rank_table(data);
