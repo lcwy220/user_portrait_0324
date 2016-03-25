@@ -65,9 +65,15 @@ Draw_name:function(data){
 	$('#attribute_name_zh').empty();
 	var html = '';
 	html += '<select id="select_attribute_name">';
-	for(i=0;i<data.length;i++){
+	if(data==""){
+		html += '<option value="">暂无</option>';
+	}
+	else{
+		for(i=0;i<data.length;i++){
 		html += '<option value="'+data[i]+'">'+data[i]+'</option>';
 	}
+	}
+	
 	$('#attribute_name_zh').append(html);
   }
 }
@@ -107,7 +113,8 @@ Draw_value:function(data){
 }   
 }
 var select_attribute_name = $("#select_attribute_name").val();
-if(select_attribute_name != ''){
+console.log()
+if(select_attribute_name != '[]'){
     url_attribute_value = "/tag/show_attribute_value/?user=" + $('#p_useremail').text() + "&attribute_name="+select_attribute_name;
     console.log(url_attribute_value);
     var Show_value = new Show_value();
