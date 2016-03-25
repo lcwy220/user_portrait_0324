@@ -25,16 +25,16 @@
 		<div id="recommend" style="margin-top:10px"><div style="text-align:center;vertical-align:middle;height:40px">数据正在加载中，请稍后...</div></div>
         </div>
         <div id='upload_panel' style="display:none;">
+            <span style='float:left;margin-top:10px;'>文件内容：</span>
+            <span style='float:left;margin-top:10px;'><select id='file_type'>
+                <option value='uid'>用户ID</option>
+                <option value='uname'>用户昵称</option>
+                <option value='url'>用户相册URL</option>
+            </select></span>
 	        <form enctype="multipart/form-data" method="post" style="float:left;margin:10px 15px;height:25px;">
                     <input type="file" id="seed_file_upload" class="fleft" style='border:1px solid #999'/>  
                     <input type="button" value="上传" id="uploadbtn" class="fleft"/>
                 </form>
-                <div>
-		    <input type="radio" name="recommend_type" checked value="influence" />影响力推荐
-		    <input style="margin-left:50px;" type="radio" name="recommend_type" value="sensitive" />敏感度推荐
-		    <input style="margin-left:50px;" type="radio" name="recommend_type" value="auto" />智能推荐
-		    <input style="margin-left:50px;" type="radio" name="recommend_type" value="upload" />用户推荐
-                </div>
                 <div class="col-lg-9" id="file_status" style="display:none;padding:0px;">
                     <span class="input-group-addon" style="color:#2c3251;font-weight:bold;width:100px;border:1px solid white;background-color:white;display:inline-block">上传成功！</span>
                     <span id="add_file" class="input-group-addon" style="width:250px;border:1px solid white;background-color:white;display:inline-block" ></span>

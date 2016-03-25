@@ -473,6 +473,7 @@ function draw_activeness_chart(data){
     var timeline = data.timeline;
     //var activeness = data.activeness;
     var activeness = data.evaluate_index;
+    if(activeness){
     //console.log(timeline,activeness);
     for (var i = 0;i < timeline.length;i++){
         data_time.push(getDate_zh(timeline[i]));
@@ -536,6 +537,9 @@ function draw_activeness_chart(data){
             data: data_count,
         }]
     });
+    }else{
+        $('#activeness').append('<h4 style="text-align:center;margin-top:50%;">暂无数据</h4>');
+    }
 }
 
 function get_unix_time(dateStr){

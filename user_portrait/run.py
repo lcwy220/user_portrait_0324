@@ -62,6 +62,7 @@ def after_request(response):
     return response
 
 @app.route('/')
+@login_required
 def homepage():
     return render_template('homepage.html')
 
