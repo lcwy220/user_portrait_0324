@@ -43,9 +43,9 @@ def save_detect_single_task(input_dict):
 
     #step2: identify the detect task name is valid----is not in group es
     task_information = input_dict['task_information']
-    task_name = task_information['task_name']
+    task_id = task_information['task_id']
     try:
-        task_exist_result = es_group_result.get(index=group_index_name, doc_type=group_index_type, id=task_name)
+        task_exist_result = es_group_result.get(index=group_index_name, doc_type=group_index_type, id=task_id)
     except:
         task_exist_result = {}
     if task_exist_result != {}:
@@ -137,7 +137,7 @@ def save_detect_multi_task(input_dict, extend_mark):
     #step2: identify task name is valid
     task_name = input_dict['task_information']['task_name']
     submit_user = input_dict['task_information']['submit_user']
-    task_id = submit_user + '-' + task_name
+    task_id = input_dict['task_information']['task_id']
     try:
         task_exist_result = es_group_result.get(index=group_index_name, doc_type=group_index_type, id=task_id)['_source']
     except:
@@ -175,7 +175,7 @@ def save_detect_attribute_task(input_dict):
     task_information = input_dict['task_information']
     task_name = task_information['task_name']
     submit_user = task_information['submit_user']
-    task_id = submit_user + '-' + task_name
+    task_id = task_information['task_id']
     try:
         task_exist_result = es_group_result.get(index=group_index_name, doc_type=group_index_type, id=task_id)
     except:
@@ -206,7 +206,7 @@ def save_detect_event_task(input_dict):
     task_information = input_dict['task_information']
     task_name = task_information['task_name']
     submit_user = task_information['submit_user']
-    task_id = submit_user + '-' + task_name
+    task_id = task_information_dict['task_id']
     try:
         task_exist_result = es_group_result.get(index=group_index_name, doc_type=group_index_type, id=task_id)
     except:
@@ -260,7 +260,7 @@ def save_detect2es(input_dict):
     add_dict = dict(add_dict, **input_dict['task_information'])
     task_name = input_dict['task_information']['task_name']
     submit_user = input_dict['task_information']['submit_user']
-    task_id = submit_user + '-' + task_name
+    task_id = input_dict['task_information']['task_id']
     add_dict['query_condition'] = json.dumps(input_dict['query_condition'])
     try:
         es_group_result.index(index=group_index_name, doc_type=group_index_type, id=task_id, body=add_dict)
@@ -280,7 +280,7 @@ def save_compute2es(input_dict):
     task_name = input_dict['task_information']['task_name']
     uid_list = input_dict['task_information']['uid_list']
     submit_user = input_dict['task_information']['submit_user']
-    task_id = submit_user + '-' + task_name
+    task_id = input_dict['task_information']['task_id']
     if isinstance(uid_list, list):
         count = len(input_dict['task_information']['uid_list'])
     else:
@@ -359,7 +359,7 @@ def search_detect_task(task_name, submit_date, state, process, detect_type, subm
         
         condition_num += 1
     if submit_user:
-        query.append({'wildcard':{'submit_user': '*'+submit_user+'*'}})
+        query.append({'term':{'submit_user': submit_user}})
         condition_num += 1
     try:
         search_result = es_group_result.search(index=group_index_name, doc_type=group_index_type, \
@@ -476,7 +476,7 @@ def detect2analysis(input_data):
     task_information_dict = {'task_name':task_name, 'uid_list':uid_list, 'status':0, 'count':len(uid_list),\
             'task_type':'analysis', 'submit_user':task_exist_result['submit_user'], 'submit_date':task_exist_result['submit_date'], \
             'detect_type':task_exist_result['detect_type'], 'detect_process':task_exist_result['detect_process'], \
-            'state': task_exist_result['state']}
+            'state': task_exist_result['state'], 'task_id':task_id, 'query_condition':task_exist_result['query_condition']}
     
     add_es_dict = {'task_information':task_information_dict, 'query_condition':task_exist_result['query_condition']}
     es_status = save_compute2es(add_es_dict)
@@ -508,8 +508,10 @@ def submit_sensing(input_dict):
     status = True
     #step1: identify the task name is valid
     task_name = input_dict['task_information']['task_name']
+    submit_user = input_dict['task_information']['submit_user']
+    task_id = submit_user + '-' + task_name
     try:
-        task_exist_result = es_group_result.get(index=group_index_name, doc_type=group_index_type, id=task_name)
+        task_exist_result = es_group_result.get(index=group_index_name, doc_type=group_index_type, id=task_id)
     except:
         task_exist_result = {}
     if task_exist_result != {}:
@@ -523,6 +525,7 @@ def submit_sensing(input_dict):
     input_dict['task_information']['status'] = 0
     input_dict['task_information']['detect_type'] = 'sensing'
     input_dict['task_information']['task_type'] = input_dict['task_information']['task_type']
+    input_dict['task_information']['task_id'] = task_id
     es_status = save_compute2es(input_dict)
     #step3: save to compute redis
     add_dict2redis = input_dict['task_information']
