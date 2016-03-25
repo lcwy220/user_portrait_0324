@@ -58,5 +58,5 @@ user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security()
 
 # Create admin
-admin = admin.Admin(name=u'权限管理', template_mode='role')
+admin = admin.Admin(name=u'权限管理', template_mode='bootstrap3')
 #admin = admin.Admin(name=u'权限管理', base_template='/portrait/role_manage.html')
