@@ -101,7 +101,7 @@ $(function(){
                   </div>
                 </div>
               </div>
-            <h3  style="padding:5px;margin-top:10px;color:white">个人注册信息</h3>
+            <h3  style="padding:5px;margin-top:79px;color:white">个人注册信息</h3>
             <li>
                 <ul style="padding:0px;height:350px;">
                     <div >
@@ -148,7 +148,41 @@ $(function(){
                     </div>
                 </ul>
             </li>
+
+        <h3  style="padding:5px;margin-top:10px;color:white">标签</h3>
+        <li>
+        <ul style="padding:0px;height:350px;">
+        <div >
+            <span style="margin-left:20px;line-height:40px;">个人标签</span>
+            <span style="float:left;width:100%;border-top:1px solid #ccc;" id="d_tag">
+            </span>
+                <span style="float:left;margin-left:20px;font-size:14px;margin-top:20px;">添加标签</span>
+                    <span style= "width:100%;float:left;margin-left:20px;margin-top:10px;">
+                        <span >选择类别：</span>
+                        <span id="d_attribute_name_zh" style="margin-left:10px">
+                            <select id="d_select_attribute_name">
+                            </select>
+                        </span>
+                    </span>
+                    <span style= "width:100%;float:left;margin-top:10px;margin-left:20px;">
+                        <span >选择标签：</span>
+                        <span id="d_attribute_value_zh" style="margin-left:10px">
+                            <select id="d_select_attribute_name">
+                            </select>
+                        </span>
+                    </span>
+                <div><span style="margin-right:3px;float:right;"><span id="d_add_tag" style="display:inline-block;border:1px solid #334EE3;width:50px;height:30px;border-radius:2px;color:#FFF;background-color:#6699FF;padding-left:10px;line-height:30px;cursor:pointer;" onclick="d_add_tag()">添加</span></span></div>
         </div>
+        <span style="float:left;border-top:1px solid #ccc;width:100%;padding-top:10px;margin-top:10px;" id="d_group_tag">
+        </span>
+        <span style="float:left;margin-left:20px;margin-top:10px;">用户备注：</span>
+        <span style="float:left;margin-left:40px;margin-top:10px;" id="d_extraDetail">暂无</span>
+         </ul>
+        </li>
+        </div>
+
+
+
 
         <div id="framecontent" style="width:850px;">
             <div class ="framepost" style="height:160px;">
@@ -267,9 +301,13 @@ $(function(){
                 userlocation.innerHTML = "无此数据";
             }
             var detailPortrait = document.getElementById('userdes');
+            //console.log(personalData.description.length);
             if(!personalData.description ){
                 detailPortrait.innerHTML = "无此数据";
-            }else{
+            }else if(personalData.description.length>40){
+                detailPortrait.innerHTML = personalData.description.substr(0,40)+'...';
+            }
+            else{
                 detailPortrait.innerHTML = personalData.description;
             }       
             var homepage = document.getElementById('uhome');
@@ -411,13 +449,43 @@ $(function(){
             ST.innerHTML = '0';
         }
     },
+    d_attentionData:function(data){
+    $('#d_tag').empty();
+        html = '';
+        html = html + '<span style="float:left;margin-left:20px;margin-top:5px;font-size:14px;">已有标签</span>';
+        html = html + '<span style="float:left;margin-top:5px;">';
+        if(data.tag_remark.tag.length == 0){
+            html = html + '<label style="margin-left:30px;" class="">暂无数据</label>';
+            html = html +'</span>';
+            $('#d_tag').append(html);
+        }else{
+            for(var i=0;i<data.tag_remark.tag.length;i++){
+                html = html + '<label class="cols-label"><input name="" class=" fleft chosebox" type="checkbox" value="">'+data.tag_remark.tag[i]+'</label>';
+            }
+            html = html +'<li class="portrait_button" style="margin-right:15px;float:right;width:50px;height:30px;"><span id="d_del_tag" style="padding-left:10px;line-height:30px;cursor:pointer;">删除</span></li>';
+            $('#d_tag').append(html);
+        }
+
+        $('#d_group_tag').empty();
+        html = '';
+        html = html + '<span style="float:left;margin-left:20px;">群组标签：</span>';
+        if(data.group_tag.length==0){
+            html = html + '<span style="float:left;margin-left:40px;">暂无数据</span>';
+        }else{
+            for(var i=0;i<data.group_tag.length;i++){
+                html = html + '<span style="float:left;margin-left:40px;">'+data.group_tag[i]+'</span>';
+            }
+        }
+        $('#d_group_tag').append(html);
+    },        
+
         remarkData:function(data){
             //console.log(data);
             if (data == ''){
-                $('#extraDetail').html('暂无');
+                $('#d_extraDetail').html('暂无');
             }
             else{
-                $('#extraDetail').html(data);
+                $('#d_extraDetail').html(data);
             }
         },
         historyData:function(data){
@@ -447,7 +515,8 @@ $(function(){
     Personal.call_sync_ajax_request(url, Personal.ajax_method, Personal.historyData);
     var url = "/attribute/current_tag_vector/?uid=" + uid;
     Personal.call_sync_ajax_request(url, Personal.ajax_method, currentData);
-
+    var url = "/attribute/new_user_portrait/?uid=" + uid;
+    Personal.call_sync_ajax_request(url, Personal.ajax_method, Personal.d_attentionData);
     var url = "/attribute/new_user_evaluate/?uid=" + uid;
     Personal.call_sync_ajax_request(url, Personal.ajax_method, Personal.overallData0)
 
@@ -472,6 +541,16 @@ $(function(){
             success:callback,
         });
     }
+
+$(function(){
+    $('#d_add_tag').click(function(){
+        //console.log('sadas');
+        add_tag_attribute_name = $("#d_select_attribute_name").val();
+        add_tag_attribute_value = $("#d_select_attribute_value").val();
+        add_group_tag_url = '/tag/add_tag/?uid=' + uid + "&attribute_name=" + add_tag_attribute_name + "&attribute_value=" + add_tag_attribute_value;
+    })
+});
+
 
     function person_call_ajax_request(url, callback){
         $.ajax({
@@ -518,6 +597,7 @@ $(function(){
 	</div>
 </div>
 <div id="float-wrap" class="hidden"></div>
+<script type="text/javascript" src="/static/js/portrait/d_show_tag.js"></script> 
 
 {% endblock main %}
 

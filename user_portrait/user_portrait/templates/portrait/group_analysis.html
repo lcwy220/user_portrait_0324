@@ -99,9 +99,6 @@ $(function(){
      //preference_load();
     $(" .portrait_button").click(function(){
         var x = $(this).attr("title");
-        // var x=$(this).parent().index();
-        // console.log(x);
-        //$(this).children("p").css({"color":"#008dd9"}).parent().parent().siblings().children().children("p").css({"color":"#333333"});
         $(this).css({"background-color":"#3351B7"}).siblings().css({"background-color":"#6699FF"});
         if(x=='基本特征'){
            $("#g_bas").css({"display":"block"}).siblings().css({"display":"none"});
@@ -167,7 +164,24 @@ $(function(){
                 </div>
             </div>
         </div>
-
+        <div id="framecontent" style="width:850px;">
+            <div class ="framepost" style="height:600px;">
+                <h3 class="title">发帖内容</h3>
+                <div style="width:100%;margin-top:10px;">
+                    <span style= "color:red;margin-left:20px;margin-right:20px;float:left;">相关微博</span>
+                    <div style="float:left;">
+                            <input type="radio" name="mode_choose" value="timestamp" checked="checked">
+                            <span class="mode" style="margin-right:20px;">时间</span>
+                            <input type="radio" name="mode_choose" value="retweet_count">
+                            <span class="mode" style="margin-right:20px;">转发数</span>
+                            <input type="radio" name="mode_choose" value="count_count" >
+                            <span class="mode" style="margin-right:20px;">评论数</span>
+                            <input type="radio" name="mode_choose" value="sensitive">
+                            <span class="mode" style="margin-right:20px;">敏感性</span>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div style="margin-left:250px;margin-bottom:11px;">
             <button class="portrait_button" type='button' style="margin-right:32px;background-color:#3351B7" title="基本特征" >基本特征</button>
              <button class="portrait_button" type='button' style="margin-right:32px;" title="活动特征" >活动特征</button>
