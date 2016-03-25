@@ -121,6 +121,16 @@ Draw_overview: function(data){
     }else{
         state = data.state;
     };
+    if(data.domain== undefined){
+        domain = '无此数据';
+    }else{
+        domain = data.domain;
+    };
+    if(data.topic == undefined){
+        topic = '无此数据';
+    }else{
+        topic = data.topic;
+    };
     $('#overview').empty();
     html = '';
     html += '<p style="font-size:13px;padding: 5px 5px 5px 5px;">群体名称：' + name +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">创建时间：' + submit_date +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">群体备注：' + state +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">创建人员：' + submit_user +'</p>';
@@ -147,8 +157,8 @@ Draw_overview: function(data){
     //html += '<td style="font-size:13px;text-align:center;vertical-align:middle"><b>&nbsp;&nbsp;&nbsp;&nbsp;影响力<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员整体的影响力，通过群体成员原创微博、转发微博的评论和转发的最高值、均值、总量计算得到"></i>&nbsp;&nbsp;</b></td></tr>';
     html += '</table>';
     html += '<table style="width:100%;">';   
-    html += '<tr><td><span style="color:red;margin-left:20px;font-size:13px;">身份：</span><span>'+density_star+'</span></td>';
-    html += '<td ><span style="color:red;margin-left:20px;font-size:13px;">话题：</span><span>'+influence_star+'</span></td></tr>';
+    html += '<tr><td><span style="color:red;margin-left:20px;font-size:13px;">身份：</span><span>'+domain+'</span></td>';
+    html += '<td ><span style="color:red;margin-left:20px;font-size:13px;">话题：</span><span>'+topic+'</span></td></tr>';
     html += '</table>';   
     $('#g_tag').append(html);
 },
