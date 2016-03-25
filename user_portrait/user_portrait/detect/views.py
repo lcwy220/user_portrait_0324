@@ -89,8 +89,9 @@ def ajax_user_string():
     #get task information
     task_information_dict['task_name'] = request.args.get('task_name', '')
     task_information_dict['submit_date'] = int(time.time())
-    task_information_dict['submit_user'] = request.args.get('submit_user', '')
+    task_information_dict['submit_user'] = request.args.get('submit_user', 'admin')
     task_information_dict['state'] = request.args.get('state', '')
+    task_information_dict['task_id'] = task_information_dict['submit_user'] + '-' + task_information_dict['task_name']
     #identify whether to extend
     extend_mark = request.args.get('extend_mark', '0') #extend_mark=0/1 means analysis/detect
     if extend_mark == '0':
@@ -209,6 +210,7 @@ def ajax_user_file():
     task_information_dict['submit_date'] = int(time.time())
     task_information_dict['submit_user'] = input_data['submit_user']
     task_information_dict['uid_list'] = seed_uid_list
+    task_information_dict['task_id'] = input_data['submit_user'] + '-' + input_data['task_name']
     #identify whether to extend
     extend_mark = input_data['extend']
     if extend_mark == '0':
@@ -400,7 +402,7 @@ def ajax_single_person():
     task_information_dict['task_type'] = 'detect'   #type: detect/analysis
     task_information_dict['detect_type'] = 'single' #type: single/multi/attribute/event
     task_information_dict['detect_process'] = 0     #type: 0/20/50/70/100
-    
+    task_information_dict['task_id'] = task_information_dict['submit_user'] + '-' + task_information_dict['task_name']
     #save task information
     input_dict = {}
     input_dict['task_information'] = task_information_dict
@@ -434,6 +436,7 @@ def ajax_multi_person():
     task_information_dict['state'] = input_data['state']
     task_information_dict['submit_date'] = int(time.time())
     task_information_dict['submit_user'] = input_data['submit_user']
+    task_information_dict['task_id'] =  input_data['submit_user'] + '-' + input_data['task_name']
     #identify whether to extend
     extend_mark = input_data['extend'] # extend_mark = 0/1
     if extend_mark == '0':
@@ -543,6 +546,16 @@ def ajax_attribute_pattern():
     condition_num = 0
     attribute_condition_num  = 0
     pattern_condition_num = 0
+    #step0:get task information dict
+    task_information_dict = {}
+    task_information_dict['task_name'] = request.args.get('task_name', '')
+    task_information_dict['state'] = request.args.get('state', '')
+    task_information_dict['submit_user'] = request.args.get('submit_user', 'admin')
+    task_information_dict['submit_date'] = int(time.time())
+    task_information_dict['task_type'] = 'detect'
+    task_information_dict['detect_type'] = 'attribute'
+    task_information_dict['detect_process'] = 0
+    task_information_dict['task_id'] = task_information_dict['submit_user'] + '-' + task_information_dict['task_name']
     #step1:get attribute query list
     #step1.1: fuzz item
     for item in DETECT_ATTRIBUTE_FUZZ_ITEM:
@@ -572,7 +585,9 @@ def ajax_attribute_pattern():
                     item_value = tag_item_list[1]
                 if item_name and item_value:
                     attribute_condition_num += 1
-                    attribute_query_list.append({'match':{item_name: item_value}})
+                    tag_key = submit_user + '-tag'
+                    tag_value = item_name + '-' + item_value
+                    attribute_query_list.append({'term':{tag_key: tag_value}})
         else:
             item_value = request.args.get(item, '')
             if item_value:
@@ -627,15 +642,6 @@ def ajax_attribute_pattern():
     if filter_dict['count'] == 0:
         return 'invalid input for count'
     query_dict['filter'] = filter_dict
-    #step4:get task information dict
-    task_information_dict = {}
-    task_information_dict['task_name'] = request.args.get('task_name', '')
-    task_information_dict['state'] = request.args.get('state', '')
-    task_information_dict['submit_user'] = request.args.get('submit_user', 'admin')
-    task_information_dict['submit_date'] = int(time.time())
-    task_information_dict['task_type'] = 'detect'
-    task_information_dict['detect_type'] = 'attribute'
-    task_information_dict['detect_process'] = 0
     #save task information
     input_dict = {}
     input_dict['task_information'] = task_information_dict
@@ -710,6 +716,7 @@ def ajax_new_pattern_detect():
     task_information_dict['task_type'] = 'detect'
     task_information_dict['detect_type'] = 'pattern'
     task_information_dict['detect_process'] = 0
+    task_information_dict['task_id'] = task_information_dict['submit_user'] + '-' + task_information_dict['task_name']
     #save task information
     input_dict = {}
     input_dict['task_information'] = task_information_dict
@@ -796,7 +803,7 @@ def ajax_event_detect():
     task_information_dict['task_type'] = 'detect'
     task_information_dict['detect_type'] = 'event'
     task_information_dict['detect_process'] = 0
-
+    task_information_dict['task_id'] = task_information_dict['submit_user'] + '-' + task_information_dict['task_name']
     #step5: save to es and redis
     input_dict['task_information'] = task_information_dict
     input_dict['query_condition'] = query_dict
