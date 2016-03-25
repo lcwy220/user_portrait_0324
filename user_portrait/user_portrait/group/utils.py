@@ -174,7 +174,8 @@ def search_task(task_name, submit_date, state, status, submit_user):
 #output: module_result
 def search_group_results(task_name, module, submit_user):
     result = {}
-    task_id = submit_user + '-' + task_name
+    #task_id = submit_user + '-' + task_name
+    task_id = task_name
     #step1:identify the task_name exist
     try:
         source = es_group_result.get(index=group_index_name, doc_type=group_index_type, \
@@ -195,12 +196,15 @@ def search_group_results(task_name, module, submit_user):
         result['activeness_star'] = source['activeness_star']
         result['influence_star'] = source['influence_star']
         result['importance_star'] = source['importance_star']
+        #need to delete
         result['tag_vector'] = json.loads(source['tag_vector'])
     elif module == 'basic':
         result['gender'] = json.loads(source['gender'])
         result['verified'] = json.loads(source['verified'])
         result['user_tag'] = json.loads(source['user_tag'])
         result['count'] = source['count']
+        result['domain'] = json.loads(source['domain'])
+        result['topic'] = json.loads(source['topic'])
     elif module == 'activity':
         result['activity_trend'] = json.loads(source['activity_trend'])
         result['activity_time'] = json.loads(source['activity_time'])
@@ -214,6 +218,7 @@ def search_group_results(task_name, module, submit_user):
         result['keywords'] = json.loads(source['keywords'])
         result['hashtag'] = json.loads(source['hashtag'])
         result['sentiment_word'] = json.loads(source['sentiment_word'])
+        #need to delete
         result['domain'] = json.loads(source['domain'])
         result['topic'] = json.loads(source['topic'])
     elif module == 'influence':
