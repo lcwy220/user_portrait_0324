@@ -854,6 +854,32 @@ def attribute_pattern_detect(input_dict):
     return results
 
 
+#use to detect group by pattern
+#input: detect_task_information
+#output: detect user list
+#deal one scen: just user pattern condition
+def new_pattern_detect(input_dict):
+    results = {}
+    task_information_dict = input_dict['task_information']
+    task_id = task_information_dict['task_id']
+    task_exist_mark = identify_task_exist(task_id)
+    if task_exist_mark == False:
+        return 'task is not exist'
+    query_condition_dict = input_dict['query_condition']
+    filter_dict = query_condition_dict['filter']
+    pattern_list = query_condition_dict['pattern']
+    #step1: search pattern list and filter by in-user_portrait and filter_dict
+    filter_user_result = pattern_filter_attribute(pattern_list, filter_dict)
+    #step2: change process proportion
+    process_mark = change_process_proportion(task_id, 60)
+    if process_mark == 'task is not exist':
+        return 'task is not exist'
+    elif process_mark == False:
+        return process_mark
+    #step3: filter user list by filter count
+    count = filter_dict['count']
+    results = filter_user_result[:count]
+    return results
 
 #use to detect group by event
 #input: input_dict
@@ -1025,6 +1051,8 @@ def compute_group_detect():
                 detect_results =  attribute_pattern_detect(detect_task_information)
             elif detect_task_type == 'event':
                 detect_results = event_detect(detect_task_information)
+            elif detect_task_type == 'pattern':
+                detect_results = new_pattern_detect(detect_task_information)
             #step3:identify the return---'task is not exist'/'false'/normal_results
             if detect_results != 'task is not exist':
                 #step4:save detect results to es (status=1 and process=100 and add uid_list)
