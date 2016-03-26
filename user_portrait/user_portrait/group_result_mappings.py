@@ -62,7 +62,7 @@ index_info = {
 
 es = Elasticsearch('219.224.134.213')
 
-es.indices.create(index='group_result', body=index_info, ignore=400)
+es.indices.create(index='group_manage_v2', body=index_info, ignore=400)
 
 #es.indices.put_mapping(index='group_result', doc_type='group', \
 #        body={'properties':{'test_field':{'type':'string', 'index':'not_analyzed'}}}, ignore=400)

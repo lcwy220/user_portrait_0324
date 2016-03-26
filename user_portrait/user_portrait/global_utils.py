@@ -118,7 +118,7 @@ UPDATE_MONTH_REDIS_KEY = 'update_month'
 es_user_profile = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
 es_user_portrait = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 6000)
 es_flow_text = Elasticsearch(FLOW_TEXT_ES_HOST, timeout=600)
-es_group_result = Elasticsearch(USER_PORTRAIT_ES_HOST, time_out=600)
+es_group_result = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout=600)
 es_retweet = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
 es_comment = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
 es_copy_portrait = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
@@ -146,7 +146,7 @@ be_comment_index_type = 'user'
 copy_portrait_index_name = 'this_is_a_copy_user_portrait'
 copy_portrait_index_type = 'manage'
 # es for group detect and analysis
-group_index_name = 'group_manage'
+group_index_name = 'group_manage_v2'
 group_index_type = 'group'
 
 # es for sentiment keywords task

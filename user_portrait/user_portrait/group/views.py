@@ -9,7 +9,7 @@ from flask import Blueprint, url_for, render_template, request,\
 from utils import submit_task, search_task, get_group_list,\
        delete_group_results, get_social_inter_content, search_group_sentiment_weibo,\
        get_group_user_track, search_group_results, get_influence_content
-from utils import get_group_member_name, get_activity_weibo
+from utils import get_group_member_name, get_activity_weibo, group_user_weibo
 
 from user_portrait.global_config import UPLOAD_FOLDER, ALLOWED_EXTENSIONS
 from user_portrait.search_user_profile import es_get_source
@@ -84,6 +84,20 @@ def ajax_show_group_result_basic():
     results = search_group_results(task_name, module, submit_user)
     return json.dumps(results)
 
+# show the group weibo result
+# version: write in 16-03-26
+# input: task_name, submit_user, sort_type
+# ouput: weibo result
+@mod.route('/group_user_weibo/')
+def ajax_group_user_weibo():
+    results = {}
+    task_name = request.args.get('task_name', '')
+    submit_user = request.args.get('submit_user', 'admin')
+    sort_type = request.args.get('sort_type', '')
+    results = group_user_weibo(task_name, submit_user, sort_type)
+    if not results:
+        results = {}
+    return json.dumps(results)
 
 #show group members geo track
 #input: uid
