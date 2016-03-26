@@ -24,6 +24,7 @@
     {% block main %}
     <div class="box-content">
         <div>
+            <div id='useremail' hidden>{{ g.user.email }}</div>
             <span style='font-weight:bold;margin-left:40px;font-size:18px;'>发现方式：</span>
             <select id='discovery_choose'style='font-size:18px;'>
                 <option value='user'>由用户发现群体</option>
@@ -56,18 +57,17 @@
                     <div id="information" class="col-md-12" style="width:1030px;margin-left:45px;padding-top:5px">
                         <table class='table table-border bootstrap-datatable'>
                             <tr><td>
-                                <label class='control-label'>群组信息
-                                </label>
                                 <div class='controls'>
                                     <div class='col-md-12' style='padding:0px;'>
-                                        <div class='col-lg-6' style='padding:0px;'>
+                                        <div style='float:left;margin-left:25px;font-weight:bold;'><span class='control-label'>群组信息</span></div>
+                                        <div class='col-lg-6' style='width:400px;padding:0px;margin-left:45px;'>
                                              <span style='float:left;color:#c00;font-size:15px;margin-top:5px;'>*</span>
                                              <span class="input-group-addon" style="width:70px;padding-right:0px;border:1px solid white;float:left;background-color:white;display:inline-block">名称</span>
-                                             <input id="first_name" type='text' class="form-control" style='width:80%; display:inline-block;height:25px' placeholder='（必填）仅包含汉字、英文、数字和下划线'>
+                                             <input id="first_name" type='text' class="form-control" style='width:295px; display:inline-block;height:25px' placeholder='（必填）仅包含汉字、英文、数字和下划线'>
                                         </div>
-                                        <div class='col-lg-6' style='padding:0px;'>
+                                        <div class='col-lg-6' style='padding:0px;width:450px;'>
                                              <span class="input-group-addon" style="width:75px;border:1px solid white;float:left;background-color:white;display:inline-block">备注</span>
-                                             <input id="first_remarks" type='text' class="form-control" style='width:80%; display:inline-block;height:25px' placeholder='（选填）仅包含汉字、英文、数字和下划线'>
+                                             <input id="first_remarks" type='text' class="form-control" style='width:370px; display:inline-block;height:25px' placeholder='（选填）仅包含汉字、英文、数字和下划线'>
                                         </div>
                                     </div>
                                 </div>
@@ -223,6 +223,21 @@
                 $('#discovery_choose').change(function(){
                     var value = $(this).val();
                     $('#tab_con_' + value).fadeIn(600).siblings().hide();
+                });
+                $('#identify_commit').click(function(){
+                    var mood = $('#discovery_choose').val();
+                    console.log(mood);
+                    if (mood == 'user'){
+                    
+                    }
+                    else if(mood == 'event'){
+                        submit_event();
+                    }
+                    else if(mood == 'attribute'){
+                        submit_attribute();
+                    }
+                    else{
+                    }
                 });
             });
         </script>
