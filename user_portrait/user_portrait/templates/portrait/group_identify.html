@@ -1,5 +1,6 @@
 {% extends "tbase.html" %}
-    {% block title %}群体分析{% endblock title %}
+    {% block title %}群体发现{% endblock title %}
+    {% block head_title %}群体发现{% endblock head_title %}
     {% block css %}
         {{ super() }}
         <style>
@@ -8,13 +9,10 @@
             .dataTables_paginate{margin-top:-10px;margin-bottom:-20px;}
             .wrapper{min-height:330px;margin-top:50px;margin-left:-20px;background: #fff;position: relative;}
             #tab{width: 180px;height:284px;}
-            #tab_left,#tab_con{margin: 0px;background: #fff;} #tab,#tab_con{float: left;}
-            #tab_left{width:180px;height:380px;font-family:"Microsoft Yahei"}
-            #tab_left li{list-style-type: none;font-size: 20px;text-align: center;border-top: 1px solid #ccc;}
-            #tab_left li a{color: #000;opacity:0.7;text-decoration: none;line-height: 80px;width: 180px;height: 70px;display: block;background: #fff;text-shadow:1px 1px 2px #ccc;border-left: 1px solid #ccc;}
-            #tab_left li.current a{background: #dde4f2;text-decoration: none;border-left: 1px solid #f00;text-shadow:1px 1px 2px #ccc;}
-            #tab_left li a:hover{background: #dde4f2;text-decoration: none;border-left: 1px solid #f00;text-shadow:1px 1px 2px #ccc;}
-            #tab_con{width: 820px;overflow: hidden;margin-bottom:65px;}
+            #tab_con{width: 1000px;margin-left:60px;overflow: hidden;}
+            #main #content_discovery .search_name{width:120px;}
+            #content_discovery td{border:1px solid #c5c1c1;}
+            #content_discovery .input-group-addon{font-size:13px;}
         </style>
         <link rel="stylesheet" type="text/css" href="/static/css/jquery.datetimepicker.css"/>
     {% endblock css %}
@@ -24,46 +22,66 @@
         <script type="text/javascript" src="/static/js/portrait/identify_table.js"></script>
     {% endblock head_js %}
     {% block main %}
-    <h4 class="page-header">群体分析</h4>
     <div class="box-content">
-        <ul class="nav nav-tabs" id="myTab">
-            <li class="active"><a id="tab_discovery" href="#">群体发现任务</a></li>
-            <li><a id="tab_manage" href="#">群体分析任务</a></li>
-        </ul>
+        <div>
+            <span style='font-weight:bold;margin-left:40px;font-size:18px;'>发现方式：</span>
+            <select id='discovery_choose'style='font-size:18px;'>
+                <option value='user'>由用户发现群体</option>
+                <option value='event'>由事件发现群体</option>
+                <option value='attribute'>由特征发现群体</option>
+                <option value='pattern'>由模式发现群体</option>
+            </select>
+            <!--
+            <button class='portrait_button' style='margin-left:50px;height:30px;'>确定</button>
+            -->
+        </div>
         <div id="myTabContent" class="tab-content">
             <div id="content_discovery" class="tab-pane active" style="margin-top:10px">
                 <div class="wrapper">
-                    <div id="tab">
-                        <ul id="tab_left">
-                            <li id="tab_left_1" class="current"><a href="#tab_con">用户<img src="/static/img/go-next-icon.png" style="width:20px;margin: 0 5px;">群体</a></li>
-                            <li id="tab_left_2"><a href="#tab_con">属性<img src="/static/img/go-next-icon.png" style="width:20px;margin: 0 5px;">群体</a></li>
-                            <li id="tab_left_3"><a href="#tab_con">事件<img src="/static/img/go-next-icon.png" style="width:20px;margin: 0 5px;">群体</a></li>
-                            <li id="tab_left_4" style="border-bottom:1px solid #ccc;"><a href="#tab_con">感知<img src="/static/img/go-next-icon.png" style="width:20px;margin: 0 5px;">群体</a></li>
-                        </ul>
-                    </div>
                     <div id="tab_con">
-                        <div id="tab_con_1">
+                        <div id="tab_con_user">
                             {% include "portrait/group/seed_user.html"%}
 
                         </div>
-                        <div id="tab_con_2" style='display:none'>
+                        <div id="tab_con_attribute" style='display:none'>
                             {% include "portrait/group/attribute_pattern.html"%}
                         </div>
-                        <div id="tab_con_3" style='display:none'>
+                        <div id="tab_con_event" style='display:none'>
                             {% include "portrait/group/event_pattern.html"%}
                         </div>
-                        <div id="tab_con_4" style='display:none'>
-                            {% include "portrait/group/group_social_sensing.html"%}
+                        <div id="tab_con_pattern" style='display:none'>
+                            {% include "portrait/group/pattern.html"%}
                         </div>
+                    </div>
+                    <div id="information" class="col-md-12" style="width:1030px;margin-left:45px;padding-top:5px">
+                        <table class='table table-border bootstrap-datatable'>
+                            <tr><td>
+                                <label class='control-label'>群组信息
+                                </label>
+                                <div class='controls'>
+                                    <div class='col-md-12' style='padding:0px;'>
+                                        <div class='col-lg-6' style='padding:0px;'>
+                                             <span style='float:left;color:#c00;font-size:15px;margin-top:5px;'>*</span>
+                                             <span class="input-group-addon" style="width:70px;padding-right:0px;border:1px solid white;float:left;background-color:white;display:inline-block">名称</span>
+                                             <input id="first_name" type='text' class="form-control" style='width:80%; display:inline-block;height:25px' placeholder='（必填）仅包含汉字、英文、数字和下划线'>
+                                        </div>
+                                        <div class='col-lg-6' style='padding:0px;'>
+                                             <span class="input-group-addon" style="width:75px;border:1px solid white;float:left;background-color:white;display:inline-block">备注</span>
+                                             <input id="first_remarks" type='text' class="form-control" style='width:80%; display:inline-block;height:25px' placeholder='（选填）仅包含汉字、英文、数字和下划线'>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td></tr>
+                        </table>
+                    </div>
+                    <div class='col-md-12' style='margin-left:60px;text-align:right;padding-right:0px;margin-bottom:40px;'>
+                        <button id="identify_commit" class="portrait_button" style='cursor:pointer;'>提交</button>
                     </div>
                 </div>
                 <div >
                     <div id="dis_table">
                     </div>
                 </div>
-            </div>
-            <div id="content_manage" class="tab-pane" style="margin-top:10px">
-
             </div>
         </div>
     </div>
@@ -202,56 +220,9 @@
         <script type="text/javascript" src="/static/js/portrait/group_pattern.js"></script>
         <script>
             $(function(){
-                $("#tab_left_1").click(function(){
-                    if ($(this).hasClass('current')) return;
-                    $(this).addClass('current');
-                    $(this).siblings().removeClass('current');
-                    $("#tab_con_1").fadeIn(600);
-                    $("#tab_con_2").hide();
-                    $("#tab_con_3").hide();
-                    $("#tab_con_4").hide();
-                });
-                $("#tab_left_2").click(function(){
-                    if ($(this).hasClass('current')) return;
-                    $(this).addClass('current');
-                    $(this).siblings().removeClass('current');
-                    $("#tab_con_1").hide();
-                    $("#tab_con_3").hide();
-                    $("#tab_con_4").hide();
-                    $("#tab_con_2").fadeIn(600);
-                });
-                $("#tab_left_3").click(function(){
-                    if ($(this).hasClass('current')) return;
-                    $(this).addClass('current');
-                    $(this).siblings().removeClass('current');
-                    $("#tab_con_2").hide();
-                    $("#tab_con_1").hide();
-                    $("#tab_con_4").hide();
-                    $("#tab_con_3").fadeIn(600);
-                });
-                $("#tab_left_4").click(function(){
-                    if ($(this).hasClass('current')) return;
-                    $(this).addClass('current');
-                    $(this).siblings().removeClass('current');
-                    $("#tab_con_1").hide();
-                    $("#tab_con_2").hide();
-                    $("#tab_con_3").hide();
-                    $("#tab_con_4").fadeIn(600);
-                });
-                $("#tab_discovery").click(function(){
-                    if ($(this).parent('li').hasClass('active')) return;
-                    $(this).parent('li').siblings().removeClass('active');
-                    $(this).parent('li').addClass('active');
-                    $('#content_discovery').css('display','block');
-                    $('#content_manage').css('display','none');
-                });
-                $("#tab_manage").click(function(){
-                    if ($(this).parent('li').hasClass('active')) return;
-                    $(this).parent('li').siblings().removeClass('active');
-                    $(this).parent('li').addClass('active');
-                    $('#content_discovery').css('display','none');
-                    redraw_result();
-                    $('#content_manage').css('display','block');
+                $('#discovery_choose').change(function(){
+                    var value = $(this).val();
+                    $('#tab_con_' + value).fadeIn(600).siblings().hide();
                 });
             });
         </script>
