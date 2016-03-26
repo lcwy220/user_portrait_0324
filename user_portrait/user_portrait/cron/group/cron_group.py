@@ -117,6 +117,9 @@ def get_attr_portrait(uid_list):
     character_dict = {'character_sentiment':{}, 'character_text':{}}
     activity_geo_distribution_date = dict() # {'date1':{geo1:person_count, geo2:person_count}, 'date2':{geo1:person_count,..}, ..} # one month
     activity_geo_vary = dict() # {'geo2geo': count, ...}  geo2geo='activity_geo1&activity_geo2'
+    main_start_geo = dict()
+    main_end_geo = dict()
+    vary_detail_geo = dict()
     importance_list = []
     influence_list = []
     activeness_list = []
@@ -214,17 +217,36 @@ def get_attr_portrait(uid_list):
                     except:
                         last_user_date_main_item = ''
                     if main_date_city != last_user_date_main_item:
-                        user_date_main_list.append(main_date_city)
+                        user_date_main_list.append([main_date_city, iter_ts])
 
                 iter_ts += DAY
             #attr8: activity_geo_dict---location vary
             if len(user_date_main_list) > 1:
                 for i in range(1, len(user_date_main_list)):
-                    vary_item = '&'.join(user_date_main_list[i-1:i+1])
+                    vary_city = [geo_ts_item[0] for geo_ts_item in user_date_main_list[i-1:i+1]]
+                    vary_ts = [geo_ts_item[1] for geo_ts_item in user_date_main_list[i-1:i+1]]
+                    vary_item = '&'.join(vary_city)
+                    #vary_item = '&'.join(user_date_main_list[i-1:i+1])
+                    #get activity geo vary for vary table and map
                     try:
                         activity_geo_vary[vary_item] += 1
                     except:
                         activity_geo_vary[vary_item] = 1
+                    #get main start geo
+                    try:
+                        main_start_geo[vary_city[0]] += 1
+                    except:
+                        main_start_geo[vary_city[0]] = 1
+                    #get main end geo
+                    try:
+                        main_end_geo[vary_city[1]] += 1
+                    except:
+                        main_end_geo[vary_city[1]] = 1
+                    #get vary detail geo
+                    try:
+                        vary_detail_geo[vary_item].append([uid, vary_ts[0], vary_ts[1]])
+                    except:
+                        vary_detail_geo[vary_item] = [[uid, vary_ts[0], vary_ts[1]]]
             
             #attr9: influence distribution
             influence = source['influence']
@@ -325,6 +347,9 @@ def get_attr_portrait(uid_list):
     results['topic'] = json.dumps(sort_topic_ratio)
     results['activity_geo_distribution'] = json.dumps(activity_geo_distribution_date)
     results['activity_geo_vary'] = json.dumps(activity_geo_vary)
+    results['main_start_geo'] = json.dumps(main_start_geo)
+    results['main_end_geo'] = json.dumps(main_end_geo)
+    results['vary_detail_geo'] = json.dumps(vary_detail_geo)
     #main activity geo
     all_activity_geo = union_dict_list(activity_geo_distribution_date.values())
     sort_all_activity_geo = sorted(all_activity_geo.items(), key=lambda x:x[1], reverse=True)
