@@ -294,6 +294,8 @@ IDENTIFY_ATTRIBUTE_LIST = ['domain', 'uid', 'hashtag_dict', 'importance', 'influ
         'character_sentiment', 'activity_geo_aggs', 'online_pattern_aggs']
 
 #cron_group
+TOPIC_MODEL_COUNT = 5
+TOPIC_MODEL_WORD_COUNT = 10
 ACTIVITY_GEO_TOP = 3
 HIS_BINS_COUNT = 5
 GROUP_ACTIVITY_TIME_THRESHOLD = [0.3, 0.5]
