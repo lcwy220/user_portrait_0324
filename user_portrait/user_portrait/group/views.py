@@ -85,6 +85,7 @@ def ajax_show_group_result_basic():
     return json.dumps(results)
 
 # show the group weibo result
+# version: write in 16-03-26
 # input: task_name, submit_user, sort_type
 # ouput: weibo result
 @mod.route('/group_user_weibo/')

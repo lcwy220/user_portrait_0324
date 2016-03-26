@@ -146,7 +146,7 @@ be_comment_index_type = 'user'
 copy_portrait_index_name = 'this_is_a_copy_user_portrait'
 copy_portrait_index_type = 'manage'
 # es for group detect and analysis
-group_index_name = 'group_manage'
+group_index_name = 'group_manage_v2'
 group_index_type = 'group'
 
 # es for sentiment keywords task

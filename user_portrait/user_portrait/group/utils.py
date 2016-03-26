@@ -195,6 +195,7 @@ def group_user_weibo(task_name, submit_user, sort_type):
         now_date = RUN_TEST_TIME
         sort_type = 'timestamp'
     #step1: get group user
+    task_id = submit_user + '-' + task_name
     try:
         group_exist_result = es_group_result.get(index=group_index_name, doc_type=group_index_type,\
                 id=task_id)['_source']
@@ -225,7 +226,7 @@ def group_user_weibo(task_name, submit_user, sort_type):
     for portrait_item in portrait_exist_result:
         uid = portrait_item['_id']
         if portrait_item['found'] == True:
-            source = portrait_item['source']
+            source = portrait_item['_source']
             uname = source['uname']
         else:
             uname = 'unknown'
@@ -250,7 +251,7 @@ def group_user_weibo(task_name, submit_user, sort_type):
         else:
             retweet_count = 0
             comment_count = 0
-            sensitive_count = 0
+            sensitive_score = 0
         city = ip2city(ip)
         weibo_list.append([mid, uid, uname, text, ip, city, timestamp, date, retweet_count, comment_count, sensitive_score, weibo_url])
     return weibo_list
