@@ -7,7 +7,7 @@ import csv
 import heapq
 from operator import itemgetter, attrgetter
 from lda_config import load_scws,cx_dict,single_word_whitelist,black_word,re_cut
-
+from parameter import TOPIC_MODEL_WORD_COUNT
 class TopkHeap(object):
     def __init__(self, k):
         self.k = k
@@ -61,7 +61,7 @@ def lda_main(texts,nt):
     lda = gensim.models.ldamodel.LdaModel(corpus=corpus_tfidf, id2word=dictionary, num_topics=nt, update_every=1, chunksize=5000, passes=1)
 
     ##将对应的topic写入文件
-    topics=lda.show_topics(num_topics=nt, num_words=10, log=False, formatted=True)
+    topics=lda.show_topics(num_topics=nt, num_words=TOPIC_MODEL_WORD_COUNT, log=False, formatted=True)
     
     t_topic = []
     for t in topics:
