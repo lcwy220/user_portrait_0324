@@ -474,6 +474,58 @@ function Draw_top_platform(dealt_data){
     $('#top_platform').append(html);
 }
 
+function Draw_top_place(start,end){
+    
+    var html = '';
+	$('#top_place').empty();
+    var html = '';
+    if(start.length==0){
+		html += '<div style="width:100%;line-height:30px;">主要出发地：暂无数据</div>';
+	}else {
+		var start_geo = [];
+		for(var i in start){
+			start_geo.push(i);
+		}
+		if(start_geo.length <=5){
+		    html += '<div style="width:100%;line-height:30px;">主要出发地：';
+		    for(var i=0;j<start_geo.length;j++){
+			    html = html + '<a>' +start_geo[i] +'</a>&nbsp&nbsp';
+		    }
+		    html += '</div>'
+	    }else{
+		    html += '<div style="width:100%;line-height:30px;">主要出发地：';
+		    for(var i=0;i<5;i++){
+			    html = html + '<a>' + start_geo[i] +'</a>&nbsp&nbsp';
+		    }
+		    html += '<span id="more_start" data-toggle="modal" data-target="#moreStart">更多<span></div>'
+	    }
+	}
+		
+	if(end.length==0){
+		html += '<div style="width:100%;line-height:30px;">主要目的地：暂无数据</div>';
+	}else {
+		var end_geo = [];
+		for(var i in end){
+			end_geo.push(i);
+		}
+		if(end_geo.length <=5){
+		    html += '<div style="width:100%;line-height:30px;">主要出发地：';
+		    for(var i=0;j<end_geo.length;j++){
+			    html = html + '<a>' +end_geo[i] +'</a>&nbsp&nbsp';
+		    }
+		    html += '</div>'
+	    }else{
+		    html += '<div style="width:100%;line-height:30px;">主要出发地：';
+		    for(var i=0;i<5;i++){
+			    html = html + '<a>' + end_geo[i] +'</a>&nbsp&nbsp';
+		    }
+		    html += '<span id="more_end" data-toggle="modal" data-target="#moreEnd">更多<span></div>'
+	    }
+	}
+	
+    $('#top_place').append(html);
+}
+
 // function Draw_more_top_platform(data){
 //     $('#top_more_platform').empty();
 //     var html = '';
@@ -696,7 +748,7 @@ function show_activity(data) {
 
 	Draw_top_platform(data.online_pattern);
 	//Draw_more_top_platform();
-
+    Draw_top_place(data.main_start_geo,data.main_end_geo);
 	draw_active_distribution(data.activeness_his);
 
 	group_activity(data.activeness_trend);

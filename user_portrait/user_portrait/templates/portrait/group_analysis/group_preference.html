@@ -3,49 +3,49 @@
 <link href="/static/personal/css/component.css" rel="stylesheet" type="text/css" />
 <script src="/static/js/modernizr.custom.js"></script>
 
-<div class="col-lg-6">
+<div class="col-lg-4">
     <div class="panel panel-default">
         <div class="panel-heading" style="border-bottom: 1px solid transparent;border-color: #dddddd;">
             <div class=" box_title"><span class="showmore" id="showmore_keyWords" style="float:right;cursor:pointer" type="button"data-toggle="modal" data-target="#more_keyWords" ><u>查看详情</u></span>关键词</div>
         </div>
         <div class="panel-body">
-          <div id="Language" style="width:330px;height:300px;margin:30px 40px;margin:-10px 50px 0px 20px;">
+          <div id="Language" style="width:250px;height:300px;margin:30px 40px;margin:-10px 50px 0px 20px;">
           </div>
       </div>
   </div>
 </div>
 
-<div class="col-lg-6">
+<div class="col-lg-4">
     <div class="panel panel-default">
         <div class="panel-heading" style="border-bottom: 1px solid transparent;border-color: #dddddd;">
             <div class="box_title"><span class="showmore " id="showmore_hashtagWords" style="float:right;cursor:pointer" type="button"data-toggle="modal" data-target="#more_hashtagWords" ><u>查看详情</u></span>事件标签</div>
         </div>
         <div class="panel-body">
-          <div id="hashtag_words" style="width:330px;height:300px;margin:30px 40px;margin:-10px 50px 0px 20px;">
+          <div id="hashtag_words" style="width:250px;height:300px;margin:30px 40px;margin:-10px 50px 0px 20px;">
           </div>
       </div>
   </div>
 </div>
 
-<div class="col-lg-6" style="margin-top:15px;">
+<div class="col-lg-4" style="">
     <div class="panel panel-default">
         <div class="panel-heading" style="border-bottom: 1px solid transparent;border-color: #dddddd;">
             <div class="box_title"><span class="showmore " id="showmore_domain" style="float:right;cursor:pointer" type="button"data-toggle="modal" data-target="#more_sensitive" ><u>查看详情</u></span>敏感词</div>
         </div>
         <div class="panel-body">
-          <div id="preference_domain"  style="width:450px;height:300px;margin-left: -30px;">
+          <div id="preference_domain"  style="width:250px;height:300px;margin:30px 40px;margin:-10px 50px 0px 20px;">
           </div>
       </div>
   </div>
 </div>
 
-<div class="col-lg-6" style="margin-top:15px;">
+<div class="col-lg-12" style="margin-top:15px;">
     <div class="panel panel-default">
         <div class="panel-heading" style="border-bottom: 1px solid transparent;border-color: #dddddd;">
-            <div class="box_title"><span class="showmore " id="showmore_topic" style="float:right;cursor:pointer" type="button"data-toggle="modal" data-target="#more_model" ><u>查看详情</u></span>Topic-model</div>
+            <div class="box_title">Topic-model</div>
         </div>
         <div class="panel-body">
-          <div id="preference_topic"  style="width:450px;height:300px;margin-left: -10px;">
+          <div id="preference_topic"  style="width:100%;height:250px;margin-left: -10px;">
           </div>
       </div>
   </div>
@@ -145,26 +145,22 @@ Show_pref.prototype = {
 	
     if(domain_data.length==0){
 	    html += '<h4 style="text-align:center;height:300px;">暂无数据</h4>';
-	}else if(domain_data.length<=5){
+	}else {
+	    html += '<table class="table table-striped table-bordered" style="width:100%;">';
+	    html += '<tr><th style="text-align:center">排名</th><th style="text-align:center">Topic-model</th></tr>';
 	    for (var i = 0; i < domain_data.length; i++) {
             var s = i.toString();
             var m = i + 1;
-			html += '<table class="table table-striped table-bordered" style="width:450px;">';
-			html += '<tr><th style="text-align:center">排名</th><th style="text-align:center">Topic-model</th><th style="text-align:center">频数</th></tr>';
-            html += '<tr style=""><th style="text-align:center">' + m + '</th><th style="text-align:center">' + domain_data[i][0] +  '</th><th style="text-align:center">' + domain_data[i][1] + '</th></tr>';
+            html += '<tr style=""><th style="text-align:center">Top.' + m + '</th><th style="text-align:center">' ;
+			for(var j=0;j<10;j++){
+			    html = html + domain_data[i][j] +'&nbsp&nbsp';
+			}
+			html += '</th></tr>';
        }
-	}else if(domain_data.length>5){
-	    for (var i = 0; i < 6; i++) {
-            var s = i.toString();
-            var m = i + 1;
-			html += '<table class="table table-striped table-bordered" style="width:450px;">';
-			html += '<tr><th style="text-align:center">排名</th><th style="text-align:center">Topic-model</th><th style="text-align:center">频数</th></tr>';
-            html += '<tr style=""><th style="text-align:center">' + m + '</th><th style="text-align:center">' + domain_data[i][0] +  '</th><th style="text-align:center">' + domain_data[i][1] + '</th></tr>';
-        }
 	}
     html += '</table>'; 
     $('#preference_topic').append(html);
-	DrawMore(domain_data,'model_WordList');
+	//DrawMore(domain_data,'model_WordList');
   }
 }
 
@@ -335,6 +331,6 @@ function DrawMore(data,div){
     $('#'+ div).append(html);
 }
 var Show_pref = new Show_pref();
-var prefrence_url = '/group/show_group_result/?task_name=mytest030303&submit_user=admin&module=preference';
+var prefrence_url = '/group/show_group_result/?task_name='+name+'&submit_user=admin&module=preference';
 Show_pref.call_sync_ajax_request(prefrence_url, Show_pref.ajax_method, Show_pref.Draw_table);
   </script>
