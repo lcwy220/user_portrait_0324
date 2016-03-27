@@ -208,7 +208,7 @@ def save_detect_event_task(input_dict):
     task_information = input_dict['task_information']
     task_name = task_information['task_name']
     submit_user = task_information['submit_user']
-    task_id = task_information_dict['task_id']
+    task_id = task_information['task_id']
     try:
         task_exist_result = es_group_result.get(index=group_index_name, doc_type=group_index_type, id=task_id)
     except:

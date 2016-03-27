@@ -15,20 +15,21 @@ from user_portrait.parameter import INDEX_MANAGE_SOCIAL_SENSING as index_manage_
 from user_portrait.parameter import DOC_TYPE_MANAGE_SOCIAL_SENSING as task_doc_type
 from user_portrait.parameter import DETAIL_SOCIAL_SENSING as index_sensing_task
 
-def get_warning_detail(task_name, keywords, ts, task_type="2"):
+def get_warning_detail(task_name, keywords, ts, user, task_type="2"):
     results = dict()
     index_name = task_name # 可能的index-name
 
-    results = get_task_detail_2(task_name, keywords, ts)
+    results = get_task_detail_2(task_name, keywords, ts, user)
 
     #flow_detail = es.mget(index=index_sensing_task, doc_type=index_name)
 
     return results
 
 # 获得一段时间内的文本，按序排列
-def get_text_detail(task_name, ts, text_type, size=100):
+def get_text_detail(task_name, ts, text_type, user, size=100):
     results = []
-    task_detail = es.get(index=index_manage_sensing_task, doc_type=task_doc_type, id=task_name)["_source"]
+    _id = user + '-' + task_name
+    task_detail = es.get(index=index_manage_sensing_task, doc_type=task_doc_type, id=_id)["_source"]
     keywords_list = json.loads(task_detail['keywords'])
     sensitive_words_list = json.loads(task_detail['sensitive_words'])
     social_sensors = json.loads(task_detail["social_sensors"])

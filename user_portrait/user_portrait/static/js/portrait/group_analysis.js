@@ -63,42 +63,54 @@ Search_weibo.prototype = {
 
 Draw_overview: function(data){
     //画星星
-    var importance_star = '';
-    // for(var i=0;i<data.importance_star;i++){
-    //     importance_star += '<img src="/static/img/star-yellow.png" style="width:25px">'
-    // };
-     var activeness_star = '';
-    // for(var i=0;i<data.activeness_star;i++){
-    //     activeness_star += '<img src="/static/img/star-yellow.png" style="width:25px">'
-    // };
-     var density_star = '';
-    // for(var i=0;i<data.density_star;i++){
-    //     density_star += '<img src="/static/img/star-yellow.png" style="width:25px" >'
-    // };
-     var influence_star = '';
-    // for(var i=0;i<data.influence_star;i++){
-    //     influence_star += '<img src="/static/img/star-yellow.png" style="width:25px" >'
-    // };
     if(data.importance_star==undefined){
         importance_star = '无此数据';
     }else{
-        importance_star = data.importance_star;
-    }
+    var importance_star = '';
+    for(var i=0;i<data.importance_star;i++){
+        importance_star += '<img src="/static/img/star-yellow.png" style="width:25px">'
+    };}
     if(data.activeness_star==undefined){
         activeness_star = '无此数据';
     }else{
-        activeness_star = data.activeness_star;
-    }
+     var activeness_star = '';
+    for(var i=0;i<data.activeness_star;i++){
+        activeness_star += '<img src="/static/img/star-yellow.png" style="width:25px">'
+    };}
     if(data.density_star==undefined){
         density_star = '无此数据';
     }else{
-        density_star = data.density_star;
-    }
+     var density_star = '';
+    for(var i=0;i<data.density_star;i++){
+        density_star += '<img src="/static/img/star-yellow.png" style="width:25px" >'
+    };}
     if(data.influence_star==undefined){
         influence_star = '无此数据';
-    }else{
-        influence_star = data.influence_star;
-    }
+    }else{    
+     var influence_star = '';
+    for(var i=0;i<data.influence_star;i++){
+        influence_star += '<img src="/static/img/star-yellow.png" style="width:25px" >'
+    };}
+    // if(data.importance_star==undefined){
+    //     importance_star = '无此数据';
+    // }else{
+    //     importance_star = data.importance_star;
+    // }
+    // if(data.activeness_star==undefined){
+    //     activeness_star = '无此数据';
+    // }else{
+    //     activeness_star = data.activeness_star;
+    // }
+    // if(data.density_star==undefined){
+    //     density_star = '无此数据';
+    // }else{
+    //     density_star = data.density_star;
+    // }
+    // if(data.influence_star==undefined){
+    //     influence_star = '无此数据';
+    // }else{
+    //     influence_star = data.influence_star;
+    // }
     group_tag_vector(data.tag_vector);
 
     var task_name_2;
@@ -133,9 +145,7 @@ Draw_overview: function(data){
     };
     $('#overview').empty();
     html = '';
-    html += '<p style="font-size:13px;padding: 5px 5px 5px 5px;">群体名称：' + name +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">创建时间：' + submit_date +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">群体备注：' + state +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">创建人员：' + submit_user +'</p>';
-    html += '<p><span style="font-size:13px;cursor:pointer;text-decoration:underline" onclick="show_members();">群组成员</span>&nbsp;&nbsp;';
-    html += '<span style="float:right;cursor:pointer;font-size:13px;" type="button"data-toggle="modal" data-target="#group_tag2"><u>群组标签</u></span></p>';
+    html += '<p style="font-size:13px;padding: 5px 5px 5px 5px;">群体名称：<a>' + name +'</a></p><p style="font-size:13px;padding: 5px 5px 5px 5px;">创建时间：' + submit_date +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">群体备注：' + state +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">创建人员：' + submit_user +'</p>';
     html += '</a></li></ul></div>';
     $('#overview').append(html);
     $('#g_tag').empty();
