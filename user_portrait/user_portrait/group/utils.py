@@ -168,13 +168,104 @@ def search_task(task_name, submit_date, state, status, submit_user):
     
     return result
 
+#ip2city
+def ip2city(ip):
+    try:
+        city = IP.find(str(ip))
+        if city:
+            city = city.encode('utf-8')
+        else:
+            return None
+        city_list = city.split('\t')
+        if len(city_list)==4:
+            city = '\t'.join(city_list[:3])
+    except Exception,e:
+        return None
+    return city
+
+
+#get group user weibo
+#write in version: 16-03-25
+#input: task_name, submit_user, sort_type
+def group_user_weibo(task_name, submit_user, sort_type):
+    weibo_list = []
+    now_date = ts2datetime(time.time())
+    #run_type
+    if RUN_TYPE == 0:
+        now_date = RUN_TEST_TIME
+        sort_type = 'timestamp'
+    #step1: get group user
+    task_id = submit_user + '-' + task_name
+    try:
+        group_exist_result = es_group_result.get(index=group_index_name, doc_type=group_index_type,\
+                id=task_id)['_source']
+    except:
+        group_exist_result = {}
+    if not group_exist_result:
+        return 'group no exist'
+    #step2: get user weibo list
+    uid_list = group_exist_result['uid_list']
+    for i in range(7,0,-1):
+        iter_date = ts2datetime(datetime2ts(now_date) - i * DAY)
+        index_name = flow_text_index_name_pre + iter_date
+        try:
+            weibo_result = es_flow_text.search(index=index_name, doc_type=flow_text_index_type,\
+                    body={'query':{'filtered':{'filter':{'terms':{'uid': uid_list}}}}, 'sort':sort_type, 'size':100})['hits']['hits']
+        except:
+            weibo_result = []
+        if weibo_result:
+            weibo_list.extend(weibo_result)
+    sort_weibo_list = sorted(weibo_list, key=lambda x:x['_source'][sort_type], reverse=True)[:100]
+    #step3: get user name
+    try:
+        portrait_exist_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, \
+                body={'ids':uid_list})['docs']
+    except:
+        portrait_exist_result = []
+    uid2uname_dict = {}
+    for portrait_item in portrait_exist_result:
+        uid = portrait_item['_id']
+        if portrait_item['found'] == True:
+            source = portrait_item['_source']
+            uname = source['uname']
+        else:
+            uname = 'unknown'
+        uid2uname_dict[uid] = uname
+    
+    for weibo_item in sort_weibo_list:
+        source = weibo_item['_source']
+        mid = source['mid']
+        uid = source['uid']
+        uname = uid2uname_dict[uid]
+        text = source['text']
+        ip = source['geo']
+        timestamp = source['timestamp']
+        date = ts2date(timestamp)
+        sentiment = source['sentiment']
+        weibo_url = weiboinfo2url(uid, mid)
+        #run_type:
+        if RUN_TYPE == 1:
+            retweet_count = source['retweet_count']
+            comment_count = source['comment_count']
+            sensitive_score = source['sensitive_score']
+        else:
+            retweet_count = 0
+            comment_count = 0
+            sensitive_score = 0
+        city = ip2city(ip)
+        weibo_list.append([mid, uid, uname, text, ip, city, timestamp, date, retweet_count, comment_count, sensitive_score, weibo_url])
+    return weibo_list
+
+
+
 
 #search group analysis result
 #input: task_name, module
 #output: module_result
 def search_group_results(task_name, module, submit_user):
     result = {}
-    task_id = submit_user + '-' + task_name
+    #task_id = submit_user + '-' + task_name
+    task_id = task_name
     #step1:identify the task_name exist
     try:
         source = es_group_result.get(index=group_index_name, doc_type=group_index_type, \
@@ -195,12 +286,15 @@ def search_group_results(task_name, module, submit_user):
         result['activeness_star'] = source['activeness_star']
         result['influence_star'] = source['influence_star']
         result['importance_star'] = source['importance_star']
+        #need to delete
         result['tag_vector'] = json.loads(source['tag_vector'])
     elif module == 'basic':
         result['gender'] = json.loads(source['gender'])
         result['verified'] = json.loads(source['verified'])
         result['user_tag'] = json.loads(source['user_tag'])
         result['count'] = source['count']
+        result['domain'] = json.loads(source['domain'])
+        result['topic'] = json.loads(source['topic'])
     elif module == 'activity':
         result['activity_trend'] = json.loads(source['activity_trend'])
         result['activity_time'] = json.loads(source['activity_time'])
@@ -214,6 +308,7 @@ def search_group_results(task_name, module, submit_user):
         result['keywords'] = json.loads(source['keywords'])
         result['hashtag'] = json.loads(source['hashtag'])
         result['sentiment_word'] = json.loads(source['sentiment_word'])
+        #need to delete
         result['domain'] = json.loads(source['domain'])
         result['topic'] = json.loads(source['topic'])
     elif module == 'influence':

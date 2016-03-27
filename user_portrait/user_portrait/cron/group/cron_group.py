@@ -8,6 +8,7 @@ import numpy as np
 from save_utils import save_group_results
 from config import activeness_weight_dict, importance_weight_dict,\
                    domain_weight_dict, topic_weight_dict, tightness_weight_dict
+from topic_lda import topic_lda_main
 reload(sys)
 sys.path.append('../../')
 from global_utils import es_user_portrait as es
@@ -35,7 +36,7 @@ from parameter import ACTIVITY_GEO_TOP, MAX_VALUE, DAY, HIS_BINS_COUNT, GROUP_AC
         GROUP_AVE_IMPORTANCE_RANK_DESCRIPTION, GROUP_AVE_IMPORTANCE_RANK_THRESHOLD,\
         IDENTIFY_ATTRIBUTE_LIST, GROUP_DENSITY_THRESHOLD, GROUP_DENSITY_DESCRIPTION,\
         GROUP_SENTIMENT_LIST, GROUP_NEGATIVE_SENTIMENT, GROUP_KEYWORD_COUNT,\
-        GROUP_HASHTAG_COUNT, GROUP_SENTIMENT_WORD_COUNT
+        GROUP_HASHTAG_COUNT, GROUP_SENTIMENT_WORD_COUNT, TOPIC_MODEL_COUNT
 from parameter import RUN_TYPE, RUN_TEST_TIME
 from time_utils import ts2datetime, datetime2ts, datetimestr2ts
 
@@ -117,6 +118,9 @@ def get_attr_portrait(uid_list):
     character_dict = {'character_sentiment':{}, 'character_text':{}}
     activity_geo_distribution_date = dict() # {'date1':{geo1:person_count, geo2:person_count}, 'date2':{geo1:person_count,..}, ..} # one month
     activity_geo_vary = dict() # {'geo2geo': count, ...}  geo2geo='activity_geo1&activity_geo2'
+    main_start_geo = dict()
+    main_end_geo = dict()
+    vary_detail_geo = dict()
     importance_list = []
     influence_list = []
     activeness_list = []
@@ -141,6 +145,7 @@ def get_attr_portrait(uid_list):
             iter_user_dict_list = []
 
         for user_dict in iter_user_dict_list:
+            uid = user_dict['_id']
             source = user_dict['_source']
             #attr1: gender ratio:
             gender = source['gender']
@@ -210,21 +215,40 @@ def get_attr_portrait(uid_list):
                 if date_item != {}:
                     main_date_city = sort_date_item[0][0]
                     try:
-                        last_user_date_main_item = user_date_main_list[-1]
+                        last_user_date_main_item = user_date_main_list[-1][0]
                     except:
                         last_user_date_main_item = ''
                     if main_date_city != last_user_date_main_item:
-                        user_date_main_list.append(main_date_city)
+                        user_date_main_list.append([main_date_city, iter_ts])
 
                 iter_ts += DAY
             #attr8: activity_geo_dict---location vary
             if len(user_date_main_list) > 1:
                 for i in range(1, len(user_date_main_list)):
-                    vary_item = '&'.join(user_date_main_list[i-1:i+1])
+                    vary_city = [geo_ts_item[0] for geo_ts_item in user_date_main_list[i-1:i+1]]
+                    vary_ts = [geo_ts_item[1] for geo_ts_item in user_date_main_list[i-1:i+1]]
+                    vary_item = '&'.join(vary_city)
+                    #vary_item = '&'.join(user_date_main_list[i-1:i+1])
+                    #get activity geo vary for vary table and map
                     try:
                         activity_geo_vary[vary_item] += 1
                     except:
                         activity_geo_vary[vary_item] = 1
+                    #get main start geo
+                    try:
+                        main_start_geo[vary_city[0]] += 1
+                    except:
+                        main_start_geo[vary_city[0]] = 1
+                    #get main end geo
+                    try:
+                        main_end_geo[vary_city[1]] += 1
+                    except:
+                        main_end_geo[vary_city[1]] = 1
+                    #get vary detail geo
+                    try:
+                        vary_detail_geo[vary_item].append([uid, vary_ts[0], vary_ts[1]])
+                    except:
+                        vary_detail_geo[vary_item] = [[uid, vary_ts[0], vary_ts[1]]]
             
             #attr9: influence distribution
             influence = source['influence']
@@ -325,6 +349,9 @@ def get_attr_portrait(uid_list):
     results['topic'] = json.dumps(sort_topic_ratio)
     results['activity_geo_distribution'] = json.dumps(activity_geo_distribution_date)
     results['activity_geo_vary'] = json.dumps(activity_geo_vary)
+    results['main_start_geo'] = json.dumps(main_start_geo)
+    results['main_end_geo'] = json.dumps(main_end_geo)
+    results['vary_detail_geo'] = json.dumps(vary_detail_geo)
     #main activity geo
     all_activity_geo = union_dict_list(activity_geo_distribution_date.values())
     sort_all_activity_geo = sorted(all_activity_geo.items(), key=lambda x:x[1], reverse=True)
@@ -1723,6 +1750,43 @@ def add_group_tag(submit_user, task_name, uid_list):
         es_user_portrait.bulk(bulk_action, index=portrait_index_name, doc_type=portrait_index_type)
 
 
+#user to get topic model results
+#version: 16-03-26
+#input: uid_list
+def get_attr_topic_model(uid_list):
+    weibo_list = []
+    results = []
+    #run_type
+    if RUN_TYPE == 1:
+        now_date = ts2datetime(int(time.time()))
+    else:
+        now_date = RUN_TEST_TIME
+    now_date_ts = datetime2ts(now_date)
+    #step1:get user weibo list
+    for i in range(7, 0, -1):
+        iter_date_ts = now_date_ts - i * DAY
+        iter_date = ts2datetime(iter_date_ts)
+        flow_text_index_name = flow_text_index_name_pre + iter_date
+        try:
+            weibo_exist = es_flow_text.search(index=flow_text_index_name, doc_type=flow_text_index_type,\
+                    body={'query':{'filtered':{'filter':{'terms':{'uid': uid_list}}}}, 'size': MAX_VALUE}, _source=False, fields=['text'])['hits']['hits']
+        except:
+            weibo_exist = []
+        for weibo_item in weibo_exist:
+            weibo_text = weibo_item['fields']['text'][0]
+            if isinstance(weibo_text, unicode):
+                weibo_text = weibo_text.encode('utf-8')
+            weibo_list.append(weibo_text)
+    #step2:use lda_main(texts, nt)
+    result_list = topic_lda_main(weibo_list, TOPIC_MODEL_COUNT)
+    #step3: get keywords
+    topic_result = []
+    for result_item in result_list:
+        result_item_list = result_item.split(' + ')
+        word_list = [result_string_item.split('*')[1] for result_string_item in result_item_list]
+        topic_result.append(word_list)
+    return topic_result
+
 #use to compute group task for multi-process
 #version: 16-02-27
 def compute_group_task_v2():
@@ -1741,6 +1805,7 @@ def compute_group_task_v2():
             submit_date = task['submit_date']  #submit_date = timestamp
             results['task_type'] = task['task_type']
             results['count'] = len(uid_list)
+            result['task_id'] = task['task_id']
             #get uid2uname dict for other module using
             uid2uname = {}
             try:
@@ -1782,6 +1847,9 @@ def compute_group_task_v2():
             user_sentiment_words = get_attr_sentiment_word(uid_list)
             results = dict(results, **user_sentiment_words)
             results['tag_vector'] = json.dumps(tag_vector_result)
+            #step8: get user topic model
+            user_topic_results = get_attr_topic_model(uid_list)
+            results['topic_model'] = json.dumps(user_topic_results)
             #step8: update compute status to completed
             results['status'] = 1
             #step9: save results
@@ -1858,7 +1926,7 @@ if __name__=='__main__':
     log_time_date = ts2datetime(log_time_ts)
     print 'cron/group/cron_group.py&start&' + log_time_date
 
-    compute_group_task_v2()
+    #compute_group_task_v2()
 
     log_time_ts = time.time()
     log_time_date = ts2datetime(log_time_ts)
@@ -1873,6 +1941,13 @@ if __name__=='__main__':
     input_data['uid_list'] = ['2803301701', '1292808363', '2656274875', '2062994093', '1663937380', \
                               '2651176564', '1999472465', '1855514017', '2127460165', '1887790981', '1639498782', \
                               '1402977920', '1414148492', '3114175427', '2105426467']
+    #topic_model_result = get_attr_topic_model(input_data['uid_list'])
+    result, tag_vector = get_attr_portrait(input_data['uid_list'])
+    print 'activity geo vary:',len(json.loads(result['activity_geo_vary']))
+    #print 'main start geo:', result['main_start_geo']
+    #print 'main end geo:', result['main_end_geo']
+    print 'geo detail vary:', len(json.loads(result['vary_detail_geo']))
+    
     input_data['submit_date'] = datetime2ts('2013-09-08')
     input_data['state'] = u'关注的媒体'
     input_data['submit_user'] = 'admin'

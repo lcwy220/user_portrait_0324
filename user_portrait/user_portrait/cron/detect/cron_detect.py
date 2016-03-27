@@ -358,7 +358,7 @@ def single_detect(input_dict):
     task_information_dict = input_dict['task_information']
     task_name = task_information_dict['task_name']
     submit_user = task_information_dict['submit_user']
-    task_id = submit_user + '-' + task_name
+    task_id = task_information_dict['task_id']
     task_exist_mark = identify_task_exist(task_id)
     if task_exist_mark == False:
         return 'task is not exist'
@@ -380,12 +380,17 @@ def single_detect(input_dict):
     attribute_item = query_condition_dict['attribute']
     attribute_query_list = []
     #get user tag keys
-    user_tag_keys = list(set(user_portrait.keys()) - set(IDENTIFY_ATTRIBUTE_LIST))
+    tag_query_key = submit_user + '-tag'
+    try:
+        user_tag_string = user_portrait = user_portrait[tag_query_key]
+    except:
+        user_tag_string = ''
+    user_tag_list = user_tag_string.split('&')
     for query_item in attribute_item:
         #deal tag
         if query_item == 'tag':
-            for tag_item in user_tag_keys:
-                attribute_query_list.append({'wildcard':{tag_item: user_portrait[tag_item]}})
+            for tag_item in user_tag_list:
+                attribute_query_list.append({'term':{tag_query_key: tag_item}})
         else:
             try:
                 user_attribute_value = user_portrait[query_item]
@@ -466,7 +471,7 @@ def single_detect(input_dict):
 #use to get seed user attribute
 #input: seed_user_list, attribute_list
 #output: results
-def get_seed_user_attribute(seed_user_list, attribute_list):
+def get_seed_user_attribute(seed_user_list, attribute_list, submit_user):
     results = {}
     attribute_query_list = []
     #step1: mget user result from user_portrait
@@ -533,9 +538,19 @@ def get_seed_user_attribute(seed_user_list, attribute_list):
                         results['activity_geo'][activity_geo_item] += 1
                     except:
                         results['activity_geo'][activity_geo_item] = 1
-            #step2.7: tendency
             #step2.8: tag
-            #step2.9: remark
+            if 'tag' in attribute_list:
+                tag_query_key = submit_user + '-tag'
+                try:
+                    user_tag_string = source[tag_query_key]
+                except:
+                    user_tag_string = ''
+                user_tag_list = user_tag_string.split('&')
+                for tag_item in user_tag_list:
+                    try:
+                        results['tag'][tag_item] += 1
+                    except:
+                        results['tag'][tag_item] = 1
     #step3: get search attribtue value-- new attribute query condition
     new_attribute_query_condition = []
     for item in results:
@@ -544,7 +559,10 @@ def get_seed_user_attribute(seed_user_list, attribute_list):
         nest_body_list = []
         for query_item in sort_item_dict[:3]:
             item_value = query_item[0]
-            nest_body_list.append({'wildcard':{item: '*'+item_value+'*'}})
+            if item =='tag':
+                nest_body_list.append({'term':{submit_user+'-tag': item_value}})
+            else:
+                nest_body_list.append({'wildcard':{item: '*'+item_value+'*'}})
         new_attribute_query_condition.append({'bool':{'should': nest_body_list}})
 
     return new_attribute_query_condition
@@ -557,7 +575,7 @@ def multi_detect(input_dict):
     task_information_dict = input_dict['task_information']
     task_name = task_information_dict['task_name']
     submit_user = task_information_dict['submit_user']
-    task_id = submit_user + '-' + task_name
+    task_id = task_information_dict['task_id']
     task_exist_mark = identify_task_exist(task_id)
     if task_exist_mark == False:
         return 'task is not exist'
@@ -567,7 +585,7 @@ def multi_detect(input_dict):
     #step1.1: get seed users attribute
     attribute_list = query_condition_dict['attribute']
     seed_user_list = task_information_dict['uid_list']
-    attribute_query_condition = get_seed_user_attribute(seed_user_list, attribute_list)
+    attribute_query_condition = get_seed_user_attribute(seed_user_list, attribute_list, submit_user)
     #step1.2: change process proportion
     process_mark = change_process_proportion(task_id, 20)
     if process_mark == 'task is not exist':
@@ -795,7 +813,7 @@ def attribute_pattern_detect(input_dict):
     task_information_dict = input_dict['task_information']
     task_name = task_information_dict['task_name']
     submit_user = task_information_dict['submit_user']
-    task_id = submit_user + '-' + task_name
+    task_id = task_information_dict['task_id']
     task_exist_mark = identify_task_exist(task_id)
     if task_exist_mark == False:
         return 'task is not exist'
@@ -854,6 +872,32 @@ def attribute_pattern_detect(input_dict):
     return results
 
 
+#use to detect group by pattern
+#input: detect_task_information
+#output: detect user list
+#deal one scen: just user pattern condition
+def new_pattern_detect(input_dict):
+    results = {}
+    task_information_dict = input_dict['task_information']
+    task_id = task_information_dict['task_id']
+    task_exist_mark = identify_task_exist(task_id)
+    if task_exist_mark == False:
+        return 'task is not exist'
+    query_condition_dict = input_dict['query_condition']
+    filter_dict = query_condition_dict['filter']
+    pattern_list = query_condition_dict['pattern']
+    #step1: search pattern list and filter by in-user_portrait and filter_dict
+    filter_user_result = pattern_filter_attribute(pattern_list, filter_dict)
+    #step2: change process proportion
+    process_mark = change_process_proportion(task_id, 60)
+    if process_mark == 'task is not exist':
+        return 'task is not exist'
+    elif process_mark == False:
+        return process_mark
+    #step3: filter user list by filter count
+    count = filter_dict['count']
+    results = filter_user_result[:count]
+    return results
 
 #use to detect group by event
 #input: input_dict
@@ -865,7 +909,7 @@ def event_detect(input_dict):
     task_information_dict = input_dict['task_information']
     task_name = task_information_dict['task_name']
     submit_user = task_information_dict['submit_user']
-    task_id = submit_user + '-' + task_name
+    task_id = task_information_dict['task_id']
     task_exist_mark = identify_task_exist(task_id)
     if task_exist_mark == False:
         return 'task is not exist'
@@ -1001,7 +1045,7 @@ def compute_group_detect():
             task_information_dict = detect_task_information['task_information']
             task_name = task_information_dict['task_name']
             submit_user = task_information_dict['submit_user']
-            task_id = submit_user + '-' + task_name
+            task_id = task_information_dict['task_id']
             #step1: modify filter dict evalute index to abnormal
             filter_dict = detect_task_information['query_condition']['filter']
             importance_from = filter_dict['importance']['gte']
@@ -1025,6 +1069,8 @@ def compute_group_detect():
                 detect_results =  attribute_pattern_detect(detect_task_information)
             elif detect_task_type == 'event':
                 detect_results = event_detect(detect_task_information)
+            elif detect_task_type == 'pattern':
+                detect_results = new_pattern_detect(detect_task_information)
             #step3:identify the return---'task is not exist'/'false'/normal_results
             if detect_results != 'task is not exist':
                 #step4:save detect results to es (status=1 and process=100 and add uid_list)

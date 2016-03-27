@@ -230,19 +230,19 @@ def submit_identify_in_uid(input_data):
             new_uid_list.append(exist_item['_id'])
     #step2: filter in compute
     new_uid_set = set(new_uid_list)
-    compute_set = r.hkeys('compute')
+    compute_set = set(r.hkeys('compute'))
     in_uid_set = list(new_uid_set - compute_set)
-    for in_item in in_uid_list:
+    for in_item in in_uid_set:
         if in_item in auto_recomment_set:
-            tmp = json.loads(r.hget(hashtname_submit, uid))
+            tmp = json.loads(r.hget(hashtname_submit, in_item))
             recommentor_list = tmp['operation'].split('&')
             recommentor_list.append(str(submit_user))
             new_list = list(set(recommentor_list))
             tmp['operation'] = '&'.join(new_list)
         else:
             tmp = {'system':'0', 'operation':submit_user}
-        r.hset(hashname_submit, uid, json.dumps(tmp))
-        r.hset(submit_user_recomment, uid, '0')
+        r.hset(hashname_submit, in_item, json.dumps(tmp))
+        r.hset(submit_user_recomment, in_item, '0')
     return True
 
 def submit_identify_in_url(input_data):
@@ -253,10 +253,13 @@ def submit_identify_in_url(input_data):
     url_list = upload_data.split('\n')
     uid_list = []
     for url_item in url_list:
-        #url_item = 'weibo.com/p/1002065727942146/album?.....'
-        url_list = url_item.split('/')
-        uid = url_list[2][-10:]
-        uid_list.append(uid)   
+        try:
+            #url_item = 'http://weibo.com/p/1002065727942146/album?.....'
+            url_list = url_item.split('/')
+            uid = url_list[4][-10:]
+            uid_list.append(uid)
+        except:
+            return 'no valid input url'
     #step2: identify uid list is not exist in user_portrait and compute
     #step2.1: identify in user_portrait
     new_uid_list = []
@@ -264,7 +267,7 @@ def submit_identify_in_url(input_data):
     new_uid_list = [exist_item['_id'] for exist_item in exist_portrait_result if exist_item['found']==False]
     #step2.2: identify in compute
     new_uid_set = set(new_uid_list)
-    compute_set = r.hkeys('compute')
+    compute_set = set(r.hkeys('compute'))
     in_uid_list = list(new_uid_set - compute_set)
     #step3: save
     hashname_submit = 'submit_recomment_' + date
@@ -274,15 +277,15 @@ def submit_identify_in_url(input_data):
     auto_recomment_set = set(r.hkeys(hashname_influence)) | set(r.hkeys(hashname_sensitive))
     for in_item in in_uid_list:
         if in_item in auto_recomment_set:
-            tmp = json.loads(r.hget(hashname_submit, uid))
+            tmp = json.loads(r.hget(hashname_submit, in_item))
             recommentor_list = tmp['operation'].split('&')
             recommentor_list.append(str(submit_user))
             new_list = list(set(recommentor_list))
             tmp['operation'] = '&'.join(new_list)
         else:
             tmp = {'system': '0', 'operation': submit_user}
-        r.hset(hashname_submit, uid, json.dumps(tmp))
-        r.hset(submit_user_recomment, uid, '0')
+        r.hset(hashname_submit, in_item, json.dumps(tmp))
+        r.hset(submit_user_recomment, in_item, '0')
     return True
 
 # get uid by uname
@@ -309,7 +312,7 @@ def submit_identify_in_uname(input_data):
         return 'uname list all in'
     #step2.2: identify in compute
     new_uid_set = set(new_uid_list)
-    compute_set = r.hkeys('compute')
+    compute_set = set(r.hkeys('compute'))
     in_uid_list = list(new_uid_set - compute_set)
     if not in_uid_list:
         return 'uname list all in'
@@ -321,15 +324,15 @@ def submit_identify_in_uname(input_data):
     auto_recomment_set = set(r.hkeys(hashname_influence)) | set(r.hkeys(hashname_sensitive))
     for in_item in in_uid_list:
         if in_item in auto_recomment_set:
-            tmp = json.loads(r.hget(hashname_submit, uid))
+            tmp = json.loads(r.hget(hashname_submit, in_item))
             recommentor_list = tmp['operation'].split('&')
             recommentor_list.append(str(submit_user))
             new_list = list(set(recommentor_list))
             tmp['operation'] = '&'.join(new_list)
         else:
             tmp = {'system':'0', 'operation': submit_user}
-        r.hset(hashname_submit, uid, json.dumps(tmp))
-        r.hset(submit_user_recomment, uid, '0')
+        r.hset(hashname_submit, in_item, json.dumps(tmp))
+        r.hset(submit_user_recomment, in_item, '0')
     return True
 
 
