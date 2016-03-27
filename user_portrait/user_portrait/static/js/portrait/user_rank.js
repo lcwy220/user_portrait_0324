@@ -26,6 +26,14 @@ function user_rank_timepicker(str){
 
 function task_status (data) {
 	$('#task_status').empty();
+	if(sort_scope == 'all_nolimit'){
+		alert('all')
+
+		//call_sync_ajax_request(url, draw_all_rank_table);
+	}else{
+		alert('库内')
+		//call_sync_ajax_request(url, draw_rank_table);
+	}
 	var html = '';
 	html += '<table class="table table-striped" style="margin-left:30px;width:900px;">';
 	for(var i=0;i<data.length;i++){
@@ -38,24 +46,55 @@ function task_status (data) {
 	$('#task_status').append(html);
 }
 
-function draw_rank_table(data){
+function draw_all_rank_table(data){
+	var data = data;
 	$('#result_rank_table').empty();
 	var html = '';
 	html += '<table id="rank_table" class="table table-striped table-bordered bootstrap-datatable datatable responsive" style="margin-left:30px;width:900px;">';
 	html += '<thead><th style="text-align:center;">排名</th>';
 	html += '<th style="text-align:center;">用户ID</th>';
 	html += '<th style="text-align:center;">昵称</th>';
+	html += '<th style="text-align:center;">是否入库</th>';
 	html += '<th style="text-align:center;">注册地</th>';
-	html += '<th style="text-align:center;">敏感度</th>';
-	html += '<th style="text-align:center;">身份敏感度</th></thead>';
+	html += '<th style="text-align:center;">粉丝数</th>';
+	html += '<th style="text-align:center;">微博数</th>';
+	html += '<th style="text-align:center;">影响力</th>';
+	html += '<th style="text-align:center;">言论敏感度</th>';
+	html += '</thead>';
 	for(var i=0;i<data.length;i++){
+		var uid = data[i].uid;
+		var uname = data[i].uname;
+		if(uname == 'unknown'){
+			uname = uid
+		}
+		var is_warehousing = '';
+		if(data[i].is_warehousing == true){
+			is_warehousing = '是';
+		}else{
+			is_warehousing == '否'
+		}
+		var location = data[i].location;
+		var fans = data[i].fansnum
+		var weibo_count = data[i].weibo_num;
+		var influcence = data[i].bci_day_last;
+		if(influcence == null){
+			influcence = 0;
+		}
+		var sensitive = data[i].sen_day_last;
+		if(sensitive == null){
+			sensitive = 0;
+		}
 		html += '<tr>';
 		html += '<td style="text-align:center;">'+(i+1)+'</td>';
-		html += '<td style="text-align:center;">'+data[i][0]+'</td>';
-		html += '<td style="text-align:center;">'+data[i][0]+'</td>';
-		html += '<td style="text-align:center;">'+data[i][0]+'</td>';
-		html += '<td style="text-align:center;">'+data[i][0]+'</td>';
-		html += '<td style="text-align:center;">'+data[i][0]+'</td>';
+		html += '<td style="text-align:center;"><a href="/index/personal/?uid='+uid+'" target="_blank">'+uid+'</a></td>';
+
+		html += '<td style="text-align:center;">'+uname+'</td>';
+		html += '<td style="text-align:center;">'+is_warehousing+'</td>';
+		html += '<td style="text-align:center;">'+location+'</td>';
+		html += '<td style="text-align:center;">'+fans+'</td>';
+		html += '<td style="text-align:center;">'+weibo_count+'</td>';
+		html += '<td style="text-align:center;">'+influcence.toFixed(2)+'</td>';
+		html += '<td style="text-align:center;">'+sensitive.toFixed(2)+'</td>';
 		html += '</tr>';
 	}
 	html += '</table>';
@@ -70,6 +109,85 @@ function draw_rank_table(data){
     });
 }
 
+function draw_rank_table(data){
+	if(data.length == 0){
+		var html = '暂无数据';
+		$('#result_rank_table').append(html);
+
+	}else{
+		$('#result_rank_table').empty();
+		var html = '';
+		html += '<table id="rank_table" class="table table-striped table-bordered bootstrap-datatable datatable responsive" style="margin-left:30px;width:900px;">';
+		html += '<thead><th style="text-align:center;">排名</th>';
+		html += '<th style="text-align:center;">用户ID</th>';
+		html += '<th style="text-align:center;">昵称</th>';
+		html += '<th style="text-align:center;">注册地</th>';
+		html += '<th style="text-align:center;">领域</th>';//其实是话题
+		html += '<th style="text-align:center;">身份</th>';//其实是领域
+		html += '<th style="text-align:center;">身份敏感度</th>';
+		html += '<th style="text-align:center;">活跃度</th>';
+		html += '<th style="text-align:center;">影响力</th>';
+		html += '<th style="text-align:center;">言论敏感度</th></thead>';
+		for(var i=0;i<data.length;i++){
+
+			var uid = data[i].uid;
+			var uname = data[i].uname;
+			if(uname == 'unknown'){
+				uname = uid
+			}
+			var location = data[i].location;
+			if(location == 'unknown'){
+				location = '未知'
+			}
+			var topic = [];
+			console.log(data[i].topic);
+			//topic = data[i].topic.split('&');
+			var domain = data[i].domain;
+			var imp = data[i].imp;
+			if(imp == null){
+				imp = 0;
+			}
+			var active = data[i].act;
+			if(active == null){
+				active = 0;
+			}
+
+			//var weibo_count = data[i].weibo_num;
+			var influcence = data[i].bci;
+			if(influcence == null){
+				influcence = 0;
+			}
+			var sensi = data[i].sen;
+			if(data[i].sen == null){
+				sensi = 0;
+			}
+
+			html += '<tr>';
+			html += '<td style="text-align:center;">'+(i+1)+'</td>';
+			html += '<td style="text-align:center;"><a href="/index/personal/?uid='+uid+'" target="_blank">'+uid+'</a></td>';
+			html += '<td style="text-align:center;">'+uname+'</td>';
+			html += '<td style="text-align:center;">'+location+'</td>';
+			html += '<td style="text-align:center;">'+topic+'</td>';
+			html += '<td style="text-align:center;">'+domain+'</td>';
+			html += '<td style="text-align:center;">'+imp.toFixed(2) +'</td>';
+			html += '<td style="text-align:center;">'+active.toFixed(2)+'</td>';
+			html += '<td style="text-align:center;">'+influcence.toFixed(2)+'</td>';
+			html += '<td style="text-align:center;">'+sensi.toFixed(2)+'</td>';
+			html += '</tr>';
+		}
+		html += '</table>';
+		$('#result_rank_table').append(html);
+		$('#rank_table').dataTable({
+			"sDom": "<'row'<'col-md-6'l ><'col-md-6'f>r>t<'row'<'col-md-12'i><'col-md-12 center-block'p>>",
+			"sPaginationType": "bootstrap",
+			//"aoColumnDefs":[ {"bSortable": false, "aTargets":[1]}],
+			"oLanguage": {
+			    "sLengthMenu": "每页 _MENU_ 条 ",
+			}
+	    });
+	}
+}
+
 
 //排序范围选择
 $('#range_choose').change(function(){
@@ -79,7 +197,7 @@ $('#range_choose').change(function(){
 		$('#sort_select').empty();
 		var sort_select = '';
 		sort_select += '<select  id="sort_select_2">';
-		sort_select += '<option value="imp">重要度</option>';
+		sort_select += '<option value="imp">身份敏感度</option>';
 		sort_select += '<option value="act">活跃度</option>';
 		sort_select += '<option value="bci">影响力</option>';
 		sort_select += '<option value="ses">言论敏感度</option>';
@@ -102,9 +220,9 @@ $('#range_choose').change(function(){
 		$('#sort_select').empty();
 		var sort_select = '';
 		sort_select += '<select id="sort_select_2">';
-		sort_select += '<option value="imp">重要度</option>';
+		sort_select += '<option value="imp">身份敏感度</option>';
 		sort_select += '<option value="act">活跃度</option>';
-		sort_select += '<option value="bci">身份敏感度</option>';
+		sort_select += '<option value="bci">影响力</option>';
 		sort_select += '<option value="ses">言论敏感度</option>';
 		sort_select += '<option value="im_change">突发重要度变动</option>';
 		sort_select += '<option value="acr_change">突发活跃度变动</option>';
@@ -142,9 +260,9 @@ $('#range_choose').change(function(){
 		$('#sort_select').empty();
 		var sort_select = '';
 		sort_select += '<select id="sort_select_2">';
-		sort_select += '<option value="imp">重要度</option>';
+		sort_select += '<option value="imp">身份敏感度</option>';
 		sort_select += '<option value="act">活跃度</option>';
-		sort_select += '<option value="bci">身份敏感度</option>';
+		sort_select += '<option value="bci">影响力</option>';
 		sort_select += '<option value="ses">言论敏感度</option>';
 		sort_select += '<option value="im_change">突发重要度变动</option>';
 		sort_select += '<option value="acr_change">突发活跃度变动</option>';
@@ -188,9 +306,9 @@ $('#range_choose').change(function(){
 		$('#sort_select').empty();
 		var sort_select = '';
 		sort_select += '<select id="sort_select_2">';
-		sort_select += '<option value="imp">重要度</option>';
+		sort_select += '<option value="imp">身份敏感度</option>';
 		sort_select += '<option value="act">活跃度</option>';
-		sort_select += '<option value="bci">身份敏感度</option>';
+		sort_select += '<option value="bci">影响力</option>';
 		sort_select += '<option value="ses">言论敏感度</option>';
 		sort_select += '<option value="im_change">突发重要度变动</option>';
 		sort_select += '<option value="acr_change">突发活跃度变动</option>';
@@ -214,9 +332,9 @@ $('#range_choose').change(function(){
 		$('#sort_select').empty();
 		var sort_select = '';
 		sort_select += '<select id="sort_select_2">';
-		sort_select += '<option value="imp">重要度</option>';
+		sort_select += '<option value="imp">身份敏感度</option>';
 		sort_select += '<option value="act">活跃度</option>';
-		sort_select += '<option value="bci">身份敏感度</option>';
+		sort_select += '<option value="bci">影响力</option>';
 		sort_select += '<option value="ses">言论敏感度</option>';
 		sort_select += '<option value="im_change">突发重要度变动</option>';
 		sort_select += '<option value="acr_change">突发活跃度变动</option>';
@@ -240,9 +358,9 @@ $('#range_choose').change(function(){
 		$('#sort_select').empty();
 		var sort_select = '';
 		sort_select += '<select id="sort_select_2">';
-		sort_select += '<option value="imp">重要度</option>';
+		sort_select += '<option value="imp">身份敏感度</option>';
 		sort_select += '<option value="act">活跃度</option>';
-		sort_select += '<option value="bci">身份敏感度</option>';
+		sort_select += '<option value="bci">影响力</option>';
 		sort_select += '<option value="ses">言论敏感度</option>';
 		sort_select += '<option value="im_change">突发重要度变动</option>';
 		sort_select += '<option value="acr_change">突发活跃度变动</option>';
@@ -328,7 +446,7 @@ $('#range_choose').change(function(){
 		sort_select += '<select id="sort_select_2">';
 		sort_select += '<option value="fans">粉丝数</option>';
 		sort_select += '<option value="weibo_count">发帖数</option>';
-		sort_select += '<option value="bci">身份敏感度</option>';
+		sort_select += '<option value="bci">影响力</option>';
 		sort_select += '<option value="ses">言论敏感度</option>';
 		sort_select += '<option value="bci_change">突发影响力变动</option>';
 		sort_select += '<option value="ses_change">突发敏感度变动</option>';
@@ -412,6 +530,12 @@ function submit_rank(){
 			if(day_select == "30"){
 				$('#rec_time_range').append('过去一个月');
 			}
+			if(sort_scope == 'all_nolimit'){
+				call_sync_ajax_request(url, draw_all_rank_table);
+			}else{
+				alert('库内')
+				//call_sync_ajax_request(url, draw_rank_table);
+			}
 			console.log(url);
 		}else{ //输入参数的时候，更新任务状态表格
 			var keyword_array = [];
@@ -425,8 +549,9 @@ function submit_rank(){
 			time_from_after = time_from_after.format('yyyy-MM-dd')
 			time_to_after = time_to_after.format('yyyy-MM-dd')
 			console.log(time_from_after)
-			var url = '/user_rank/search_task/?time=-1&username='+username+'&st='+time_from_after +'&et='+time_to_after+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope+'&arg='+keyword;
+			var url = '/user_rank/user_sort/?time=-1&username='+username+'&st='+time_from_after +'&et='+time_to_after+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope+'&arg='+keyword;
 			var data = [['121关键词：两会','121状态：正在计算'],['关键词：两会','状态：正在计算'],['关键词：两会','状态：正在计算']];
+			var task_url = '/user_rank/search_task/?username='+username;
 			task_status(data);
 			console.log(url);
 		}
@@ -459,5 +584,6 @@ var data = [['关键词：两会','状态：正在计算'],['关键词：两会'
 //var task_url = '/user_rank/search_task/?time=-1&username='+username+'&st='+time_from_after +'&et='+time_to_after+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope+'&arg='+keyword;
 var rank_url = '/user_rank/user_sort/?username='+username+'&time='+day_select+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope;
 console.log(rank_url);
+call_sync_ajax_request(rank_url, draw_all_rank_table)
 task_status(data);
-draw_rank_table(data);
+//draw_rank_table(data);
