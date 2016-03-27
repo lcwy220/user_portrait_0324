@@ -51,10 +51,15 @@
     text-align:center;
     border:1px solid #999;
     cursor:pointer;
+    margin-left:20px;
 }
 #pageGro .pageDown{
     text-indent:5px;
     width:63px;
     /*border:1px solid #999;*/
     cursor:poointer;
+}
+
+#pageGro span ul li{
+    float:left;
 }
