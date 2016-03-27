@@ -856,6 +856,9 @@ min_date_ms.setTime(from_date_time*1000);
 var from_date = min_date_ms.format('yyyy/MM/dd hh:mm');
 //var Weibo_user = new Weibo_user();
 var global_spread_flag = false;
+$(function(){
+	spread_load();
+})
     //选择时间
 /*
 var url_all = [];
