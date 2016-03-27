@@ -50,6 +50,12 @@ def sensing_analysis():
 def group_identify():
     return render_template('portrait/group_identify.html')
 
+@mod.route('/group_list/')
+@login_required
+@roles_required("group")
+def group_list():
+    return render_template('portrait/group_list.html')
+
 @mod.route('/group_analysis/')
 @login_required
 @roles_required("group")
