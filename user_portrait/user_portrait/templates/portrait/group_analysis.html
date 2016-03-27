@@ -4,6 +4,7 @@
 {% block css %}
 {{ super() }}
 <link href="/static/bootstrap/css/bootstrap-cerulean.min.css" rel="stylesheet">
+<link href="/static/css/charisma-app.css" rel="stylesheet">
 <link  type="text/css" href="/static/personal/css/style.css" rel="stylesheet"/>
 <link  type="text/css" href="/static/personal/css/basic.css" rel="stylesheet"/>
 <link  type="text/css" href="/static/personal/css/framestyle.css" rel="stylesheet"/>
@@ -11,6 +12,11 @@
 
 {% block head_js %}
 {{ super() }}
+<script type="text/javascript" src="/static/js/highstock.js" charset="utf-8"></script>  
+<script type="text/javascript" src="/static/js/exporting.js" charset="utf-8"></script>
+<script type="text/javascript" src='/static/js/esl.js'></script>
+<script type="text/javascript" src="/static/js/jquery.datetimepicker.js"></script>
+<script type="text/javascript" src="/static/js/portrait/group_table.js"></script>
 <style type="text/css">
 .terms{
     /*height:30px;width:237px;float:left;*/
@@ -148,7 +154,7 @@ $(function(){
             </div>
         </div>
 
-        <div style="margin-left:100px;margin-bottom:11px;float:left;">
+        <div style="margin-left:250px;margin-bottom:11px;">
             <button class="portrait_button g_a" type='button' style="margin-right:32px;background-color:#3351B7" title="基本特征" >基本特征</button>
              <button class="portrait_button g_a" type='button' style="margin-right:32px;" title="活动特征" >活动特征</button>
             <button class="portrait_button g_a" type='button' style="margin-right:32px;" title="偏好特征" >偏好特征</button>
@@ -157,8 +163,7 @@ $(function(){
             <button class="portrait_button g_a" type='button' style="margin-right:32px;" title="性格特征" >性格特征</button>
             <button class="portrait_button g_a" type='button'  title="外部评价" >外部评价</button>
         </div>
-		<hr>
-        <div style="margin-left:40px;margin-top:20px;float:left;width:980px;">     
+        <div style="margin-left:10px;margin-top:20px;float:left;width:850px;">     
             <div id="g_bas" >
                 {% include "portrait/group_analysis/group_basic.html"%}
             </div>
@@ -195,8 +200,9 @@ $(function(){
         <div style="font-size:18px;margin-bottom:10px">选择用户添加标签</div>
         <div>
             <span>选择类别：</span><span id='attribute_name' style="min-width:75px;margin-left:10px" ></span>
-            <span style='margin-left:20px'>选择标签：</span><span id='attribute_value' style="min-width:75px;margin-left:10px"></span><span style="margin-left:10px"><button class="btn btn-primary btn-sm" style="width:80px;height:30px" id="add_group_tag_button" title="确定选择" onclick="add_group_tag()">添加</button></span>
-        <div id= "group_member_user" style="margin-top:14px"></div>
+            <span style='margin-left:20px'>选择标签：</span><span id='attribute_value' style="min-width:75px;margin-left:10px"></span>
+            <span style="margin-left:10px"><button class="btn btn-primary btn-sm" style="width:80px;height:30px" id="add_group_tag_button" title="确定选择" onclick="add_group_tag()">添加</button></span>
+        <div id= "g_group_member_user" style="margin-top:14px"></div>
        </div>
       </div>
     </div>
