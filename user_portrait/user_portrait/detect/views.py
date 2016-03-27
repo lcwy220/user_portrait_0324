@@ -873,14 +873,17 @@ def ajax_delete_task():
 #output:
 @mod.route('/show_sensing_task/') #获得所有的已经完成的社会感知任务列表
 def ajax_socail_sensing():
+    user = request.args.get("user", "")
     results = []
-    results = show_social_sensing_task()
+    results = show_social_sensing_task(user)
     return json.dumps(results)
 
 @mod.route('/show_user_in_sensing_task/')
 def ajax_show_user_in_sensing_task():
     task_name = request.args.get('task_name', '') # 获取某个任务名，返回相应重要的人
-    results = show_important_users(task_name)
+    user = request.args.get("user", "")
+    _id = user + '-' + task_name
+    results = show_important_users(_id)
 
     return json.dumps(results)
 
