@@ -1,8 +1,7 @@
-#-*- coding:utf-8 -*-
+# -*- coding: utf-8 -*-
 import time
+from global_config import R_BEGIN_TIME
 from parameter import DAY, RUN_TYPE, RUN_TEST_TIME
-
-R_BEGIN_TIME = '2013-09-01'
 
 def unix2hadoop_date(ts):
     return time.strftime('%Y_%m_%d', time.localtime(ts))
@@ -29,6 +28,7 @@ def ts2datetimestr(ts):
     return time.strftime('%Y%m%d', time.localtime(ts))
 
 def ts2HourlyTime(ts, interval):
+    # interval 取 Minite、Hour
     ts = ts - ts % interval
     return ts
 
