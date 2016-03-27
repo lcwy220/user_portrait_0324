@@ -67,12 +67,8 @@
                             <input type="radio" name="mode_choose" value="sensitive">
                             <span class="mode" style="margin-right:20px;">敏感性</span>
                     </div>
-                </div>
-            </div>
-        </div>
-		
-		<div class="tang-scrollpanel-content" style="margintop:10px;">
-	    <div id='group_influ_weibo' style='overflow-x:hidden;width:730px;float:left;'>
+							<div class="tang-scrollpanel-content" style="margintop:10px;">
+	    <div id='group_influ_weibo' style='overflow-x:hidden;width:100%;float:left;'>
  			<div id="group_influ_weibo_result" style="float:left;width:100%;"></div>
             <div id="pageGro" class="cb" style="display:none;float:left;width:600px;height:60px;margin-left:200px;margin-top:40px;line-height:23px;">
                 <span class="pageUp" style="float:left;">上一页</span>
@@ -89,6 +85,11 @@
             </div>	       
         </div>
 	</div>
+                </div>
+            </div>
+        </div>
+		
+
 		
 <div class="modal fade" id="more_domain" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
@@ -128,10 +129,7 @@ g_basic.prototype = {   //获取数据，重新画表
       async: false,
       success:callback
     });
-  },
-  weiboData:function(data){;
-		DrawWeibo(data,'group_influ_weibo', 'group_influ_weibo_result');
-	}
+  }
 }
 function draw_basic(data){
     //console.log(data);
@@ -142,6 +140,11 @@ function draw_basic(data){
 	g_info(data);
 	//draw_tag({'user_tag':{'好':13,'中':21,'坏':9}});
 }
+
+function weiboData(data){
+		DrawWeibo(data,'group_influ_weibo', 'group_influ_weibo_result');
+	}
+
 g_basic = new g_basic();
 function g_info(data){
 	$('#group_num').html(data.count);
@@ -426,6 +429,8 @@ var basic_url='/group/show_group_result/?task_name=mytest030303&submit_user=admi
 //console.log(basic_url);
 g_basic.call_sync_ajax_request(basic_url,g_basic.ajax_method,draw_basic);
 
+var url = "/group/group_user_weibo/?task_name=mytest0303&submit_user=admin&sort_type=timestamp";
+g_basic.call_sync_ajax_request(url, g_basic.ajax_method,weiboData);
 
 $(function(){
 	$('#modechoose').click(function(){
@@ -439,13 +444,14 @@ $(function(){
 	//var url = "/attribute/new_user_weibo/?uid="+uid+"&sort_type="+sort_type;
 	var url = "/group/group_user_weibo/?task_name=mytest0303&submit_user=admin&sort_type=timestamp";
 	console.log(url);
-    g_basic.call_sync_ajax_request(url, g_basic.ajax_method, g_basic.weiboData);
+    g_basic.call_sync_ajax_request(url, g_basic.ajax_method,weiboData);
 	});
 });
 
 
 
 function DrawWeibo(data, div_name, sub_div_name){
+    console.log(data);
     page_num = 5;
 	//console.log(data);	
     if (data.length < page_num) {
@@ -554,25 +560,26 @@ function page_group_influ_weibo(start_row,end_row,data, sub_div_name){
         s=i.toString();
 		var mid = data[s][0];
 		var uid = data[s][1];
-        var text = data[s][2];
-		var retweet_count = data[s][7];
-		var comment_count = data[s][8];
+		var uname = data[s][2];
+        var text = data[s][3];
+		var retweet_count = data[s][8];
+		var comment_count = data[s][9];
         //var location = data[s][2];
-        var date = data[s][6];
-        var tweet_ulr = data[s][10];
+        var date = data[s][7];
+        var tweet_ulr = data[s][11];
         //date = new Date(parseInt(timestamp)*1000).format("yyyy-MM-dd hh:mm:ss");
         if (i%2 ==0){
             html += '<div style="padding:5px;background:whitesmoke;">';
-            html += '<p style="margin-left:10px;"><a target="_blank" href="/index/personal/?uid=' + uid + '">' + Pname + '</a>&nbsp;&nbsp;发布:<font color=black>' + text + '</font></p>';
+            html += '<p style="margin-left:10px;"><a target="_blank" href="/index/personal/?uid=' + uid + '">' + uname + '</a>&nbsp;&nbsp;发布:<font color=black>' + text + '</font></p>';
             html += '<p style="margin-top:-5px;margin-left:10px;"><a color:#e0e0e0 target="_blank" style="text-decoration: underline;" href="'+tweet_ulr+'">' + date + '</a>-<a target="_blank" href="/index/personal_detail/?uid=' + uid + '">用户详情</a>-<a>转发树</a>';
-            html += '<span style="margin-left:300px;"><a>转发数（'+ retweet_count +'）</a><a>评论数（'+ comment_count +'）</a></span></p>';
+            html += '<span style="margin-left:400px;"><a>转发数（'+ retweet_count +'）</a><a>评论数（'+ comment_count +'）</a></span></p>';
 			html += '</div>'
     }
         else{
             html += '<div style="padding;5px;">';
-            html += '<p style="margin-left:10px;"><a target="_blank" href="/index/personal/?uid=' + uid + '">' + Pname + '</a>&nbsp;&nbsp;发布:<font color=black>' + text + '</font></p>';    
+            html += '<p style="margin-left:10px;"><a target="_blank" href="/index/personal/?uid=' + uid + '">' + uname + '</a>&nbsp;&nbsp;发布:<font color=black>' + text + '</font></p>';    
             html += '<p style="margin-top:-5px;margin-left:10px;"><a color:#e0e0e0 target="_blank" style="text-decoration: underline;" href="'+tweet_ulr+'">' + date + '</a>-<a target="_blank" href="/index/personal_detail/?uid=' + uid + '">用户详情</a>-<a>转发树</a>';
-            html += '<span style="margin-left:300px;"><a>转发数（'+ retweet_count +'）</a><a>评论数（'+ comment_count +'）</a></span></p>';
+            html += '<span style="margin-left:400px;"><a>转发数（'+ retweet_count +'）</a><a>评论数（'+ comment_count +'）</a></span></p>';
 			html += '</div>';
         }
     }
