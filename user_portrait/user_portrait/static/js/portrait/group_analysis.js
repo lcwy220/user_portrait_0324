@@ -140,7 +140,7 @@ Draw_overview: function(data){
     $('#overview').append(html);
     $('#g_tag').empty();
     var html = '';
-    html += '<table style="height:100px;width:100%;border-bottom:1px solid #ccc;">';
+    html += '<table style="height:100px;width:100%;">';//border-bottom:1px solid #ccc;
     // html += '<tr><td style="text-align:center;vertical-align:middle"><img src="/static/img/closeness.png" style="height:80px"></td>';
     // html += '<td style="text-align:center;vertical-align:middle"><img src="/static/img/activeness.png" style="height:80px"></td>';
     // html += '<td style="text-align:center;vertical-align:middle"><img src="/static/img/importance.png" style="height:80px"></td>';
@@ -155,11 +155,11 @@ Draw_overview: function(data){
     //html += '<td style="font-size:13px;text-align:center;vertical-align:middle"><b>&nbsp;&nbsp;&nbsp;&nbsp;活跃度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员线上线下的活跃程度，通过发布微博综述、活跃地区数、发布微博的时间走势计算得到"></i>&nbsp;&nbsp;</b></td>';
     //html += '<td style="font-size:13px;text-align:center;vertical-align:middle"><b>&nbsp;&nbsp;&nbsp;&nbsp;重要度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员对社会网络安全业务的重要程度，通过群体成员的所属领域和偏好话题计算得到"></i>&nbsp;&nbsp;</b></td>';
     //html += '<td style="font-size:13px;text-align:center;vertical-align:middle"><b>&nbsp;&nbsp;&nbsp;&nbsp;影响力<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员整体的影响力，通过群体成员原创微博、转发微博的评论和转发的最高值、均值、总量计算得到"></i>&nbsp;&nbsp;</b></td></tr>';
-    html += '</table>';
-    html += '<table style="width:100%;">';   
-    html += '<tr><td><span style="color:red;margin-left:20px;font-size:13px;">身份：</span><span>'+domain+'</span></td>';
-    html += '<td ><span style="color:red;margin-left:20px;font-size:13px;">话题：</span><span>'+topic+'</span></td></tr>';
-    html += '</table>';   
+    // html += '</table>';
+    // html += '<table style="width:100%;">';   
+    // html += '<tr><td><span style="color:red;margin-left:20px;font-size:13px;">身份：</span><span>'+domain+'</span></td>';
+    // html += '<td ><span style="color:red;margin-left:20px;font-size:13px;">话题：</span><span>'+topic+'</span></td></tr>';
+    // html += '</table>';   
     $('#g_tag').append(html);
 },
 
