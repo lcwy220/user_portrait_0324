@@ -679,6 +679,7 @@ function group_activity(data){
 }
 
 function show_activity(data) {
+	console.log(data);
 	var time_data = [23,3,4,55,22,6]
     // console.log(runtype);
 	//微博走势，点击后显示微博
