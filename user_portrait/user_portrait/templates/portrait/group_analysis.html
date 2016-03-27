@@ -3,6 +3,7 @@
 
 {% block css %}
 {{ super() }}
+<link href="/static/bootstrap/css/bootstrap-cerulean.min.css" rel="stylesheet">
 <link  type="text/css" href="/static/personal/css/style.css" rel="stylesheet"/>
 <link  type="text/css" href="/static/personal/css/basic.css" rel="stylesheet"/>
 <link  type="text/css" href="/static/personal/css/framestyle.css" rel="stylesheet"/>
@@ -39,7 +40,7 @@ body {
 		border-color:#A09D9D!important;
 	}
 	.panel .panel-default{border: 1px solid #77ACF4;}
-	.panel-heading{background-color:#77ACF4!important;;}
+	.panel-heading{background-color:#77ACF4!important;}
 	.box_title{background:#77ACF4;color:#fff;}
     .panel-body{border: 1px solid #77ACF4;}
 	#accordion h4{
@@ -79,10 +80,12 @@ body {
 	#pageGro div,#pageGro div ul li{ font-size:12px; color:#999; line-height:23px; float:left; margin-left:5px;}
 	#pageGro div ul li{ width:22px; text-align:center; border:1px solid #999; cursor:pointer;}
 	#pageGro div ul li.on{ color:#fff; background:#3c90d9; border:1px solid #3c90d9;}
-	#pageGro .pageUp{ border:1px solid #999; cursor:pointer;}
-	#pageGro .pageDown{ width:63px; border:1px solid #999; cursor:pointer;}
-	#pageGro .pageUp{ text-indent:23px;background:url(/static/img/pageUp.png) 5px 7px no-repeat;}
-	#pageGro .pageDown{ text-indent:5px;background:url(/static/img/pageDown.png) 46px 6px no-repeat;}
+	#pageGro .pageUp{ cursor:pointer;}
+	#pageGro .pageDown{ width:63px; cursor:pointer;}
+    '''
+    #pageGro .pageUp{ text-indent:23px;background:url(/static/img/pageUp.png) 5px 7px no-repeat;}
+    #pageGro .pageDown{ text-indent:5px;background:url(/static/img/pageDown.png) 46px 6px no-repeat;}
+    '''
 	#group_weibo_font{ 
 	font-family: '微软雅黑';
     font-size: 14px; }
@@ -97,41 +100,21 @@ var th_flag = false;
 $(function(){
     /**软件功能切换js**/
      //preference_load();
-    $(" .portrait_button").click(function(){
+    $(" .g_a").click(function(){
         var x = $(this).attr("title");
         $(this).css({"background-color":"#3351B7"}).siblings().css({"background-color":"#6699FF"});
         if(x=='基本特征'){
            $("#g_bas").css({"display":"block"}).siblings().css({"display":"none"});
            //$("#qxtz").css({"background-color":"#3351B7"})
         }else if(x=='活动特征'){
-            if(pre_flag==false){
-     		//activity_load();
-                pre_flag = true;
-            }
             $("#g_act").css({"display":"block"}).siblings().css({"display":"none"});
         }else if(x=='偏好特征'){
-            if(lan_flag==false){
-             //   language_load();
-                lan_flag = true;
-            }
            $("#g_pre").css({"display":"block"}).siblings().css({"display":"none"});
         }else if(x=='影响力特征'){
-            if(in_flag==false){
-             //   influence_load();
-                in_flag = true;
-            }
            $("#g_spr").css({"display":"block"}).siblings().css({"display":"none"});
         }else if(x=='社交特征'){
-            if(so_flag==false){
-             //   social_load();
-                so_flag = true;
-            }
            $("#g_soc").css({"display":"block"}).siblings().css({"display":"none"});
         }else if(x=='性格特征'){
-            if(th_flag==false){
-            //    thought_load();
-                th_flag = true;
-            }
            $("#g_psy").css({"display":"block"}).siblings().css({"display":"none"});
         }
     });
@@ -152,29 +135,30 @@ $(function(){
         <div id="framesidebar"  >
             <h3  style="padding:5px;color:white">群组分析</h3>
             <li>
-                <ul style="padding:0px;height:350px;">
+                <ul style="padding:0px;height:110px;">
                     <div style='height:190px;width:100%' id='overview'> </div>
                 </ul>
             </li>
         </div>
         <div id="framecontent" style="width:850px;">
-            <div class ="framepost" style="height:200px;">
+            <div class ="framepost" style="height:148px;">
                 <h3 class="title">群体属性</h3>
                 <div  id="g_tag">
                 </div>
             </div>
         </div>
 
-        <div style="margin-left:250px;margin-bottom:11px;">
-            <button class="portrait_button" type='button' style="margin-right:32px;background-color:#3351B7" title="基本特征" >基本特征</button>
-             <button class="portrait_button" type='button' style="margin-right:32px;" title="活动特征" >活动特征</button>
-            <button class="portrait_button" type='button' style="margin-right:32px;" title="偏好特征" >偏好特征</button>
-            <button class="portrait_button" type='button' style="margin-right:32px;" title="影响力特征" >影响力特征</button>
-            <button class="portrait_button" type='button' style="margin-right:32px;" title="社交特征" >社交特征</button>
-            <button class="portrait_button" type='button' style="margin-right:32px;" title="性格特征" >性格特征</button>
-            <button class="portrait_button" type='button'  title="标签特征" >外部评价</button>
+        <div style="margin-left:100px;margin-bottom:11px;float:left;">
+            <button class="portrait_button g_a" type='button' style="margin-right:32px;background-color:#3351B7" title="基本特征" >基本特征</button>
+             <button class="portrait_button g_a" type='button' style="margin-right:32px;" title="活动特征" >活动特征</button>
+            <button class="portrait_button g_a" type='button' style="margin-right:32px;" title="偏好特征" >偏好特征</button>
+            <button class="portrait_button g_a" type='button' style="margin-right:32px;" title="影响力特征" >影响力特征</button>
+            <button class="portrait_button g_a" type='button' style="margin-right:32px;" title="社交特征" >社交特征</button>
+            <button class="portrait_button g_a" type='button' style="margin-right:32px;" title="性格特征" >性格特征</button>
+            <button class="portrait_button g_a" type='button'  title="外部评价" >外部评价</button>
         </div>
-        <div style="margin-left:10px;margin-top:20px;float:left;width:850px;">     
+		<hr>
+        <div style="margin-left:40px;margin-top:20px;float:left;width:980px;">     
             <div id="g_bas" >
                 {% include "portrait/group_analysis/group_basic.html"%}
             </div>
@@ -184,7 +168,6 @@ $(function(){
             <div id="g_pre" style="display:none">
                 {% include "portrait/group_analysis/group_preference.html"%}
             </div>
-        
             <div id="g_spr" style="display:none">
                 {% include "portrait/group_analysis/group_spread.html"%}
             </div>
@@ -200,6 +183,26 @@ $(function(){
 	</div>
 </div>
 <div id="float-wrap" class="hidden"></div>
+
+<div class="modal fade" id="g_myModal_group" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document" style="width:950px">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" style="font-size:18px">群组成员</h4>
+      </div>
+      <div class="modal-body">
+        <div style="font-size:18px;margin-bottom:10px">选择用户添加标签</div>
+        <div>
+            <span>选择类别：</span><span id='attribute_name' style="min-width:75px;margin-left:10px" ></span>
+            <span style='margin-left:20px'>选择标签：</span><span id='attribute_value' style="min-width:75px;margin-left:10px"></span><span style="margin-left:10px"><button class="btn btn-primary btn-sm" style="width:80px;height:30px" id="add_group_tag_button" title="确定选择" onclick="add_group_tag()">添加</button></span>
+        <div id= "group_member_user" style="margin-top:14px"></div>
+       </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 {% endblock main %}
 
