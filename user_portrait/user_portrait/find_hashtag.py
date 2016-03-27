@@ -47,5 +47,20 @@ def write_json(arr):
     with open('id_domain.json','w') as f:
         f.write(json.dumps(arr))
 
+def read_id():
+    f = open('id_domain.json','r')
+    for line in f:
+        strs = json.loads(line)
+    hash_dict = dict()
+    for i in strs:
+        try:
+            hash_dict[i[1]] += 1
+        except KeyError:
+            hash_dict[i[1]] = 1
+    hash_dict  = sorted(hash_dict.iteritems(),key = lambda d:d[1],reverse=True)
+    #print type(hash_dict)
+    for i in hash_dict:
+        print i[0]
+
 if __name__ == '__main__':
-	find_domain()
+	read_id()

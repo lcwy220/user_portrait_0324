@@ -553,6 +553,59 @@ $(function(){
 });
 
 
+function d_bind_remark_edit(Personal){
+    $('#d_extraDetail').click(function(){
+        var td = $(this);
+        var txt = td.html();
+        var input = "<input id='d_editremark' style='width:100px;' type='text' value='" + txt + "'/>";
+        td.html(input);
+        $('#d_editremark').click(function(){
+            return false;
+        });
+        $('#d_editremark').trigger('focus');
+        $('#d_editremark').bind('keyup', function(e){
+            var ev = document.all?window.event:e;
+            if (ev.keyCode == 13){
+                var newtxt = $(this).val();
+                if (newtxt == ''){
+                    td.html('暂无');
+                }
+                else{    
+                    td.html(newtxt);
+                }
+                if (newtxt != txt){
+                    var url = '/attribute/edit_remark/?uid=' + uid + '&remark=' + newtxt;
+                    Personal.call_sync_ajax_request(url, Personal.ajax_method, confirm_edit);
+                    //console.log('diff');
+                }
+            }
+        }).bind('keydown', function(e){
+            var ev = document.all?window.event:e;
+            if (ev.keyCode == 13){
+                return false;
+            }
+        });
+        $('#d_editremark').blur(function(){
+            var newtxt = $(this).val();
+            if (newtxt == ''){
+                td.html('暂无');
+            }
+            else{    
+                td.html(newtxt);
+            }
+            if (newtxt != txt){
+                var url = '/attribute/edit_remark/?uid=' + uid + '&remark=' + newtxt;
+                Personal.call_sync_ajax_request(url, Personal.ajax_method, confirm_edit);
+                //console.log('diff');
+            }
+        });
+        function confirm_edit(data){
+            //alert(data);
+        }
+    });
+}
+d_bind_remark_edit(Personal);
+
     function person_call_ajax_request(url, callback){
         $.ajax({
             url:url,
