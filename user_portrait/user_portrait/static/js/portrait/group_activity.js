@@ -482,20 +482,18 @@ function Draw_top_place(start,end){
     if(start.length==0){
 		html += '<div style="width:100%;line-height:30px;">主要出发地：暂无数据</div>';
 	}else {
-		var start_geo = [];
-		for(var i in start){
-			start_geo.push(i);
-		}
-		if(start_geo.length <=5){
+		
+		if(start.length <=5){
 		    html += '<div style="width:100%;line-height:30px;">主要出发地：';
-		    for(var i=0;j<start_geo.length;j++){
-			    html = html + '<a>' +start_geo[i] +'</a>&nbsp&nbsp';
+		    for(var i=0;i<start.length;j++){
+			    html = html + '<a>' +start[i][0] +'('+start[i][1]+'人次)</a>&nbsp&nbsp';
 		    }
 		    html += '</div>'
 	    }else{
+			console.log(start);
 		    html += '<div style="width:100%;line-height:30px;">主要出发地：';
 		    for(var i=0;i<5;i++){
-			    html = html + '<a>' + start_geo[i] +'</a>&nbsp&nbsp';
+			    html = html + '<a>' +start[i][0] +'('+start[i][1]+'人次)</a>&nbsp&nbsp';
 		    }
 		    html += '<span id="more_start" data-toggle="modal" data-target="#moreStart">更多<span></div>'
 	    }
@@ -504,20 +502,17 @@ function Draw_top_place(start,end){
 	if(end.length==0){
 		html += '<div style="width:100%;line-height:30px;">主要目的地：暂无数据</div>';
 	}else {
-		var end_geo = [];
-		for(var i in end){
-			end_geo.push(i);
-		}
-		if(end_geo.length <=5){
+		
+		if(end.length <=5){
 		    html += '<div style="width:100%;line-height:30px;">主要出发地：';
-		    for(var i=0;j<end_geo.length;j++){
-			    html = html + '<a>' +end_geo[i] +'</a>&nbsp&nbsp';
+		    for(var i=0;i<end.length;j++){
+			    html = html + '<a>' +end[i][0] +'('+end[i][1]+'人次)</a>&nbsp&nbsp';
 		    }
 		    html += '</div>'
 	    }else{
 		    html += '<div style="width:100%;line-height:30px;">主要出发地：';
 		    for(var i=0;i<5;i++){
-			    html = html + '<a>' + end_geo[i] +'</a>&nbsp&nbsp';
+			    html = html + '<a>'  +end[i][0] +'('+end[i][1]+'人次)</a>&nbsp&nbsp';
 		    }
 		    html += '<span id="more_end" data-toggle="modal" data-target="#moreEnd">更多<span></div>'
 	    }
