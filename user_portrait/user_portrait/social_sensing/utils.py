@@ -15,7 +15,7 @@ from user_portrait.parameter import INDEX_MANAGE_SOCIAL_SENSING as index_manage_
 from user_portrait.parameter import DOC_TYPE_MANAGE_SOCIAL_SENSING as task_doc_type
 from user_portrait.parameter import DETAIL_SOCIAL_SENSING as index_sensing_task
 
-def get_warning_detail(task_name, keywords, ts, task_type="2", user):
+def get_warning_detail(task_name, keywords, ts, user, task_type="2"):
     results = dict()
     index_name = task_name # 可能的index-name
 

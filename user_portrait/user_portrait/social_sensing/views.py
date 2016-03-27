@@ -166,7 +166,7 @@ def ajax_show_task():
                 "filter":{
                     "bool":{
                         "must":[
-                            {"term":{"create_by": user}
+                            {"term":{"create_by": user}}
                         ]
                     }
                 }
