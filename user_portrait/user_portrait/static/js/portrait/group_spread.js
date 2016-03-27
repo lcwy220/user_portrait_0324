@@ -798,6 +798,7 @@ Weibo_user.prototype = {
     });
   },
   Draw_user:function(data){
+	  //console.log(data);
 	  var unames = [];
 	  var uids = [];
 	  for(var key in data){
@@ -820,6 +821,10 @@ function bind_spread_click(){
         }
     });
 }
+
+var weibo_user_url = '/group/group_member/?task_name=mytest030303&submit_user=admin';
+var Weibo_user = new Weibo_user();
+Weibo_user.call_sync_ajax_request(weibo_user_url,Weibo_user.ajax_method,Weibo_user.Draw_user)
 function spread_load(){
     if (!global_spread_flag){
         if(global_test_mode==0){
@@ -849,7 +854,7 @@ var from_date_time = Math.floor(date.getTime()/1000) - 60*60*24*30;
 var min_date_ms = new Date()
 min_date_ms.setTime(from_date_time*1000);
 var from_date = min_date_ms.format('yyyy/MM/dd hh:mm');
-var Weibo_user = new Weibo_user();
+//var Weibo_user = new Weibo_user();
 var global_spread_flag = false;
     //选择时间
 /*

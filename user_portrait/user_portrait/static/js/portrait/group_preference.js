@@ -273,7 +273,7 @@ function show_results(data){
 }
 function preference_load(){
     if (!global_preference_flag){
-        var prefrence_url = '/group/show_group_result/?task_name='+ name +'&module=preference';
+        var prefrence_url = '/group/show_group_result/?task_name='+ name +'&module=preference&submit_user=admin';
         Show_pref.call_sync_ajax_request(prefrence_url, Show_pref.ajax_method, Show_pref.Draw_table);
         global_preference_flag = true;
     }
