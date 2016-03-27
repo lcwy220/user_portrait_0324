@@ -864,6 +864,18 @@ def search_group_sentiment_weibo(task_name, start_ts, sentiment, submit_user):
 
     return weibo_list
 
+def edit_state(task_name, submit_user, new_state):
+    results = True
+    task_id = submit_user + '-' + task_name
+    try:
+        group_exist = es_group_result.get(index=group_index_name, doc_type=group_index_type,\
+                id=task_id)['_source']
+    except:
+        return 'group no exist'
+    es_group_result.update(index=group_index_name, doc_type=group_index_type,\
+            id=task_id, body={'doc':{'state': new_state}})
+    return results
+
 
 if __name__=='__main__':
     #test group task
