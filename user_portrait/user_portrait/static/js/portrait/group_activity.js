@@ -933,7 +933,8 @@ function month_process(data){
 }
 
 
-var group_activity_url = '/group/show_group_result/?module=activity&task_name=' + name;
+//var group_activity_url = '/group/show_group_result/?module=activity&task_name=' + name;
+var group_activity_url = '/group/show_group_result/?module=activity&task_name=mytest030303&submit_user=admin';
 call_sync_ajax_request(group_activity_url,ajax_method, show_activity);
 var group_user_url =  "/group/show_group_list/?task_name=" + name;
 call_sync_ajax_request(group_user_url,ajax_method, show_activity_track);
