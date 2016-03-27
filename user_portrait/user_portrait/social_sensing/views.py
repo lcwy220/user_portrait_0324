@@ -64,7 +64,7 @@ def ajax_create_task():
         else:
             task_detail["sensitive_words"] = json.dumps([])
         now_ts = int(time.time())
-        task_detail["create_at"] = create_time # now_ts
+        task_detail["create_at"] = now_ts # now_ts
         task_detail["warning_status"] = '0'
         task_detail["finish"] = "0" # not end the task
         task_detail["history_status"] = json.dumps([]) # ts, keywords, warning_status
@@ -158,7 +158,7 @@ def ajax_show_task():
     # "0": unfinish working task
     # "1": finish working task
     status = request.args.get("finish", "01")
-    user = request.args.get('user', '')
+    user = request.args.get('user', 'admin')
     length = len(status)
     query_body = {
         "query":{
@@ -177,9 +177,9 @@ def ajax_show_task():
     }
     if length == 2:
         category_list = [status[0], status[1]]
-        query_body['query']['filtered']['filter']["bool"]["must"].append({"finish": category_list})
+        query_body['query']['filtered']['filter']["bool"]["must"].append({"term":{"finish": category_list}})
     elif length == 1:
-        query_body['query']['filtered']['filter']['bool']['must'].append({"finish": status})
+        query_body['query']['filtered']['filter']['bool']['must'].append({"term":{"finish": status}})
     else:
         print "error"
 
