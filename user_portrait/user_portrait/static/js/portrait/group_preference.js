@@ -15,7 +15,7 @@ Show_pref.prototype = {
     });
   },
   Draw_table:function(data){
-    //console.log(data);
+    console.log(data);
     var keywords_data = data['keywords'];
     var keywords_name = 'Language';
     var keywords_more = 'key_WordList';
