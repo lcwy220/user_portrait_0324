@@ -396,13 +396,16 @@ def search_group_results(task_name, module, submit_user):
             result['vary_detail_geo'] = {}
 
         try:
-            result['main_start_geo'] = json.loads(source['main_start_geo'])
+            main_start_geo_dict = json.loads(source['main_start_geo'])
         except:
-            result['main_start_geo'] = {}
+            main_start_geo_dict = {}
+        result['main_start_geo'] = sorted(main_start_geo_dict.items(), key=lambda x:x[1], reverse=True)
+
         try:
-            result['main_end_geo'] = json.loads(source['main_end_geo'])
+            main_end_geo_dict = json.loads(source['main_end_geo'])
         except:
-            result['main_end_geo'] = {}
+            main_end_geo_dict = {}
+        result['main_end_geo'] = sorted(main_end_geo_dict.items(), key=lambda x:x[1], reverse=True)
 
     elif module == 'preference':
         result['keywords'] = json.loads(source['keywords'])
