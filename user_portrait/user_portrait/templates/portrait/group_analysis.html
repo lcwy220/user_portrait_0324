@@ -7,6 +7,7 @@
 <link  type="text/css" href="/static/personal/css/style.css" rel="stylesheet"/>
 <link  type="text/css" href="/static/personal/css/basic.css" rel="stylesheet"/>
 <link  type="text/css" href="/static/personal/css/framestyle.css" rel="stylesheet"/>
+<link rel="stylesheet" type="text/css" href="/static/css/jquery.datetimepicker.css"/>
 {% endblock css %}
 
 {% block head_js %}
@@ -23,84 +24,77 @@
     margin-left: 2px;
   
 }
-
 body {
   font-family: '微软雅黑';
   font-size: 14px;
-	}
-	ul,li{
-	  list-style:none;
-	}
-	#accordion > .panel-default{
-		border-bottom: :1px solid #A09D9D;
-		border-color:#A09D9D;
-	}
-	.panel-color{
-		background-color:#BCBCBC!important;
-		border-color:#A09D9D!important;
-	}
-	.panel .panel-default{border: 1px solid #77ACF4;}
-	.panel-heading{background-color:#77ACF4!important;}
-	.box_title{background:#77ACF4;color:#fff;}
+    }
+    ul,li{
+      list-style:none;
+    }
+    #accordion > .panel-default{
+        border-bottom: :1px solid #A09D9D;
+        border-color:#A09D9D;
+    }
+    .panel-color{
+        background-color:#BCBCBC!important;
+        border-color:#A09D9D!important;
+    }
+    .panel .panel-default{border: 1px solid #77ACF4;}
+    .panel-heading{background-color:#77ACF4!important;}
+    .box_title{background:#77ACF4;color:#fff;}
     .panel-body{border: 1px solid #77ACF4;}
-	#accordion h4{
-		color:#555555;
-	}
-	.gs_ul{
-	  overflow:hidden;
-	  padding:3em;
-	}
-	#stickynote ul li a{
-	  text-decoration:none;
-	  color:#000;
-	  background:#ffc;
-	  display:block;
-	  padding:1em;
-	}
+    #accordion h4{
+        color:#555555;
+    }
+    .gs_ul{
+      overflow:hidden;
+      padding:3em;
+    }
     #stickynote ul li a{
-	  -webkit-transform: rotate(-6deg);
-	  -o-transform: rotate(-6deg);
-	  -moz-transform:rotate(-6deg);
-	}
-	#stickynote ul li a:hover, #stickynote ul li a:focus{
-	  box-shadow:10px 10px 7px rgba(0,0,0,.7);
-	  -moz-box-shadow:10px 10px 7px rgba(0,0,0,.7);
-	  -webkit-box-shadow: 10px 10px 7px rgba(0,0,0,.7);
-	  -webkit-transform: scale(1.15);
-	  -moz-transform: scale(1.15);
-	  -o-transform: scale(1.15);
-	  position:relative;
-	  z-index:5;
-	}
-	.dataTables_filter{text-align:right;margin-bottom:5px;}
+      text-decoration:none;
+      color:#000;
+      background:#ffc;
+      display:block;
+      padding:1em;
+    }
+    #stickynote ul li a{
+      -webkit-transform: rotate(-6deg);
+      -o-transform: rotate(-6deg);
+      -moz-transform:rotate(-6deg);
+    }
+    #stickynote ul li a:hover, #stickynote ul li a:focus{
+      box-shadow:10px 10px 7px rgba(0,0,0,.7);
+      -moz-box-shadow:10px 10px 7px rgba(0,0,0,.7);
+      -webkit-box-shadow: 10px 10px 7px rgba(0,0,0,.7);
+      -webkit-transform: scale(1.15);
+      -moz-transform: scale(1.15);
+      -o-transform: scale(1.15);
+      position:relative;
+      z-index:5;
+    }
+    .dataTables_filter{text-align:right;margin-bottom:5px;}
     .dataTables_paginate{margin-top:-50px;margin-bottom:-20px;}
-	ul,li {margin:0;padding:0} 
-	ol,ul {list-style:none}
-	#pageGro{ width:400px; height:25px; margin:0px auto; padding-top:30px;}
-	#pageGro div,#pageGro div ul li{ font-size:12px; color:#999; line-height:23px; float:left; margin-left:5px;}
-	#pageGro div ul li{ width:22px; text-align:center; border:1px solid #999; cursor:pointer;}
-	#pageGro div ul li.on{ color:#fff; background:#3c90d9; border:1px solid #3c90d9;}
-	#pageGro .pageUp{ cursor:pointer;}
-	#pageGro .pageDown{ width:63px; cursor:pointer;}
+    ul,li {margin:0;padding:0} 
+    ol,ul {list-style:none}
+    #pageGro{ width:400px; height:25px; margin:0px auto; padding-top:30px;}
+    #pageGro div,#pageGro div ul li{ font-size:12px; color:#999; line-height:23px; float:left; margin-left:5px;}
+    #pageGro div ul li{ width:22px; text-align:center; border:1px solid #999; cursor:pointer;}
+    #pageGro div ul li.on{ color:#fff; background:#3c90d9; border:1px solid #3c90d9;}
+    #pageGro .pageUp{ cursor:pointer;}
+    #pageGro .pageDown{ width:63px; cursor:pointer;}
     '''
     #pageGro .pageUp{ text-indent:23px;background:url(/static/img/pageUp.png) 5px 7px no-repeat;}
     #pageGro .pageDown{ text-indent:5px;background:url(/static/img/pageDown.png) 46px 6px no-repeat;}
     '''
-	#group_weibo_font{ 
-	font-family: '微软雅黑';
+    #group_weibo_font{ 
+    font-family: '微软雅黑';
     font-size: 14px; }
 </style>
 
 <script type="text/javascript">
-var pre_flag = false;
-var lan_flag = false;
-var in_flag = false;
-var so_flag = false;
-var th_flag = false;
 $(function(){
     /**软件功能切换js**/
-     //preference_load();
-    $(" .g_a").click(function(){
+    $(".g_a").click(function(){
         var x = $(this).attr("title");
         $(this).css({"background-color":"#3351B7"}).siblings().css({"background-color":"#6699FF"});
         if(x=='基本特征'){
@@ -128,11 +122,11 @@ $(function(){
 {% block main %}
 <div id="d_useremail" hidden>{{g.user.email}}</div>
 <div id="basicwrapper" style="width:1100px;">
-	<!-- end #menu -->
-	<div id="basicpage">
-	<div id="basicpage-bgtop">
+    <!-- end #menu -->
+    <div id="basicpage">
+    <div id="basicpage-bgtop">
     <div id="basicpage-bgbtm">
-        <div id="framesidebar"  >
+        <div id="framesidebar" style="margin-left: 55px;"  >
             <h3  style="padding:5px;color:white">群组分析</h3>
             <li>
                 <ul style="padding:0px;height:110px;">
@@ -140,7 +134,7 @@ $(function(){
                 </ul>
             </li>
         </div>
-        <div id="framecontent" style="width:850px;">
+        <div id="framecontent" style="width: 687px;float: left;margin-left: 20px;">
             <div class ="framepost" style="height:148px;">
                 <h3 class="title">群体属性</h3>
                 <div  id="g_tag">
@@ -157,7 +151,7 @@ $(function(){
             <button class="portrait_button g_a" type='button' style="margin-right:32px;" title="性格特征" >性格特征</button>
             <button class="portrait_button g_a" type='button'  title="外部评价" >外部评价</button>
         </div>
-		<hr>
+        <hr>
         <div style="margin-left:40px;margin-top:20px;float:left;width:980px;">     
             <div id="g_bas" >
                 {% include "portrait/group_analysis/group_basic.html"%}
@@ -178,9 +172,9 @@ $(function(){
                 {% include "portrait/group_analysis/group_psy.html"%}
             </div>
         </div>
-	</div>
-	</div>
-	</div>
+    </div>
+    </div>
+    </div>
 </div>
 <div id="float-wrap" class="hidden"></div>
 
@@ -217,7 +211,7 @@ $(function(){
             $("#join_tooltip").tooltip(); 
             $("#node_tooltip").tooltip(); 
             $("#tag_tooltip").tooltip();          
-        })
+        });
 //点击跳转页面
 function pageGroup(pageNum,pageCount){
     switch(pageNum){
@@ -238,7 +232,6 @@ function pageGroup(pageNum,pageCount){
         break;
     }
 }
-
 //根据当前选中页生成页面点击按钮
 function page_icon(page,count,eq){
     var ul_html = "";
@@ -248,7 +241,6 @@ function page_icon(page,count,eq){
     $("#pageGro ul").html(ul_html);
     $("#pageGro ul li").eq(eq).addClass("on");
 }
-
 //上一页
 function pageUp(pageNum,pageCount){
     switch(pageNum){
@@ -268,7 +260,6 @@ function pageUp(pageNum,pageCount){
         break;
     }
 }
-
 //下一页
 function pageDown(pageNum,pageCount){
     switch(pageNum){
@@ -288,8 +279,8 @@ function pageDown(pageNum,pageCount){
         break;
     }
 }
-
 </script>
+<script type="text/javascript" src="/static/js/jquery.datetimepicker.js"></script>
     <script type="text/javascript" src="/static/js/portrait/group_analysis.js"></script>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=aBrX8X2tEjcqiKwL78DLmanZ"></script>
     <script type="text/javascript" src="/static/js/portrait/group_activity.js"></script>

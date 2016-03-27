@@ -69,7 +69,9 @@ function Draw_activity(data){
                 cursor:'pointer',
                 events:{
                     click:function(event){
-                        var activity_weibo_url = '/group/activity_weibo/?task_name='+ name +'&start_ts=' + data[event.point.x][0];
+                        var activity_weibo_url = '/group/activity_weibo/?task_name='+ name +'&start_ts=' + data[event.point.x][0]+'&submit_user='+user;
+						//var activity_weibo_url = '/group/activity_weibo/?task_name=mytest030303&start_ts=' + data[event.point.x][0]+'&submit_user=admin';
+						//console.log(activity_weibo_url);
                         call_sync_ajax_request(activity_weibo_url, ajax_method, draw_content);
                         var html0 = '';
                         $('#line_select_time').empty();  
@@ -84,8 +86,8 @@ function Draw_activity(data){
                             html0 += "<div>当前选择时间段：</div><div style='color:brown;'>"+data_x_[event.point.x]+"</div>";
                         }
                         //data_x_[event.point.x]
-                        console.log(html0);
-                        console.log(event.point.x);
+                        //console.log(html0);
+                        //console.log(event.point.x);
                         $('#line_select_time').append(html0);
                         
                         //console.log(activity_weibo_url);
@@ -677,6 +679,7 @@ function group_activity(data){
 }
 
 function show_activity(data) {
+	console.log(data);
 	var time_data = [23,3,4,55,22,6]
     // console.log(runtype);
 	//微博走势，点击后显示微博
@@ -932,11 +935,13 @@ function month_process(data){
 );
 }
 
-
-//var group_activity_url = '/group/show_group_result/?module=activity&task_name=' + name;
-var group_activity_url = '/group/show_group_result/?module=activity&task_name=mytest030303&submit_user=admin';
+user = 'admin';
+var group_activity_url = '/group/show_group_result/?module=activity&task_name=' + name+'&submit_user='+user;
+//var group_activity_url = '/group/show_group_result/?module=activity&task_name=mytest030303&submit_user=admin';
 call_sync_ajax_request(group_activity_url,ajax_method, show_activity);
-var group_user_url =  "/group/show_group_list/?task_name=" + name;
+//var group_user_url =  "/group/show_group_list/?task_name=" + name+'&submit_user=admin';
+var group_user_url =  "/group/show_group_list/?task_name=" + name+'&submit_user='+user;
+console.log(group_user_url);
 call_sync_ajax_request(group_user_url,ajax_method, show_activity_track);
 // var activity_data = []
 
