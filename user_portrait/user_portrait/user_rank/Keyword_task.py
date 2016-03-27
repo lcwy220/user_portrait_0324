@@ -4,8 +4,9 @@ import sys
 import datetime
 from time_utils import ts2datetime, datetime2ts
 from parameter import DAY, LOW_INFLUENCE_THRESHOULD
-from Sort_norm_filter import sort_norm_filter
-from Make_up_user_info import make_up_user_info
+from in_filter import in_sort_filter
+from all_filter import all_sort_filter
+from Makeup_info import make_up_user_info
 
 USER_INDEX_NAME = 'user_portrait_1222'
 USER_INDEX_TYPE = 'user'
@@ -19,7 +20,7 @@ USER_RANK_KEYWORD_TASK_TYPE = 'offline_task'
 
 MAX_ITEMS = 2**28
 
-def key_words_search(username ,  pre , during , start_time , keyword , type  = 'in' , search_key = '' , sort_norm = ''  ,time = 1):
+def key_words_search( pre , during , start_time , keyword , type  = 'in' , search_key = '' , sort_norm = '', sort_scope = ''  ,time = 1 , isall = False):
     keywords = keyword.split(",")
     should = []
     for key in keywords:
@@ -27,8 +28,8 @@ def key_words_search(username ,  pre , during , start_time , keyword , type  = '
     date = start_time 
     index_name = pre + start_time
     while not es_9206.indices.exists(index= index_name) :
-        during = datetime2ts(date) + DAY
-        date = ts2datetime(during)
+        new_time = datetime2ts(date) + DAY
+        date = ts2datetime(new_time)
         index_name = pre + date
         during -= 1
 
@@ -46,8 +47,8 @@ def key_words_search(username ,  pre , during , start_time , keyword , type  = '
         except Exception,e:
             print e
             raise  Exception('user_list failed!')        
-        during = datetime2ts(date) + DAY
-        date = ts2datetime(during)
+        new_time = datetime2ts(date) + DAY
+        date = ts2datetime(new_time)
         index_name = pre + date
         i += 1
     result_list = []
@@ -68,25 +69,21 @@ def key_words_search(username ,  pre , during , start_time , keyword , type  = '
     else :
         result_list = list(uid_set)
     if type == 'in':
-        uid_list = sort_norm_filter(result_list,sort_norm ,time,False)
+        uid_list = in_sort_filter(time,sort_norm ,sort_scope ,None , result_list)
     else:
-        uid_list = sort_norm_filter(result_list,sort_norm ,time,True)
-    results = make_up_user_info(uid_list)
+        uid_list = all_sort_filter(result_list , sort_norm , time )
+    results = make_up_user_info(uid_list,isall)
 
     query = {"query":{"bool":{"must":[{"term":{"offline_task.user_ts":search_key}}],"must_not":[],"should":[]}},"from":0,"size":10,"sort":[],"facets":{}}
 
-    try:
+    if True:
         result = es_9200.search(index = USER_RANK_KEYWORD_TASK_INDEX , doc_type = USER_RANK_KEYWORD_TASK_TYPE , body = query)['hits']['hits']
         item = result[0]
         item['_source']['status'] = 1
         item['_source']['results'] = results
         es_9200.index(index = USER_RANK_KEYWORD_TASK_INDEX , doc_type=USER_RANK_KEYWORD_TASK_TYPE , id=item['_id'],  body=item)
-    except Exception,e:
-        print e
-        raise  Exception('user_list failed!')  
     return results
-
-    
+   
     
     
 

@@ -186,8 +186,10 @@ def save_detect_attribute_task(input_dict):
     
     #step2: save to es
     es_status = save_detect2es(input_dict)
+    print 'es_status:', es_status
     #step3: save to redis
     redis_status = save_detect2redis(input_dict)
+    print 'redis_status:', redis_status
     #identify the operation status
     if es_status==True and redis_status==True:
         status = True
@@ -261,6 +263,7 @@ def save_detect2es(input_dict):
     task_name = input_dict['task_information']['task_name']
     submit_user = input_dict['task_information']['submit_user']
     task_id = input_dict['task_information']['task_id']
+    print 'task id:', task_id
     add_dict['query_condition'] = json.dumps(input_dict['query_condition'])
     try:
         es_group_result.index(index=group_index_name, doc_type=group_index_type, id=task_id, body=add_dict)

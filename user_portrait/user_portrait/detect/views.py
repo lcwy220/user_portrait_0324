@@ -9,6 +9,7 @@ from utils import save_detect_single_task, save_detect_multi_task ,\
                   show_detect_task, detect2analysis, delete_task, \
                   show_detect_result, search_detect_task, submit_sensing
 
+from user_portrait.global_utils import es_user_profile, profile_index_name, profile_index_type
 from user_portrait.global_config import UPLOAD_FOLDER, ALLOWED_EXTENSIONS
 from user_portrait.parameter import DETECT_QUERY_ATTRIBUTE, DETECT_QUERY_STRUCTURE,\
                                     DETECT_QUERY_FILTER, DETECT_DEFAULT_WEIGHT, \
@@ -28,13 +29,14 @@ mod = Blueprint('detect', __name__, url_prefix='/detect')
 
 #use to deal seed_user info string
 def deal_seed_user_string(seed_info_string, seed_info_type):
-    if seed_infor_type == 'uid':
+    if seed_info_type == 'uid':
         uid_list = seed_info_string.split(',')
     elif seed_info_type == 'uname':
         uid_list = []
         uname_list = seed_info_string.split(',')
+        print 'uname:', uname_list
         profile_exist_result = es_user_profile.search(index=profile_index_name, doc_type=profile_index_type,\
-            body={'query':{'nick_name':{'terms': uname_list}}}, _source=False)['hits']['hits']
+            body={'query':{'terms':{'nick_name': uname_list}}}, _source=False)['hits']['hits']
         if profile_exist_result:
             for profile_item in profile_exist_result:
                 uid_list.append(profile_item['_id'])
@@ -43,8 +45,8 @@ def deal_seed_user_string(seed_info_string, seed_info_type):
         url_list = seed_info_string.split(',')
         for url_item in url_list:
             url_item_list = url_item.split('/')
-            url_uid = url_item_list[2][-10:]
-            uid_list.append(uid)
+            url_uid = url_item_list[4][-10:]
+            uid_list.append(url_uid)
     return uid_list
 
 #use to deal seed_user info file
@@ -94,13 +96,14 @@ def ajax_user_string():
     task_information_dict['task_id'] = task_information_dict['submit_user'] + '-' + task_information_dict['task_name']
     #identify whether to extend
     extend_mark = request.args.get('extend_mark', '0') #extend_mark=0/1 means analysis/detect
+    print 'extend_mark:', extend_mark
     if extend_mark == '0':
         task_information_dict['task_type'] = 'analysis'
         task_information_dict['status'] = 0
-        task_information_dict['uid_list'] = uid_list
+        task_information_dict['uid_list'] = seed_uid_list
         input_dict['task_information'] = task_information_dict
         print 'no extend save'
-        results = save_detct_multi_task(input_dict, extend_mark)
+        results = save_detect_multi_task(input_dict, extend_mark)
     elif extend_mark == '1':
         task_information_dict['task_type'] = 'detect'
         print 'extend save'
@@ -662,7 +665,7 @@ def ajax_new_pattern_detect():
     #step1: get pattern query list
     #step1.1: fuzz item
     for item in DETECT_PATTERN_FUZZ_ITEM:
-        iter_value = request.args.get(item, '')
+        item_value = request.args.get(item, '')
         if item_value:
             pattern_condition_num += 1
             pattern_query_list.append({'wildcard': {item: '*' + item_value + '*'}})
@@ -689,7 +692,7 @@ def ajax_new_pattern_detect():
     #identify pattern condition num >= 1
     if pattern_condition_num < 1:
         return 'invalid input for condition'
-    query_dict['pattern'] = pattern_query_dict
+    query_dict['pattern'] = pattern_query_list
     query_dict['attribute'] = []
     #step2: get filter query dict
     filter_dict = {}
