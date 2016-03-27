@@ -145,9 +145,7 @@ Draw_overview: function(data){
     };
     $('#overview').empty();
     html = '';
-    html += '<p style="font-size:13px;padding: 5px 5px 5px 5px;">群体名称：' + name +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">创建时间：' + submit_date +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">群体备注：' + state +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">创建人员：' + submit_user +'</p>';
-    html += '<p><span style="font-size:13px;cursor:pointer;text-decoration:underline" onclick="show_members();">群组成员</span>&nbsp;&nbsp;';
-    html += '<span style="float:right;cursor:pointer;font-size:13px;" type="button"data-toggle="modal" data-target="#group_tag2"><u>群组标签</u></span></p>';
+    html += '<p style="font-size:13px;padding: 5px 5px 5px 5px;">群体名称：<a>' + name +'</a></p><p style="font-size:13px;padding: 5px 5px 5px 5px;">创建时间：' + submit_date +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">群体备注：' + state +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">创建人员：' + submit_user +'</p>';
     html += '</a></li></ul></div>';
     $('#overview').append(html);
     $('#g_tag').empty();

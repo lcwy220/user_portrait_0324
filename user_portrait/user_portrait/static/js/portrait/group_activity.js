@@ -292,7 +292,7 @@ function Draw_top_location(data){
 	//console.log(bar_data_2);
 	bar_data_x = bar_data_2;
 	
-		console.log(timeline_data.length);
+		//console.log(timeline_data.length);
     var myChart = echarts.init(document.getElementById('top_active_geo_line')); 
     var option = {
         timeline:{
