@@ -63,42 +63,54 @@ Search_weibo.prototype = {
 
 Draw_overview: function(data){
     //画星星
-    var importance_star = '';
-    // for(var i=0;i<data.importance_star;i++){
-    //     importance_star += '<img src="/static/img/star-yellow.png" style="width:25px">'
-    // };
-     var activeness_star = '';
-    // for(var i=0;i<data.activeness_star;i++){
-    //     activeness_star += '<img src="/static/img/star-yellow.png" style="width:25px">'
-    // };
-     var density_star = '';
-    // for(var i=0;i<data.density_star;i++){
-    //     density_star += '<img src="/static/img/star-yellow.png" style="width:25px" >'
-    // };
-     var influence_star = '';
-    // for(var i=0;i<data.influence_star;i++){
-    //     influence_star += '<img src="/static/img/star-yellow.png" style="width:25px" >'
-    // };
     if(data.importance_star==undefined){
         importance_star = '无此数据';
     }else{
-        importance_star = data.importance_star;
-    }
+    var importance_star = '';
+    for(var i=0;i<data.importance_star;i++){
+        importance_star += '<img src="/static/img/star-yellow.png" style="width:25px">'
+    };}
     if(data.activeness_star==undefined){
         activeness_star = '无此数据';
     }else{
-        activeness_star = data.activeness_star;
-    }
+     var activeness_star = '';
+    for(var i=0;i<data.activeness_star;i++){
+        activeness_star += '<img src="/static/img/star-yellow.png" style="width:25px">'
+    };}
     if(data.density_star==undefined){
         density_star = '无此数据';
     }else{
-        density_star = data.density_star;
-    }
+     var density_star = '';
+    for(var i=0;i<data.density_star;i++){
+        density_star += '<img src="/static/img/star-yellow.png" style="width:25px" >'
+    };}
     if(data.influence_star==undefined){
         influence_star = '无此数据';
-    }else{
-        influence_star = data.influence_star;
-    }
+    }else{    
+     var influence_star = '';
+    for(var i=0;i<data.influence_star;i++){
+        influence_star += '<img src="/static/img/star-yellow.png" style="width:25px" >'
+    };}
+    // if(data.importance_star==undefined){
+    //     importance_star = '无此数据';
+    // }else{
+    //     importance_star = data.importance_star;
+    // }
+    // if(data.activeness_star==undefined){
+    //     activeness_star = '无此数据';
+    // }else{
+    //     activeness_star = data.activeness_star;
+    // }
+    // if(data.density_star==undefined){
+    //     density_star = '无此数据';
+    // }else{
+    //     density_star = data.density_star;
+    // }
+    // if(data.influence_star==undefined){
+    //     influence_star = '无此数据';
+    // }else{
+    //     influence_star = data.influence_star;
+    // }
     group_tag_vector(data.tag_vector);
 
     var task_name_2;
