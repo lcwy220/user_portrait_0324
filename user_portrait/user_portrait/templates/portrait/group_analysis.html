@@ -164,24 +164,7 @@ $(function(){
                 </div>
             </div>
         </div>
-        <div id="framecontent" style="width:850px;">
-            <div class ="framepost" style="height:600px;">
-                <h3 class="title">发帖内容</h3>
-                <div style="width:100%;margin-top:10px;">
-                    <span style= "color:red;margin-left:20px;margin-right:20px;float:left;">相关微博</span>
-                    <div style="float:left;">
-                            <input type="radio" name="mode_choose" value="timestamp" checked="checked">
-                            <span class="mode" style="margin-right:20px;">时间</span>
-                            <input type="radio" name="mode_choose" value="retweet_count">
-                            <span class="mode" style="margin-right:20px;">转发数</span>
-                            <input type="radio" name="mode_choose" value="count_count" >
-                            <span class="mode" style="margin-right:20px;">评论数</span>
-                            <input type="radio" name="mode_choose" value="sensitive">
-                            <span class="mode" style="margin-right:20px;">敏感性</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+
         <div style="margin-left:250px;margin-bottom:11px;">
             <button class="portrait_button" type='button' style="margin-right:32px;background-color:#3351B7" title="基本特征" >基本特征</button>
              <button class="portrait_button" type='button' style="margin-right:32px;" title="活动特征" >活动特征</button>
@@ -192,10 +175,10 @@ $(function(){
             <button class="portrait_button" type='button'  title="标签特征" >外部评价</button>
         </div>
         <div style="margin-left:10px;margin-top:20px;float:left;width:850px;">     
-            <div id="g_bas" style="display:none" >
+            <div id="g_bas" >
                 {% include "portrait/group_analysis/group_basic.html"%}
             </div>
-            <div id="g_act" >
+            <div id="g_act" style="display:none" >
                 {% include "portrait/group_analysis/group_activity.html"%}
             </div>
             <div id="g_pre" style="display:none">
