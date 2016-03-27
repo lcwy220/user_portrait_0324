@@ -776,7 +776,7 @@ function Draw_topic_group_spread(data, radar_div, motal_div, show_more){
 
 
 var Show_influ = new Show_influ();
-var group_influ_url = '/group/show_group_result/?task_name=mytest030303&submit_user=admin&module=influence';
+var group_influ_url = '/group/show_group_result/?task_name='+name+'&submit_user=admin&module=influence';
 //console.log(group_influ_url);
 Show_influ.call_sync_ajax_request(group_influ_url, Show_influ.ajax_method, Show_influ.Draw_table);
 //日期选择
