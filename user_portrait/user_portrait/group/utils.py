@@ -231,7 +231,7 @@ def group_user_weibo(task_name, submit_user, sort_type):
         else:
             uname = 'unknown'
         uid2uname_dict[uid] = uname
-    
+    weibo_list = []
     for weibo_item in sort_weibo_list:
         source = weibo_item['_source']
         mid = source['mid']
