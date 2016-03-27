@@ -12,6 +12,7 @@ Group_identify_task.prototype = {   //获取数据，重新画表
     });
   },
 Draw_dis_Table:function(data){
+    //console.log(data);
 	$('#dis_table').empty();
 	var html = '';
 	html += '<a id="turnback"  href="javascript:void(0)" onclick="redraw()" style="float:right;margin-right:40px;margin-top:12px;">查看全部任务</a><a data-toggle="modal" id="searchTable" href="#table_search" style="margin-bottom:10px;margin-top:12px;float: right;margin-right: 20px;"">表单搜索</a>';
@@ -20,16 +21,14 @@ Draw_dis_Table:function(data){
 	//j = 40;
 	var dis_type='';
 	for (i=0;i<data.length;i++){
-		if(data[i][3]=='single'){
-			dis_type='单种子用户群体发现';
-		}else if(data[i][3]=='multi'){
-			dis_type='多种子用户群体发现';
+		if((data[i][3]=='single') || (data[i][3] == 'multi')){
+			dis_type='由用户发现群体';
 		}else if(data[i][3]=='attribute'){
-			dis_type='特定属性及模式群体发现';
+			dis_type='由特征发现群体';
 		}else if(data[i][3]=='event'){
-			dis_type='特定事件群体发现';
+			dis_type='由事件发现群体';
 		}else{
-			dis_type='社会感知自动群体发现';
+			dis_type='由模式发现群体';
 		}
 		html += '<tr><td>'+data[i][0]+'</td><td>'+data[i][1]+'</td><td>'+data[i][2]+'</td><td>'+dis_type+'</td><td>'+data[i][4]+'</td><td><progress value="'+data[i][5]+'" max="100"></progress>&nbsp;&nbsp;'+data[i][5]+'%</td><td><a href="javascript:void(0)" id="group_commit_analyze">提交分析</a>&nbsp;&nbsp;&nbsp;<a href="javascript:void(0)" id="group_commit_control" >提交监控</a>&nbsp;&nbsp;<a href="javascript:void(0)" id="task_del">删除</a></td></tr>';
 		//j += 10;
@@ -43,8 +42,8 @@ Draw_dis_Table:function(data){
     	if (a == true){
 			var url = '/detect/delete_task/?';
 			var temp = $(this).parent().prev().prev().prev().prev().prev().prev().html();
-			url = url + 'task_name=' + temp;
-			//window.location.href = url;
+			url += 'task_name=' + temp;
+            url += '&submit_user=' + $('#useremail').text();
 			Group_identify_task.call_sync_ajax_request(url,Group_identify_task.ajax_method,del);
 		}
 	});	
@@ -65,6 +64,7 @@ Draw_dis_Table:function(data){
 }
 function redraw(){
 	deurl= '/detect/show_detect_task/';
+    deurl += '?submit_user=' + $('#useremail').text();
 	Group_identify_task.call_sync_ajax_request(deurl, Group_identify_task.ajax_method, Group_identify_task.Draw_dis_Table);
 }
 
@@ -75,7 +75,7 @@ $('input[name="con_end_time"]').datetimepicker({value:current_date,minDate:curre
 $('input[name="so_end_time"]').datetimepicker({value:current_date,minDate:current_date,step:10});
 var Group_identify_task = new Group_identify_task();
 redraw();
-window.setInterval(redraw,10000);
+window.setInterval(redraw,30000);
 var con_sen_word_url='/social_sensing/get_sensitive_words';
 Group_identify_task.call_sync_ajax_request(con_sen_word_url,Group_identify_task.ajax_method,draw_con_sen_more);
 var con_nor_word_url='/social_sensing/get_sensing_words';
@@ -109,8 +109,8 @@ function submit_analyze(that){
 		}
 		else{
 			url = "/detect/show_detect_result/?task_name=" + temp;
+            url += '&submit_user=' + $('#useremail').text();
 			Group_identify_task.call_sync_ajax_request(url,Group_identify_task.ajax_method,function(data){draw_table(data,"#group_analyze_confirm")});
-			//draw_table('1',"#group_analyze_confirm");
 			remark0 = $(this).parent().prev().prev().html();
 			$('span[id^="group_name0"]').html(temp);
 			$('span[id^="remark0"]').html(remark0);
@@ -128,10 +128,10 @@ function submit_control(that){
 			alert('进度没有达到100%，无法提交监控任务！');
 		}
 		else{
-			//url = "/detect/show_detect_result/?task_name=" + temp;
 			url = '/social_sensing/get_group_detail/?task_name='+temp;
+            //url += '&user=' + $('#useremail').text();
+            url += '&user=admin';
 			Group_identify_task.call_sync_ajax_request(url,Group_identify_task.ajax_method,draw_control_table);
-			//that.call_sync_ajax_request(url,that.ajax_method,draw_table);
 			$('input[name="con_group_name"]').val(temp);
 			$('input[name="con_remark"]').val(remark0);
 			$('#group_control').modal();
@@ -190,7 +190,7 @@ function draw_control_table(data){
     html += '<div style="overflow-y:auto;max-height:300px;">'
 	for (var i=0;i<data.length;i++) {
     	if(item[i][1]=='unknown'){
-    		item_name = '未知';
+    		item_name = item[i][0];
     	}else{
     		item_name = item[i][1];
     	}
@@ -221,7 +221,7 @@ function draw_control_table(data){
 
 
 function draw_table(data,div){
-	 console.log(data[0]);
+	 console.log(data);
 	// console.log(div);
 	if(data[0] ==undefined){
 	$(div).empty();
@@ -236,7 +236,7 @@ function draw_table(data,div){
     for (var i=0;i<data.length;i++) {
         var uname = data[i][1];
         if (uname == 'unknown'){
-            uname == '未知';
+            uname = data[i][0];
         }
         html += '<tr><th style="text-align:center">' + data[i][0] + '</th>';
         html += '<th style="text-align:center">' + uname + '</th>';
@@ -261,12 +261,10 @@ function group_analyze_confirm_button(){
   	$('[name="analyze_list_option"]:checked').each(function(){
   	    group_confirm_uids.push($(this).parent().prev().prev().prev().prev().prev().text());
   	});
-  	//console.log(group_confirm_uids);
   	var group_ajax_url = '/detect/add_detect2analysis/';
-  	var group_url = '/index/group_result/';
   	var group_name = $('#group_name0').text();
-  	//console.log(group_name);
-  	var job = {"task_name":group_name, "uid_list":group_confirm_uids};
+    var admin = $('#useremail').text();
+  	var job = {"submit_user":admin,"task_name":group_name, "uid_list":group_confirm_uids};
   	//console.log(job);
   	$.ajax({
   	    type:'POST',
@@ -277,7 +275,7 @@ function group_analyze_confirm_button(){
   	    success: callback
   	});
     function callback(data){
-        //console.log(data);
+        console.log(data);
         if (data == '1'){
             alert('提交成功！');
         }
@@ -357,6 +355,7 @@ function group_control_data(){
 			url1 = url0;
 		}
 		url_create += url1;
+        url += '&create_by=' + $('#useremail').text();
 		//console.log(url_create);
 	    $.ajax({
 	        type:'GET',
@@ -368,7 +367,7 @@ function group_control_data(){
         function con_callback(data){
             if(data==1){
                 alert('操作成功！');
-                window.location.href='/index/group/#';
+                window.location.reload();
             }else if(data==0){
                 alert('已存在相同名称的监控任务，请重试！');
             }else if(data ==-1){
@@ -387,8 +386,7 @@ function group_search_button(){ //表单搜索
 	a['task_name'] = $('input[name="task_name"]').val();
 	a['submit_date'] = $('input[name="submit_date"]').val();
 	a['state'] = $('input[name="state"]').val();
-	a['detect_type'] = $('select[name="detect_type"] option:selected').val();
-	a['submit_user'] = $('input[name="submit_user"]').val();
+	a['detect_type'] = $('select[name="detect_type"]').val();
 	for(var k in a){
 		if(a[k]){
 			url0.push(k +'='+a[k]);
@@ -400,6 +398,7 @@ function group_search_button(){ //表单搜索
 		url1 = url0;
 	}
 	var search_url = '/detect/search_detect_task/?'+url1;
+    search_url += '&submit_user=' + $('#useremail').text();
 	//console.log(search_url);
 	$.ajax({
   	    type:'GET',

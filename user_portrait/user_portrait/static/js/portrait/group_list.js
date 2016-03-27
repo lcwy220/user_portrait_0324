@@ -57,6 +57,7 @@ Draw_resultTable: function(data){
 function redraw_result(){
     //console.log('iiiii');
 	var url = '/group/show_task/';
+    url += '?submit_user=' + $('#useremail').text();
 	Group_identify_task.call_sync_ajax_request(url, Group_identify_task.ajax_method, Group_identify_task.Draw_resultTable);
 }
 
@@ -144,6 +145,7 @@ function group_control_data(){
 			url1 = url0;
 		}
 		url_create += url1;
+        url_create += '&create_by=' + $('#useremail').text();
 		//console.log(url_create);
 	    $.ajax({
 	        type:'GET',
@@ -155,7 +157,7 @@ function group_control_data(){
         function con_callback(data){
             if(data==1){
                 alert('操作成功！');
-                window.location.href='/index/group/#';
+                window.location.reload();
             }else if(data==0){
                 alert('已存在相同名称的监控任务，请重试！');
             }else if(data ==-1){
@@ -206,8 +208,8 @@ function control_click(){
 	$('a[id^="commit_control"]').click(function(){
 		var temp = $(this).parent().prev().prev().prev().prev().prev().html();
 		var remark0 =  $(this).parent().prev().prev().html();
-		//url = "/detect/show_detect_result/?task_name=" + temp;
 		url = '/social_sensing/get_group_detail/?task_name='+temp;
+        url += '&user='+$('#useremail').text();
 		Group_identify_task.call_sync_ajax_request(url,Group_identify_task.ajax_method,draw_control_table);
 		$('input[name="con_group_name"]').val(temp);
 		$('input[name="con_remark"]').val(remark0);
@@ -219,8 +221,7 @@ function control_click(){
     		var url = '/detect/delete_task/?';
 			var temp = $(this).parent().prev().prev().prev().prev().prev().html();
 			url = url + 'task_name=' + temp;
-			//console.log(url);
-			//window.location.href = url;
+            url += '&submit_user=' + $('#useremail').text();
 			Group_identify_task.call_sync_ajax_request(url,Group_identify_task.ajax_method,del);
 		}
 	});	
@@ -304,6 +305,7 @@ function task_search_button(){ //表单搜索
 		url1 = url0;
 	}
 	var search_url = '/group/show_task/?'+url1;
+    search_url += '&submit_user=' + $('#useremail').text();
 	//console.log(search_url);
 	$.ajax({
   	    type:'GET',
