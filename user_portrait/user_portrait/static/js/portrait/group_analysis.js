@@ -23,7 +23,7 @@ Search_weibo.prototype = {
     for (var i = 0; i < data.length; i++) {
         var s = i.toString();
         html += '<option value="' + data[s] + '">' + data[s] + '</option>';
-}
+    }
     $('#attribute_name').append(html);
   },
 
@@ -288,36 +288,36 @@ function recommend_all(){
     $('input[name="in_status"]:not(:disabled)').prop('checked', $("#recommend_all").prop('checked'));
 }
 
-// function add_group_tag(){
-//     var cur_uids = []
-//     $('input[name="in_status"]:checked').each(function(){
-//         cur_uids.push($(this).attr('value'));
-//     });
-//     global_choose_uids[global_pre_page] = cur_uids;
-//     var select_uids = [];
-//     var select_uids_string = '';
-//     for (var key in global_choose_uids){
-//         var temp_list = global_choose_uids[key];
-//         for (var i = 0; i < temp_list.length; i++){
-//             select_uids.push(temp_list[i]);
-//         }
-//     }
-//     for (var i = 0; i < select_uids.length; i++) {
-//         s=i.toString();
-//         select_uids_string += select_uids[s] + ',';
-//     };
-//     //console.log(select_uids_string);
-//     add_tag_attribute_name = $("#select_attribute_name").val();
-//     add_tag_attribute_value = $("#select_attribute_value").val();
-//     add_group_tag_url = '/tag/add_group_tag/?uid_list=' + select_uids + "&attribute_name=" + add_tag_attribute_name + "&attribute_value=" + add_tag_attribute_value;
-//     //console.log(add_group_tag_url);
-//     if(select_uids.length!=0){
-//         Search_weibo.call_sync_ajax_request(add_group_tag_url, Search_weibo.ajax_method, Search_weibo.Draw_add_group_tag);
-//     }else{
-//         alert('请至少选择一名用户！')
-//     }
+function add_group_tag(){
+    var cur_uids = []
+    $('input[name="in_status"]:checked').each(function(){
+        cur_uids.push($(this).attr('value'));
+    });
+    global_choose_uids[global_pre_page] = cur_uids;
+    var select_uids = [];
+    var select_uids_string = '';
+    for (var key in global_choose_uids){
+        var temp_list = global_choose_uids[key];
+        for (var i = 0; i < temp_list.length; i++){
+            select_uids.push(temp_list[i]);
+        }
+    }
+    for (var i = 0; i < select_uids.length; i++) {
+        s=i.toString();
+        select_uids_string += select_uids[s] + ',';
+    };
+    //console.log(select_uids_string);
+    add_tag_attribute_name = $("#select_attribute_name").val();
+    add_tag_attribute_value = $("#select_attribute_value").val();
+    add_group_tag_url = '/tag/add_group_tag/?uid_list=' + select_uids + "&attribute_name=" + add_tag_attribute_name + "&attribute_value=" + add_tag_attribute_value;
+    //console.log(add_group_tag_url);
+    if(select_uids.length!=0){
+        Search_weibo.call_sync_ajax_request(add_group_tag_url, Search_weibo.ajax_method, Search_weibo.Draw_add_group_tag);
+    }else{
+        alert('请至少选择一名用户！')
+    }
 
-// }
+}
 
 function g_bind_remark_edit(Search_weibo){
     $('#group_states').click(function(){
@@ -428,13 +428,13 @@ function group_table(){
     Search_weibo.call_sync_ajax_request(model_url,Search_weibo.ajax_method, Draw_model);
     $("#g_myModal_group").modal();
     function Draw_model(data){
-        console.log(data);
-        $('#g_group_member_user').empty();
+        $("#g_group_member_user").empty();
         html = '';
-        html += '<table id="modal_table" class="table table-striped table-bordered bootstrap-datatable datatype responsive">';
+        html += '<table id="g_modal_table" class="table table-striped table-bordered bootstrap-datatable datatype responsive">';
         html += '<thead><tr><th class="center" style="text-align:center">用户ID</th><th class="center" style="text-align:center">昵称</th><th class="center" style="text-align:center;width：auto;">性别</th>';
         html += '<th class="center" style="text-align:center">注册地</th><th class="center" style="text-align:center">重要度</th><th class="center" style="text-align:center;width:72px">影响力</th>';
         html += '<th class="center" style="text-align:center"><input name="recommend_all" id="recommend_all" type="checkbox" value="" onclick="recommend_all()"></th>';
+        //html += '<th class="center" style="text-align:center">添加标签</th>';
         html += '</tr></thead>';
         html += '<tbody>';
         for ( i=0 ; i<data.length; i++){
@@ -453,12 +453,13 @@ function group_table(){
           html += '<th class="center" style="text-align:center"><a target="_blank" href="/index/personal/?uid=' + data[s]['0']+ '">' + data[s]['0']+ '</a></th><th class="center" style="text-align:center">' + data[s]['1']+ '<img data-toggle="tooltip" data-placement="right" title="" id=' + data[s]['0'] + ' src="/static/img/tag.png" class="tag" onmouseover="show_personal_tag(' + data[s]['0'] + ')"; style="height:20px"></th><th class="center" style="text-align:center">' + sex+ '</th>';
           html += '<th class="center" style="text-align:center">' + data[s]['3']+ '</th><th class="center" style="text-align:center">' + data[s]['4'].toFixed(2) + '</th><th class="center" style="text-align:center;width:72px">' + data[s]['5'].toFixed(2) + '</th>';  
           html += '<th class="center" style="text-align:center"><input name="in_status" class="in_status" type="checkbox" value="' + data[s]['0'] + '"/></th>';
+          //html += '<th><span id="attribute_name" style="min-width:75px;margin-left:10px" ></span><span id="attribute_value" style="min-width:75px;margin-left:10px"></span><button class="btn btn-primary btn-sm" style="width:80px;height:30px" id="add_group_tag_button" title="确定选择" onclick="add_group_tag()">添加</button></th>';
           html += '</tr>';
         };
         html += '</tbody>';
         html += '</table>';
-        $('#g_group_member_user').append(html);
-        $('#modal_table').dataTable({
+        $("#g_group_member_user").append(html);
+        $('#g_modal_table').dataTable({
             "sDom": "<'row'<'col-md-6'l ><'col-md-6'f>r>t<'row'<'col-md-12'i><'col-md-12 center-block'p>>",
             "sPaginationType": "bootstrap",
             "aaSorting": [[ 4, "desc" ]],
@@ -467,5 +468,15 @@ function group_table(){
                 "sLengthMenu": "_MENU_ 每页"
             }
         });
+          var tag_url =  '/tag/show_attribute_name/';
+    Search_weibo.call_sync_ajax_request(tag_url, Search_weibo.ajax_method, Search_weibo.Draw_attribute_name);
+    var select_attribute_name =document.getElementById("select_attribute_name").value;
+    var attribute_value_url = '';
+    attribute_value_url = '/tag/show_attribute_value/?attribute_name=' + select_attribute_name;
+    Search_weibo.call_sync_ajax_request(attribute_value_url, Search_weibo.ajax_method, Search_weibo.Draw_attribute_value);
+
     }
+
+  
+
 }

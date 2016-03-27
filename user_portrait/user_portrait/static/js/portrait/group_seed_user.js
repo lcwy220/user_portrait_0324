@@ -13,7 +13,7 @@ function seed_user_callback(data){
         else if (data == 'seed user invalid') {
             alert('人物库中不存在该用户！');
         }
-        else if (data == 'no valid seed user') {
+        else if (data == 'invalid seed user') {
             alert('无有效种子用户！');
         }
         else if(data =='invalid input for condition'){
@@ -36,6 +36,10 @@ function seed_user_callback(data){
         }
     }
     else if(typeof(data) == 'object'){
+        if (data[0] == 'invalid seed user'){
+            alert('用户人数太少，无法提交任务！');
+            return;
+        }
         var out_list = data[1];
         if (out_list.length > 0){
             $('#group_out_list').empty();
@@ -275,8 +279,21 @@ function group_bind_recommend(){
 function seed_single_user_data(){
     var url = '';
     url += '/detect/user_string/?';
-    url += 'seed_user_type=' + $('#content_choose').val();
-    url += '&seed_user_string=' + $('#user_input').val();
+    if ($('#content_choose').val() == 'url'){
+        url += 'seed_user_type=uid';
+        var url_string = $('#user_input').val();
+        var string_list = url_string.split('http://weibo.com/p/');
+        var uid_list = new Array();
+        for (var i = 1; i < string_list.length; i++){
+            uid_list.push(string_list[i].substring(6,16));
+        }
+        console.log(uid_list);
+        url += '&seed_user_string=' + uid_list.join('/');
+    }
+    else{
+        url += 'seed_user_type=' + $('#content_choose').val();
+        url += '&seed_user_string=' + $('#user_input').val();
+    }
     if ($('advanced_conditon').is(':hidden')){
         url += '&extend_mark=0';
         return url;
