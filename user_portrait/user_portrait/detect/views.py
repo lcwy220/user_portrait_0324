@@ -30,10 +30,10 @@ mod = Blueprint('detect', __name__, url_prefix='/detect')
 #use to deal seed_user info string
 def deal_seed_user_string(seed_info_string, seed_info_type):
     if seed_info_type == 'uid':
-        uid_list = seed_info_string.split(',')
+        uid_list = seed_info_string.split('/')
     elif seed_info_type == 'uname':
         uid_list = []
-        uname_list = seed_info_string.split(',')
+        uname_list = seed_info_string.split('/')
         profile_exist_result = es_user_profile.search(index=profile_index_name, doc_type=profile_index_type,\
             body={'query':{'terms':{'nick_name': uname_list}}}, _source=False)['hits']['hits']
         if profile_exist_result:
@@ -41,7 +41,7 @@ def deal_seed_user_string(seed_info_string, seed_info_type):
                 uid_list.append(profile_item['_id'])
     elif seed_info_type == 'url':
         uid_list = []
-        url_list = seed_info_string.split(',')
+        url_list = seed_info_string.split('/')
         for url_item in url_list:
             url_item_list = url_item.split('/')
             url_uid = url_item_list[4][-10:]
@@ -85,6 +85,7 @@ def ajax_user_string():
     seed_info_type = request.args.get('seed_user_type', 'uid') # seed_user_type=uid/uname/url
     seed_info_string = request.args.get('seed_user_string', '') # split by '/'
     seed_uid_list = deal_seed_user_string(seed_info_string, seed_info_type)
+    print 'seed_uid_list:', seed_uid_list
     if seed_uid_list==[]:
         return json.dumps('invalid seed user')
     #get task information
@@ -99,7 +100,10 @@ def ajax_user_string():
     if extend_mark == '0':
         task_information_dict['task_type'] = 'analysis'
         task_information_dict['status'] = 0
-        task_information_dict['uid_list'] = seed_uid_list
+        if len(seed_uid_list) > 1:
+            task_information_dict['uid_list'] = seed_uid_list
+        else:
+            return 'invalid seed user'
         input_dict['task_information'] = task_information_dict
         print 'no extend save'
         results = save_detect_multi_task(input_dict, extend_mark)
