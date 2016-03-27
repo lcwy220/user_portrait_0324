@@ -10,7 +10,7 @@ from utils import submit_task, search_task, get_group_list,\
        delete_group_results, get_social_inter_content, search_group_sentiment_weibo,\
        get_group_user_track, search_group_results, get_influence_content
 from utils import get_group_member_name, get_activity_weibo,\
-        group_user_weibo, edit_state
+        group_user_weibo, edit_state, show_vary_detail
 
 from user_portrait.global_config import UPLOAD_FOLDER, ALLOWED_EXTENSIONS
 from user_portrait.search_user_profile import es_get_source
@@ -215,4 +215,13 @@ def ajax_edit_state():
     submit_user = request.args.get('submit_user', 'admin')
     new_state = request.args.get('new_state', '')
     results = edit_state(task_name, submit_user, new_state)
+    return json.dumps(results)
+
+#show vary detail geo
+@mod.route('/show_vary_detail/')
+def ajax_show_vary_detail():
+    task_name = request.args.get('task_name', '')
+    submit_user = request.args.get('submit_user', 'admin')
+    vary_pattern = request.args.get('city_pattern', '') #city1-city2
+    results = show_vary_detail(task_name, submit_user, vary_pattern)
     return json.dumps(results)
