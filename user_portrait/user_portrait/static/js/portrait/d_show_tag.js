@@ -191,7 +191,7 @@ Draw_tag_change:function(data){
 var Tag_change = new Tag_change();
 
 
-function add_person_tag(){
+function d_add_person_tag(){
 	//获取所有类别名
 	var new_attribute_name = $("#d_select_attribute_name").val();
 	var new_attribute_value = $("#d_select_attribute_value").val();
