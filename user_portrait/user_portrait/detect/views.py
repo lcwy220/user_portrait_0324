@@ -844,7 +844,7 @@ def ajax_search_detect_task():
 def ajax_show_detect_result():
     results = {}
     task_name = request.args.get('task_name', '')
-    submit_user = request.args.get('submit_user', '')
+    submit_user = request.args.get('submit_user', 'admin')
     results = show_detect_result(task_name, submit_user)
     return json.dumps(results)
 

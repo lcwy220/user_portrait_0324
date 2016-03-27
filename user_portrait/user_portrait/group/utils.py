@@ -256,7 +256,89 @@ def group_user_weibo(task_name, submit_user, sort_type):
         weibo_list.append([mid, uid, uname, text, ip, city, timestamp, date, retweet_count, comment_count, sensitive_score, weibo_url])
     return weibo_list
 
+def get_vary_detail_info(vary_detail_dict, uid_list):
+    results = {}
+    #get uname
+    try:
+        user_portrait_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type,\
+                            body={'ids':uid_list})['docs']
+    except:
+        user_portrait_result = []
+    uname_dict = {}
+    for portrait_item in user_portrait_result:
+        uid = portrait_item['_id']
+        if portrait_item['found']==True:
+            uname = portrait_item['_source']['uname']
+            uname_dict[uid] = uname
+        else:
+            uname_dict[uid] = uid
 
+    #get new vary detail information
+    for vary_pattern in vary_detail_dict:
+        user_info_list = vary_detail_dict[vary_pattern]
+        new_pattern_list = []
+        for user_item in user_info_list:
+            uid = user_item[0]
+            uname= uname_dict[uid]
+            start_date = ts2datetime(int(user_item[1]))
+            end_date = ts2datetime(int(user_item[2]))
+            new_pattern_list.append([uid, uname, start_date, end_date])
+        results[vary_pattern] = new_pattern_list
+
+    return results
+
+
+
+
+#show results
+def show_vary_detail(task_name, submit_user, vary_pattern):
+    results = []
+    task_id = submit_user + '-' + task_name
+    #identify the task_id exist
+    try:
+        source = es_group_result.get(index=group_index_name, doc_type=group_index_type,\
+                id=task_id)['_source']
+    except:
+        return 'group task is not exist'
+    #identify the task status=1
+    status = source['status']
+    if status != 1:
+        return 'group task is not completed'
+    #get vary detail geo
+    try:
+        vary_detail_geo = json.loads(source['vary_detail_geo'])
+    except:
+        vary_detail_geo = {}
+    if vary_detail_geo == {}:
+        return 'vary detail geo none'
+    #get vary_detail
+    vary_pattern_list = vary_pattern.split('-')
+    vary_pattern_key = '&'.join(vary_pattern_list)
+    uid_ts_list = vary_detail_geo[vary_pattern_dict]
+    uid_list = [item[0] for item in uid_ts_list]
+    #get user name
+    try:
+        user_portrait_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type,\
+                body={'ids':uid_list})['docs']
+    except:
+        user_portrait_result = []
+    uname_dict = {}
+    for portrait_item in user_portrait_result:
+        uid = portrait_item['_id']
+        if portrait_item['found']==True:
+            uname = portrait_item['_source']['uname']
+            uname_dict[uid] = uname
+        else:
+            uname_dict[uid] = uid
+    #get vary detail
+    new_detail = []
+    for vary_item in uid_ts_list:
+        uname = uname_dict[vary_item[0]]
+        start_date = ts2datetime(vary_item[1])
+        end_date = ts2datetime(vary_item[2])
+        new_detail.append([vary_item[0], uname, start_date, end_date])
+    
+    return new_detail
 
 
 #search group analysis result
@@ -304,9 +386,15 @@ def search_group_results(task_name, module, submit_user):
         result['activeness_description'] = source['activeness_description']
         result['online_pattern'] = json.loads(source['online_pattern'])
         try:
-            result['vary_detail_geo'] = json.loads(source['vary_detail_geo'])
+            vary_detail_geo_dict = json.loads(source['vary_detail_geo'])
         except:
+            vary_detail_geo_dict = {}
+        uid_list = source['uid_list']
+        if vary_detail_geo_dict != {}:
+            result['vary_detail_geo'] = get_vary_detail_info(vary_detail_geo_dict, uid_list)
+        else:
             result['vary_detail_geo'] = {}
+
         try:
             result['main_start_geo'] = json.loads(source['main_start_geo'])
         except:

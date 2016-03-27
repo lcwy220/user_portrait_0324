@@ -97,8 +97,8 @@ def get_index_rank(index_value, index_name):
     if index_rank['_shards']['successful'] != 0:
        result = index_rank['count']
     else:
-        #print 'es index rank error'
-        results = 0
+        print 'es index rank error'
+        result = 0
     return result
 
 
@@ -1863,7 +1863,7 @@ def compute_group_task_v2():
             submit_date = task['submit_date']  #submit_date = timestamp
             results['task_type'] = task['task_type']
             results['count'] = len(uid_list)
-            result['task_id'] = task['task_id']
+            results['task_id'] = task['task_id']
             #get uid2uname dict for other module using
             uid2uname = {}
             try:
@@ -1988,7 +1988,7 @@ if __name__=='__main__':
     log_time_date = ts2datetime(log_time_ts)
     print 'cron/group/cron_group.py&start&' + log_time_date
 
-    #compute_group_task_v2()
+    compute_group_task_v2()
 
     log_time_ts = time.time()
     log_time_date = ts2datetime(log_time_ts)
@@ -1996,7 +1996,7 @@ if __name__=='__main__':
     
     
     #test
-    
+    '''
     input_data = {}
     input_data['task_name'] = u'媒体2'
     
@@ -2023,4 +2023,4 @@ if __name__=='__main__':
     #print 'result main start geo:', result['main_start_geo']
     #print 'result main end geo:', result['main_end_geo']
     #print 'result topic model:', result['topic_model']
-    
+    '''
