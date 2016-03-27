@@ -2,7 +2,7 @@
 <!-- <div id='verify' style='float:right;width:300px;height:200px'></div> -->
 <div class="col-lg-4">
     <div class="panel panel-default">
-        <div class="panel-heading" style="border-bottom: 1px solid transparent;border-color: #dddddd;">
+        <div class="panel-heading" style="border-bottom: 1px solid transparent;border-color: #dddddd;color:#fff;">
             男女比例
         </div>
         <div class="panel-body">
@@ -14,7 +14,7 @@
 <!-- <div class="col-lg-4" id='totalnumber'></div> -->
 <div class="col-lg-4">
     <div class="panel panel-default">
-        <div class="panel-heading" style="border-bottom: 1px solid transparent;border-color: #dddddd;">
+        <div class="panel-heading" style="border-bottom: 1px solid transparent;border-color: #dddddd;color:#fff">
             群组信息
         </div>
         <div class="panel-body">
@@ -31,7 +31,7 @@
 </div>
 <div class="col-lg-4">
     <div class="panel panel-default">
-        <div class="panel-heading" style="border-bottom: 1px solid transparent;border-color: #dddddd;">
+        <div class="panel-heading" style="border-bottom: 1px solid transparent;border-color: #dddddd;color:#fff;">
             认证比例
         </div>
         <div class="panel-body">
@@ -43,18 +43,18 @@
 
 <div class='col-lg-12' style="margin-top:15px;">
  <div class="panel panel-default">
-    <div class="panel-heading" style="border-bottom: 1px solid transparent;border-color: #dddddd;">
+    <div class="panel-heading" style="border-bottom: 1px solid transparent;border-color: #dddddd;color:#fff;">
             用户自定义标签
-    </div>
+        </div>
     <div class="panel-body">
-       	<div id='group_tag' style='width:800px;height:400px' >
+       	<div id='group_tag' style='width:900px;height:400px' >
        	</div>
    	</div>
 </div>
 </div>
-        <div id="framecontent" style="width:850px;">
-            <div class ="framepost" style="height:600px;">
-                <h3 class="title">发帖内容</h3>
+        <div id="framecontent" style="width:950px;float:left;margin-left:15px;">
+            <div class ="framepost" style="height:600px;border-top-right-radius:3px;border-top-left-radius:3px;">
+                <div class="title" style="">发帖内容</div>
                 <div style="width:100%;margin-top:10px;">
                     <span style= "color:red;margin-left:20px;margin-right:20px;float:left;">相关微博</span>
                     <div style="float:left;" id="modechoose">
@@ -70,7 +70,7 @@
 							<div class="tang-scrollpanel-content" style="margintop:10px;">
 	    <div id='group_influ_weibo' style='overflow-x:hidden;width:100%;float:left;'>
  			<div id="group_influ_weibo_result" style="float:left;width:100%;"></div>
-            <div id="pageGro" class="cb" style="display:none;float:left;width:600px;height:60px;margin-left:200px;margin-top:40px;line-height:23px;">
+            <div id="pageGro" class="cb" style="display:none;float:left;width:600px;height:60px;margin-left:300px;margin-top:40px;line-height:23px;">
                 <span class="pageUp" style="float:left;">上一页</span>
                 <span class="pageList" style="float:left;">
                     <ul>
@@ -572,14 +572,14 @@ function page_group_influ_weibo(start_row,end_row,data, sub_div_name){
             html += '<div style="padding:5px;background:whitesmoke;">';
             html += '<p style="margin-left:10px;"><a target="_blank" href="/index/personal/?uid=' + uid + '">' + uname + '</a>&nbsp;&nbsp;发布:<font color=black>' + text + '</font></p>';
             html += '<p style="margin-top:-5px;margin-left:10px;"><a color:#e0e0e0 target="_blank" style="text-decoration: underline;" href="'+tweet_ulr+'">' + date + '</a>-<a target="_blank" href="/index/personal_detail/?uid=' + uid + '">用户详情</a>-<a>转发树</a>';
-            html += '<span style="margin-left:400px;"><a>转发数（'+ retweet_count +'）</a><a>评论数（'+ comment_count +'）</a></span></p>';
+            html += '<span style="margin-left:500px;"><a>转发数（'+ retweet_count +'）</a><a>评论数（'+ comment_count +'）</a></span></p>';
 			html += '</div>'
     }
         else{
             html += '<div style="padding;5px;">';
             html += '<p style="margin-left:10px;"><a target="_blank" href="/index/personal/?uid=' + uid + '">' + uname + '</a>&nbsp;&nbsp;发布:<font color=black>' + text + '</font></p>';    
             html += '<p style="margin-top:-5px;margin-left:10px;"><a color:#e0e0e0 target="_blank" style="text-decoration: underline;" href="'+tweet_ulr+'">' + date + '</a>-<a target="_blank" href="/index/personal_detail/?uid=' + uid + '">用户详情</a>-<a>转发树</a>';
-            html += '<span style="margin-left:400px;"><a>转发数（'+ retweet_count +'）</a><a>评论数（'+ comment_count +'）</a></span></p>';
+            html += '<span style="margin-left:500px;"><a>转发数（'+ retweet_count +'）</a><a>评论数（'+ comment_count +'）</a></span></p>';
 			html += '</div>';
         }
     }

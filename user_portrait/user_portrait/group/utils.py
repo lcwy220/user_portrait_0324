@@ -303,10 +303,27 @@ def search_group_results(task_name, module, submit_user):
         result['activeness_his'] = json.loads(source['activeness_his'])
         result['activeness_description'] = source['activeness_description']
         result['online_pattern'] = json.loads(source['online_pattern'])
+        try:
+            result['vary_detail_geo'] = json.loads(source['vary_detail_geo'])
+        except:
+            result['vary_detail_geo'] = {}
+        try:
+            result['main_start_geo'] = json.loads(source['main_start_geo'])
+        except:
+            result['main_start_geo'] = {}
+        try:
+            result['main_end_geo'] = json.loads(source['main_end_geo'])
+        except:
+            result['main_end_geo'] = {}
+
     elif module == 'preference':
         result['keywords'] = json.loads(source['keywords'])
         result['hashtag'] = json.loads(source['hashtag'])
         result['sentiment_word'] = json.loads(source['sentiment_word'])
+        try:
+            result['topic_model'] = json.loads(source['topic_model'])
+        except:
+            result['topic_model'] = []
         #need to delete
         result['domain'] = json.loads(source['domain'])
         result['topic'] = json.loads(source['topic'])
@@ -846,6 +863,18 @@ def search_group_sentiment_weibo(task_name, start_ts, sentiment, submit_user):
         weibo_list.append(weibo)
 
     return weibo_list
+
+def edit_state(task_name, submit_user, new_state):
+    results = True
+    task_id = submit_user + '-' + task_name
+    try:
+        group_exist = es_group_result.get(index=group_index_name, doc_type=group_index_type,\
+                id=task_id)['_source']
+    except:
+        return 'group no exist'
+    es_group_result.update(index=group_index_name, doc_type=group_index_type,\
+            id=task_id, body={'doc':{'state': new_state}})
+    return results
 
 
 if __name__=='__main__':
