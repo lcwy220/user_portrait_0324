@@ -864,7 +864,7 @@ def ajax_add_detect2analysis():
 def ajax_delete_task():
     status = True
     task_name = request.args.get('task_name', '')
-    submit_user = request.args.get('submit_user', '')
+    submit_user = request.args.get('submit_user', 'admin')
     status = delete_task(task_name, submit_user)
     return json.dumps(status)
 

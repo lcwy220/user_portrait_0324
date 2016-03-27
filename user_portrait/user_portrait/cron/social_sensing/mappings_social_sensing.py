@@ -94,6 +94,10 @@ def manage_sensing_task():
                         "type": "string",
                         "index": "not_analyzed"
                     },
+                    "last_time":{
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
                     "create_by":{
                         "type": "string",
                         "index": "not_analyzed"

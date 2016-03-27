@@ -3,9 +3,11 @@
 
 {% block css %}
 {{ super() }}
+<link href="/static/bootstrap/css/bootstrap-cerulean.min.css" rel="stylesheet">
 <link  type="text/css" href="/static/personal/css/style.css" rel="stylesheet"/>
 <link  type="text/css" href="/static/personal/css/basic.css" rel="stylesheet"/>
 <link  type="text/css" href="/static/personal/css/framestyle.css" rel="stylesheet"/>
+<link rel="stylesheet" type="text/css" href="/static/css/jquery.datetimepicker.css"/>
 {% endblock css %}
 
 {% block head_js %}
@@ -147,7 +149,7 @@ $(function(){
             </div>
         </div>
 
-        <div style="margin-left:250px;margin-bottom:11px;">
+        <div style="margin-left:100px;margin-bottom:11px;float:left;">
             <button class="portrait_button g_a" type='button' style="margin-right:32px;background-color:#3351B7" title="基本特征" >基本特征</button>
              <button class="portrait_button g_a" type='button' style="margin-right:32px;" title="活动特征" >活动特征</button>
             <button class="portrait_button g_a" type='button' style="margin-right:32px;" title="偏好特征" >偏好特征</button>
@@ -156,7 +158,8 @@ $(function(){
             <button class="portrait_button g_a" type='button' style="margin-right:32px;" title="性格特征" >性格特征</button>
             <button class="portrait_button g_a" type='button'  title="外部评价" >外部评价</button>
         </div>
-        <div style="margin-left:10px;margin-top:20px;float:left;width:850px;">     
+		<hr>
+        <div style="margin-left:40px;margin-top:20px;float:left;width:980px;">     
             <div id="g_bas" >
                 {% include "portrait/group_analysis/group_basic.html"%}
             </div>
@@ -181,6 +184,26 @@ $(function(){
 	</div>
 </div>
 <div id="float-wrap" class="hidden"></div>
+
+<div class="modal fade" id="g_myModal_group" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document" style="width:950px">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" style="font-size:18px">群组成员</h4>
+      </div>
+      <div class="modal-body">
+        <div style="font-size:18px;margin-bottom:10px">选择用户添加标签</div>
+        <div>
+            <span>选择类别：</span><span id='attribute_name' style="min-width:75px;margin-left:10px" ></span>
+            <span style='margin-left:20px'>选择标签：</span><span id='attribute_value' style="min-width:75px;margin-left:10px"></span><span style="margin-left:10px"><button class="btn btn-primary btn-sm" style="width:80px;height:30px" id="add_group_tag_button" title="确定选择" onclick="add_group_tag()">添加</button></span>
+        <div id= "group_member_user" style="margin-top:14px"></div>
+       </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 {% endblock main %}
 
@@ -268,10 +291,12 @@ function pageDown(pageNum,pageCount){
 }
 
 </script>
+    <script type="text/javascript" src="/static/js/jquery.datetimepicker.js"></script>
     <script type="text/javascript" src="/static/js/portrait/group_analysis.js"></script>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=aBrX8X2tEjcqiKwL78DLmanZ"></script>
     <script type="text/javascript" src="/static/js/portrait/group_activity.js"></script>
     <script type="text/javascript" src="/static/js/portrait/group_spread.js"></script>
     <script type="text/javascript" src="/static/js/portrait/group_social.js"></script>
     <script type="text/javascript" src="/static/js/portrait/group_psy.js"></script>
+	
 {% endblock Own_js%}

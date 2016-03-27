@@ -61,6 +61,7 @@ def create_task_list(ts):
             task.append(item['warning_status']) # last step status
             task.append(item['task_type']) # task type
             task.append(ts)
+            task.append(item['create_by'])
             r.lpush('task_name', json.dumps(task))
             count += 1
 
