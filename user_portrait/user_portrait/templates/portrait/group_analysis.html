@@ -39,7 +39,7 @@ body {
 		border-color:#A09D9D!important;
 	}
 	.panel .panel-default{border: 1px solid #77ACF4;}
-	.panel-heading{background-color:#77ACF4!important;;}
+	.panel-heading{background-color:#77ACF4!important;}
 	.box_title{background:#77ACF4;color:#fff;}
     .panel-body{border: 1px solid #77ACF4;}
 	#accordion h4{
@@ -79,10 +79,12 @@ body {
 	#pageGro div,#pageGro div ul li{ font-size:12px; color:#999; line-height:23px; float:left; margin-left:5px;}
 	#pageGro div ul li{ width:22px; text-align:center; border:1px solid #999; cursor:pointer;}
 	#pageGro div ul li.on{ color:#fff; background:#3c90d9; border:1px solid #3c90d9;}
-	#pageGro .pageUp{ border:1px solid #999; cursor:pointer;}
-	#pageGro .pageDown{ width:63px; border:1px solid #999; cursor:pointer;}
-	#pageGro .pageUp{ text-indent:23px;background:url(/static/img/pageUp.png) 5px 7px no-repeat;}
-	#pageGro .pageDown{ text-indent:5px;background:url(/static/img/pageDown.png) 46px 6px no-repeat;}
+	#pageGro .pageUp{ cursor:pointer;}
+	#pageGro .pageDown{ width:63px; cursor:pointer;}
+    '''
+    #pageGro .pageUp{ text-indent:23px;background:url(/static/img/pageUp.png) 5px 7px no-repeat;}
+    #pageGro .pageDown{ text-indent:5px;background:url(/static/img/pageDown.png) 46px 6px no-repeat;}
+    '''
 	#group_weibo_font{ 
 	font-family: '微软雅黑';
     font-size: 14px; }
@@ -132,13 +134,13 @@ $(function(){
         <div id="framesidebar"  >
             <h3  style="padding:5px;color:white">群组分析</h3>
             <li>
-                <ul style="padding:0px;height:350px;">
+                <ul style="padding:0px;height:110px;">
                     <div style='height:190px;width:100%' id='overview'> </div>
                 </ul>
             </li>
         </div>
         <div id="framecontent" style="width:850px;">
-            <div class ="framepost" style="height:150px;">
+            <div class ="framepost" style="height:148px;">
                 <h3 class="title">群体属性</h3>
                 <div  id="g_tag">
                 </div>
