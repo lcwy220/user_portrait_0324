@@ -18,6 +18,7 @@ from user_portrait.parameter import finish_signal, unfinish_signal, SOCIAL_SENSO
 from utils import get_warning_detail, get_text_detail
 from full_text_serach import aggregation_hot_keywords
 from delete_es import delete_es
+from user_portrait.parameter import RUN_TYPE
 
 mod = Blueprint('social_sensing', __name__, url_prefix='/social_sensing')
 
@@ -32,15 +33,15 @@ mod = Blueprint('social_sensing', __name__, url_prefix='/social_sensing')
 def ajax_create_task():
     # task_name forbid illegal enter
     task_name = request.args.get('task_name','') # must
-    create_by = request.args.get('create_by', 'admin') #
+    create_by = request.args.get('create_by', 'admin') # 用户
     stop_time = request.args.get('stop_time', "default") #timestamp, 1234567890
     social_sensors = request.args.get("social_sensors", "") #uid_list, split with ","
     keywords = request.args.get("keywords", "") # keywords_string, split with ","
     sensitive_words = request.args.get("sensitive_words", "") # sensitive_words, split with ","
     remark = request.args.get("remark", "")
     create_time = request.args.get('create_time', '')
-
-    exist_es = es.exists(index=index_manage_sensing_task, doc_type=task_doc_type, id=task_name)
+    _id = create_by + "-" + task_name
+    exist_es = es.exists(index=index_manage_sensing_task, doc_type=task_doc_type, id=_id)
     if exist_es:
         return json.dumps(["0"]) # 任务名不能重合
 
@@ -70,18 +71,12 @@ def ajax_create_task():
         task_detail['burst_reason'] = ''
         task_detail['processing_status'] = "1" #任务正在进行
         if keywords:
-            if social_sensors:
-                task_detail["task_type"] = "3"
-            else:
-                task_detail["task_type"] = "2"
+            task_detail["task_type"] = "3" # 一定会有社会传感器
         else:
-            if social_sensors:
-                task_detail["task_type"] = "1"
-            else:
-                task_detail["task_type"] = "0"
+            task_detail["task_type"] = "1"
 
     # store task detail into es
-    es.index(index=index_manage_sensing_task, doc_type=task_doc_type, id=task_name, body=task_detail)
+    es.index(index=index_manage_sensing_task, doc_type=task_doc_type, id=_id, body=task_detail)
 
 
     return json.dumps(["1"])
@@ -91,10 +86,12 @@ def ajax_create_task():
 def ajax_delete_task():
     # delete task based on task_name
     task_name = request.args.get('task_name','') # must
-    if task_name:
-        es.delete(index=index_manage_sensing_task, doc_type=task_doc_type, id=task_name)
+    user = request.args.get('user', '')
+    if task_name and user:
+        _id = user + "-" + task_name
+        es.delete(index=index_manage_sensing_task, doc_type=task_doc_type, id=_id)
         try:
-            delete_es(task_name)
+            delete_es(_id)
         except Exception, r:
             print Exception, r
         return json.dumps(['1'])
@@ -107,11 +104,13 @@ def ajax_delete_task():
 @mod.route('/stop_task/')
 def ajax_stop_task():
     task_name = request.args.get('task_name','') # must
-    if task_name:
-        task_detail = es.get(index=index_manage_sensing_task, doc_type=task_doc_type, id=task_name)['_source']
+    user = request.args.get('user', '')
+    if task_name and user:
+        _id = user + "-" + task_name
+        task_detail = es.get(index=index_manage_sensing_task, doc_type=task_doc_type, id=_id)['_source']
         #task_detail["finish"] = finish_signal
         task_detail['processing_status'] = '0'
-        es.index(index=index_manage_sensing_task, doc_type=task_doc_type, id=task_name, body=task_detail)
+        es.index(index=index_manage_sensing_task, doc_type=task_doc_type, id=_id, body=task_detail)
         return json.dumps(['1'])
     else:
         return json.dumps([])
@@ -132,21 +131,22 @@ def ajax_revise_task():
     task_name = request.args.get('task_name','') # must
     finish = request.args.get("finish", "10")
     stop_time = request.args.get('stop_time', '') # timestamp
+    user = request.args.get('user', '')
 
-    now_ts = datetime2ts("2013-09-06")
-    #now_ts = time.time()
+    #now_ts = datetime2ts("2013-09-06")
+    now_ts = time.time()
     if stop_time and stop_time < now_ts:
         return json.dumps([])
 
-    if task_name:
-        task_detail = es.get(index=index_manage_sensing_task, doc_type=task_doc_type, id=task_name)['_source']
+    if task_name and user:
+        task_detail = es.get(index=index_manage_sensing_task, doc_type=task_doc_type, id=_id)['_source']
         if stop_time:
             task_detail['stop_time'] = stop_time
         if int(finish) == 0:
             task_detail['finish'] = finish
             task_detail['processing_status'] = "1" # 重启时将处理状态改为
         if stop_time or int(finish) == 0:
-            es.index(index=index_manage_sensing_task, doc_type=task_doc_type, id=task_name, body=task_detail)
+            es.index(index=index_manage_sensing_task, doc_type=task_doc_type, id=_id, body=task_detail)
             return json.dumps(['1'])
     return json.dumps([])
 
@@ -158,11 +158,17 @@ def ajax_show_task():
     # "0": unfinish working task
     # "1": finish working task
     status = request.args.get("finish", "01")
+    user = request.args.get('user', '')
     length = len(status)
     query_body = {
         "query":{
             "filtered":{
                 "filter":{
+                    "bool":{
+                        "must":[
+                            {"term":{"create_by": user}}
+                        ]
+                    }
                 }
             }
         },
@@ -171,9 +177,9 @@ def ajax_show_task():
     }
     if length == 2:
         category_list = [status[0], status[1]]
-        query_body['query']['filtered']['filter']['terms'] = {"finish": category_list}
+        query_body['query']['filtered']['filter']["bool"]["must"].append({"finish": category_list})
     elif length == 1:
-        query_body['query']['filtered']['filter']['term'] = {"finish": status}
+        query_body['query']['filtered']['filter']['bool']['must'].append({"finish": status})
     else:
         print "error"
 
@@ -204,7 +210,9 @@ def ajax_show_task():
 @mod.route('/get_task_detail_info/')
 def ajax_get_task_detail_info():
     task_name = request.args.get('task_name','') # task_name
-    task_detail = es.get(index=index_manage_sensing_task, doc_type=task_doc_type, id=task_name)['_source']
+    user = request.args.get('user', '')
+    _id = user + "-" + task_name
+    task_detail = es.get(index=index_manage_sensing_task, doc_type=task_doc_type, id=_id)['_source']
     task_detail["social_sensors"] = json.loads(task_detail["social_sensors"])
     task_detail['keywords'] = json.loads(task_detail['keywords'])
     task_detail["sensitive_words"]= json.loads(task_detail["sensitive_words"])
@@ -245,6 +253,7 @@ def ajax_get_task_detail_info():
 # unfinished
 @mod.route('/get_group_list/')
 def ajax_get_group_list():
+    user = request.args.get('user', '')
     # get all group list from group manage
     results = [] #
     query_body = {
@@ -254,7 +263,8 @@ def ajax_get_group_list():
                     "bool":{
                         "must":[
                             {"term": {"task_type": "analysis"}},
-                            {"term": {"status": 1}} # attention-------------------------
+                            {"term": {"status": 1}}, # attention-------------------------
+                            {"term": {"submit_user": user}}
                         ]
                     }
                 }
@@ -300,11 +310,13 @@ def get_top_influence(key):
 @mod.route('/get_group_detail/')
 def ajax_get_group_detail():
     task_name = request.args.get('task_name','') # task_name
+    user = request.args.get('user', '')
+    _id = user + '-' + task_name
     portrait_detail = []
     top_activeness = get_top_influence("activeness")
     top_influence = get_top_influence("influence")
     top_importance = get_top_influence("importance")
-    search_result = es.get(index=index_group_manage, doc_type=doc_type_group, id=task_name).get('_source', {})
+    search_result = es.get(index=index_group_manage, doc_type=doc_type_group, id=_id).get('_source', {})
     if search_result:
         try:
             uid_list = json.loads(search_result['uid_list'])
@@ -339,10 +351,15 @@ def ajax_get_warning_detail():
     keywords = request.args.get('keywords', '') # warning keywords, seperate with ","
     keywords_list = keywords.split(',')
     ts = request.args.get('ts', '') # timestamp: 123456789
+    user = request.args.get('user', '')
+    _id = user + '-' + task_name
 
-    results = get_warning_detail(task_name, keywords_list, ts)
+    results = get_warning_detail(task_name, keywords_list, ts, user)
 
     return json.dumps(results)
+
+"""
+not used for some reasn
 
 # 聚合关键词
 @mod.route('/get_keywords_list/')
@@ -358,16 +375,17 @@ def ajax_get_keywords_list():
     results = aggregation_hot_keywords(start_time, ts, keywords_list)
 
     return json.dumps(results)
-
+"""
 
 # 返回某个时间段特定的文本，按照热度排序
 @mod.route('/get_text_detail/')
 def ajax_get_text_detail():
     task_name = request.args.get('task_name','') # task_name
+    user = request.args.get('user', '')
     ts = int(request.args.get('ts', '')) # timestamp: 123456789
     text_type = request.args.get('text_type', '') # which line
 
-    results = get_text_detail(task_name, ts, text_type)
+    results = get_text_detail(task_name, ts, text_type, user)
 
     return json.dumps(results)
 
@@ -375,10 +393,12 @@ def ajax_get_text_detail():
 @mod.route('/get_clustering_topic/')
 def ajax_get_clustering_topic():
     task_name = request.args.get('task_name','') # task_name
+    user = request.args.get('user', '')
     ts = int(request.args.get('ts', '')) # timestamp: 123456789
     topic_list = []
+    _id = user + '-' + task_name
     try:
-        task_detail = es.get(index=index_sensing_task, doc_type=task_name, id=ts)['_source']
+        task_detail = es.get(index=index_sensing_task, doc_type=_id, id=ts)['_source']
     except:
         return json.dumps([])
     burst_reason = task_detail['burst_reason']
