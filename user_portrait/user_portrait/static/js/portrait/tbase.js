@@ -217,9 +217,14 @@ function getAttributeName(){
         base_call_ajax_request(attribute_value_url, draw_value_option);
         */
         $('[name=tag_type]').change(function(){
-            var attribute_value_url = '/tag/show_attribute_value/?attribute_name=';
-            attribute_value_url += $(this).val();
-            base_call_ajax_request(attribute_value_url, draw_value_option);
+            if ($(this).val() == ''){
+                $('[name=tag_name]').empty();
+            }
+            else{
+                var attribute_value_url = '/tag/show_attribute_value/?attribute_name=';
+                attribute_value_url += $(this).val();
+                base_call_ajax_request(attribute_value_url, draw_value_option);
+            }
         });
     }
 }
