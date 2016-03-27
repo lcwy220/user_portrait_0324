@@ -91,11 +91,9 @@ function attribute_pattern_check(){             // check validation
     alert('重要度输入值应在0到100之间，请重新输入！');
     return false;
   }
-  if($('#attribute_pattern #time_checkbox').is(':checked')){
-      if(num_range_count ==0 ){
-        alert('扩展规则中人数不能为0，请重新输入！');
-        return false;
-      }
+  if(num_range_count ==0 ){
+    alert('扩展规则中人数不能为0，请重新输入！');
+    return false;
   }
   if (group_name.length == 0){
       alert('群体名称不能为空，请重新输入！');
@@ -216,23 +214,7 @@ function attribute_pattern_check(){             // check validation
       });
       function attribute_callback(data){
         //console.log(data);
-        if (data == true){
-          //redraw_result();
-          alert('提交成功！');
-          //window.location.reload(); 
-        } 
-        if(data =='task name invalid'){
-            alert('已存在相同名称的群体分析任务,请重试!');
-        }
-        if(data =='invalid input for condition'){
-          alert('请至少选择一个分析条件！');
-        }
-        if(data == 'invalid input for filter'){
-          alert('请输入合理的影响力或重要度范围！');
-        }
-        if(data == 'invalid input for count'){
-          alert('请选择合理的人数！')
-        }
+        seed_user_callback(data);
       }
       
     }	
