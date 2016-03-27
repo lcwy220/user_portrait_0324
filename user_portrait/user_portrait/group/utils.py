@@ -264,8 +264,7 @@ def group_user_weibo(task_name, submit_user, sort_type):
 #output: module_result
 def search_group_results(task_name, module, submit_user):
     result = {}
-    #task_id = submit_user + '-' + task_name
-    task_id = task_name
+    task_id = submit_user + '-' + task_name
     #step1:identify the task_name exist
     try:
         source = es_group_result.get(index=group_index_name, doc_type=group_index_type, \

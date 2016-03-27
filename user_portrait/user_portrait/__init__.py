@@ -23,7 +23,7 @@ from user_portrait.sentiment.views import mod as sentimentModule
 from user_portrait.extensions import db, security, user_datastore, admin, User, Role, roles_users
 from flask.ext.security import SQLAlchemyUserDatastore
 from flask_admin.contrib import sqla
-from user_portrait.trans.views import mod as userrankModule
+from user_portrait.user_rank.views import mod as userrankModule
 
 def create_app():
     app = Flask(__name__)
