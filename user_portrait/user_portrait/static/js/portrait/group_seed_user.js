@@ -299,6 +299,7 @@ function seed_single_user_data(){
         return url;
     }
     else{
+        url += '&extend_mark=1';
         //attribute
         url += '&attribute_weight=' + $('#seed_user #attr_weight').val();
         $('#seed_user #attribute .inline-checkbox').each(function(){

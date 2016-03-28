@@ -16,6 +16,7 @@
     {% endblock head_js %}
     {% block main %}
     <h4 class="page-header">社会感知</h4>
+    <div id="so_useremail" hidden>{{g.user.email}}</div>
     <!-- <div style="font-size:16px;font-weight:bold;">新建任务</div> -->
     <div class='controls'>
         <div class='col-md-12' style='padding:0px;margin-top:5px;'>
@@ -36,31 +37,57 @@
             </div>
         </div>
     </div>
-    <label class='control-label' style='padding-top:5px;font-weight:lighter;margin-right:14px;'>传感词 </label>
+<!--     <label class='control-label' style='padding-top:5px;font-weight:lighter;margin-right:14px;'>传感词 </label>
     <input id="so_keywords" type='text' class="form-control" style='padding:0px;width: 280px;margin-top:10px;margin-right: 18px;  display:inline-block;height:25px' placeholder='（选填，敏感传感词）多个词用空格隔开'>
-    <input id="so_keywords_nor" type='text' class="form-control" style='padding:0px;width: 280px;margin-top:10px;margin-right: 18px;  display:inline-block;height:25px' placeholder='（选填，普通传感词）多个词用空格隔开'>
+    <input id="so_keywords_nor" type='text' class="form-control" style='padding:0px;width: 280px;margin-top:10px;margin-right: 18px;  display:inline-block;height:25px' placeholder='（选填，普通传感词）多个词用空格隔开'> -->
     <!-- <input name="keys_choose_all" id="keys_choose_all" type="checkbox" value="" onclick="keys_choose_all()" />
     <span>全选</span> -->
-    <span id="so_more" class="btn btn-default" style="height: 25px;font-size: 14px;padding-top: 0px;">更多已有传感词</span>
-    <div id="show_keys" style="margin:5px;margin-left:63px;"></div>
+<!--     <span id="so_more" class="btn btn-default" style="height: 25px;font-size: 14px;padding-top: 0px;">更多已有传感词</span>
+    <div id="show_keys" style="margin:5px;margin-left:63px;"></div> -->
 
     <div id='so_have_keys' class='controls'></div>
-    <div class='col-md-12' style='padding:0px;'>
+    <div class='col-md-12' style='padding:0px;float:left;'>
     <!-- <span class="input-group-addon" style="width:75px;border:1px solid white;font-weight:bold;float:left;background-color:white;display:inline-block;color:#333;">传感器</span> -->
-      <label class='control-label' style='padding-top:5px;font-weight:lighter'>传感群 </lable>
-      <input type='radio' style="margin-left:18px;" name="so_mode_choose" value='so_all_users' checked='checked'>
-        <span  style="width:144px;margin-left:5px;display:inline-block" >全库用户</span>
-        <input type='radio' name="so_mode_choose" value='so_have_users'>
+      <label class='control-label' style='padding-top:5px;font-weight:lighter;width:60px;'>传感群 </label>
+        <input type='radio' name="so_mode_choose" value='so_have_users' checked='checked'>
         <span style="width:140px;margin-left:5px;display:inline-block" >已有群体</span>
-        <a target='_blank' href='/index/group/' style='font-weight:bold;cursor:pointer;text-decoration:underline;' id='so_new_users'>更多自定义群体发现</a>
+        <input type='radio' style="margin-left:18px;" name="so_mode_choose" value='so_search_users' >
+        <span  style="width:144px;margin-left:5px;display:inline-block" >搜索群体</span>
+        <input type='radio' name="so_mode_choose" value='so_up_users'>
+        <span style="width:140px;margin-left:5px;display:inline-block" >上传文件</span>
    </div>
-    <div id='so_have_users_ext' class="box-content" style="display: none;padding: 0px;margin-top: 50px; ">
-        <div id='so_group_task' class="box-content"  style="overflow-y:auto;max-height:300px;padding: 0px;width: 1000px;">
+  <div >
+    <div id='so_have_users_ext' class="box-content" style="padding: 0px;margin-top: 50px; ">
+        <div id='so_group_task' class="box-content"  style="overflow-y:auto;max-height:300px;padding: 0px;width: 100%;float: left;margin-top: 5px;">
       </div>  
     </div>
+    <div id="so_search_users_ext" class-"box-content" style="display:none;padding: 0px;margin-top: 50px;">
+      {% include "portrait/search_base.html" %}
+    </div>
+    <div id="so_up_users_ext" class-"box-content" style="display:none;padding: 0px;margin-top: 50px;" >
+        <!-- <div id='upload_panel' style="display:none;"> -->
+            <span style='float:left;margin-top:10px;'>文件内容：</span>
+            <span style='float:left;margin-top:10px;'><select id='file_type'>
+                <option value='uid'>用户ID</option>
+                <option value='uname'>用户昵称</option>
+                <option value='url'>用户相册URL</option>
+            </select></span>
+          <form enctype="multipart/form-data" method="post" style="float:left;margin:10px 15px;height:25px;">
+              <input type="file" id="seed_file_upload" class="fleft" style='border:1px solid #999'/>  
+              <input type="button" value="上传" id="uploadbtn" class="fleft"/>
+          </form>
+          <div class="col-lg-9" id="file_status" style="display:none;padding:0px;">
+              <span class="input-group-addon" style="color:#2c3251;font-weight:bold;width:100px;border:1px solid white;background-color:white;display:inline-block">上传成功！</span>
+              <span id="add_file" class="input-group-addon" style="width:250px;border:1px solid white;background-color:white;display:inline-block" ></span>
+              <a id="delete_file" style="cursor:pointer;">删除</a>
+          </div>
+        <!-- </div> -->
+    </div>
+  </div>
+    <!-- <a target='_blank' href='/index/group/' style='font-weight:bold;cursor:pointer;text-decoration:underline;' id='so_new_users'>更多自定义群体发现</a> -->
     <div class="col-md-12" style='margin-top:10px;margin-bottom:30px;padding: 0px;'>
         <div class='col-md-12' style='text-align:right; padding-right: 0px;'>
-            <span id="so_user_commit" class="label label-success" style='cursor:pointer; background-color:rgba(69, 133, 195, 0.89)'>新建任务</span>
+            <span id="so_user_commit" class="portrait_button bluebtn" style="padding-top:10px;">新建任务</span>
         </div>
     </div>
     <br/>
@@ -170,5 +197,14 @@
     {% block Own_js %}
         {{ super() }}
 
-		<script type='text/javascript' src='/static/js/portrait/social_sensing.js'></script>
+    <script type='text/javascript' src='/static/js/portrait/social_sensing.js'></script>
+    <script>
+        var url = '/attribute/portrait_search/?stype=1';
+        url += get_simple_par();
+        url += '&submit_user='+$('#so_useremail').text();
+        draw_conditions(url);
+        base_call_ajax_request(url, so_draw_search_results);
+
+    </script>
+
     {% endblock Own_js %}
