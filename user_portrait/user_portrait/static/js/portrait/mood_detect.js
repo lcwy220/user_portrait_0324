@@ -19,7 +19,7 @@ function call_sync_ajax_request(url, callback){
       url: url,
       type: 'GET',
       dataType: 'json',
-      async: false,
+      async: true,
       success:callback
     });
 }
@@ -428,25 +428,34 @@ function show_related_topic(data){
 
 }
 
-function show_detail(flag, time, sentiment){
-    //var data = [['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56']]
-    var data = [['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56']]
-    $('#result_detect_detail').css('display','block');
-    $('#click_time').empty();
-    $('#click_sentiment').empty();
-    $('#click_time').append(time);
-    $('#click_sentiment').append(sentiment);
+function Draw_cloud(){
+
+}
+
+function show_detail( data, flag, time, sentiment){
     console.log(flag);
-    if(flag == 0){
-        draw_user_in_table(data);
-        $('#mood_out_all').empty();
+    //var data = [['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56']]
+    // $('#result_detect_detail').css('display','block');
+    // $('#click_time').empty();
+    // $('#click_sentiment').empty();
+    // $('#click_time').append(time);
+    // $('#click_sentiment').append(sentiment);
+    // console.log(flag);
+    if(flag == 'all' ){
         $('#mood_in_all').css('width', '900px');
-    }else{
-        $('#mood_in_all').css('width', '440px');
+        $('#mood_out_all').css('display', 'block');
         draw_user_in_table(data);
         draw_user_out_table(data);
 
+        //$('#mood_out_all').empty();
+    }else{
+        $('mood_out_all').empty('');
+        $('#mood_in_all').css('width', '440px');
+        draw_user_in_table(data);
+        //draw_user_out_table(data);
+
     }
+    Draw_cloud(data.keywords)
     //相关话题表格及微博详情
     show_related_topic(data);
 
@@ -474,132 +483,144 @@ function Draw_all_keyword_detect_charts(data){
 
 function Draw_detect_charts(flag, data){
     console.log(data);
-    var data_x_ = [];
-    var data_y_1 = [];
-    var data_y_0 = [];
-    var data_y_7 = [];
+    if(data["1"].length == 0){
+        $('#result_detect_charts').append('暂无数据');
+    }else{ 
+        var data_x_ = [];
+        var data_y_1 = [];
+        var data_y_0 = [];
+        var data_y_7 = [];
 
-    for(var i=0;i<data["1"].length;i++){
-        var time_line  = new Date(parseInt(data["1"][i][0])*1000).format("yyyy-MM-dd hh: mm");
-        data_x_.push(time_line);
-        data_y_1.push(data["1"][i][1]);
+        for(var i=0;i<data["1"].length;i++){
+          var time_line  = new Date(parseInt(data["1"][i][0])*1000).format("yyyy-MM-dd hh: mm");
+          data_x_.push(time_line);
+          data_y_1.push(data["1"][i][1]);
 
-    }
-    for(var i=0;i<data["7"].length;i++){
-        data_y_7.push(data["7"][i][1]);
+        }
+        for(var i=0;i<data["7"].length;i++){
+          data_y_7.push(data["7"][i][1]);
 
-    }
-    for(var i=0;i<data["0"].length;i++){
-        data_y_0.push(data["0"][i][1]);
+        }
+        for(var i=0;i<data["0"].length;i++){
+          data_y_0.push(data["0"][i][1]);
 
-    }
+        }
 
-    if(data["1"].length <10){
-        var zoom =false;
-    }else{
-        var zoom = true;
-    }
+        if(data["1"].length <10){
+          var zoom =false;
+        }else{
+          var zoom = true;
+        }
 
-    var myChart = echarts.init(document.getElementById('result_detect_charts')); 
-    var option = { 
-        title : {
-            text  :'微博情绪走势图',
-            x: 'center',
-            y: 5
-        }, 
-        tooltip : {
-            trigger: 'axis',
-            show : true,
+        var myChart = echarts.init(document.getElementById('result_detect_charts')); 
+        var option = { 
+          title : {
+              text  :'微博情绪走势图',
+              x: 'center',
+              y: 5
+          }, 
+          tooltip : {
+              trigger: 'axis',
+              show : true,
 
-        },
-        toolbox: {
-            show : true,
-            feature : {
-                mark : {show: true},
-                dataView : {show: true, readOnly: false},
-                restore : {show: true},
-                saveAsImage : {show: true}
-            }
-        },
-        dataZoom: {
-            show: zoom,
-            start : 80
-        },
-        legend : {
-            data : ['积极','消极','中性'],
-            x:'right',
-            y: 37
-        },
-        grid: {
-            y2: 70
-        },
-        xAxis : [
-            {
-                data :data_x_,
-                type : 'category',
-                splitNumber:10
-            }
-        ],
-        yAxis : [
-            {
-                name: '微博总量 (条)',
-                type : 'value'
-            }
-        ],
-        series : [
-            {
-                name: '积极',
-                type: 'line',
-                showAllSymbol : true,
-                symbolSize:2,
-                symbol: 'circle',
-                clickable: true,              
-                data: data_y_1
-            },
-            {
-                name: '消极',
-                type: 'line',
-                showAllSymbol : true,
-                symbolSize:2,
-                symbol: 'circle',
-                data: data_y_7
-            },
-            {
-                name: '中性',
-                type: 'line',
-                showAllSymbol : true,
-                symbolSize:2,
-                symbol: 'circle',
-                data: data_y_0
-            }
-        ]
-    };
-     require([
-            'echarts'
-        ],
-        function(ec){
-            var ecConfig = require('echarts/config');
-            function eConsole(param) {
-                console.log(param);
-                var segment = $('#detect_rank_by').text();
-                segment = segment_dict[segment]
-                var start_ts = parseInt(new Date(param.name).getTime()/1000);
-                task_type= flag;
-                sentiment = mood_dict[param.seriesName];
-                var detail_url = '/sentiment/sentiment_weibo_keywords_user/?'
-                detail_url += 'start_ts=' + start_ts + '&task_type=' + task_type + '&segment=' + segment +'&sentiment='+ sentiment;
-                if(flag == 'in-domain' || flag == 'in-topic'){
-                    detail_url += '&task_type=' + flag.split('-')[1];
-                }
-                console.log(detail_url);
-                show_detail(flag, param.name, param.seriesName);
-            }
+          },
+          toolbox: {
+              show : true,
+              feature : {
+                  mark : {show: true},
+                  dataView : {show: true, readOnly: false},
+                  restore : {show: true},
+                  saveAsImage : {show: true}
+              }
+          },
+          dataZoom: {
+              show: zoom,
+              start : 80
+          },
+          legend : {
+              data : ['积极','消极','中性'],
+              x:'right',
+              y: 37
+          },
+          grid: {
+              y2: 70
+          },
+          xAxis : [
+              {
+                  data :data_x_,
+                  type : 'category',
+                  splitNumber:10
+              }
+          ],
+          yAxis : [
+              {
+                  name: '微博总量 (条)',
+                  type : 'value'
+              }
+          ],
+          series : [
+              {
+                  name: '积极',
+                  type: 'line',
+                  showAllSymbol : true,
+                  symbolSize:2,
+                  symbol: 'circle',
+                  clickable: true,              
+                  data: data_y_1
+              },
+              {
+                  name: '消极',
+                  type: 'line',
+                  showAllSymbol : true,
+                  symbolSize:2,
+                  symbol: 'circle',
+                  data: data_y_7
+              },
+              {
+                  name: '中性',
+                  type: 'line',
+                  showAllSymbol : true,
+                  symbolSize:2,
+                  symbol: 'circle',
+                  data: data_y_0
+              }
+          ]
+        };
+        require([
+              'echarts'
+          ],
+          function(ec){
+              var ecConfig = require('echarts/config');
+              function eConsole(param) {
+                  console.log(param);
+                  var segment = $('#detect_rank_by').text();
+                  segment = segment_dict[segment]
+                  var start_ts = parseInt(new Date(param.name).getTime()/1000);
+                  task_type= flag;
+                  sentiment = mood_dict[param.seriesName];
+                  $('#result_detect_detail').css('display','block');
+                  $('#click_time').empty();
+                  $('#click_sentiment').empty();
+                  $('#click_time').append(param.name);
+                  $('#click_sentiment').append(param.seriesName);
+                  var detail_url = '/sentiment/sentiment_weibo_keywords_user/?'
+                  detail_url += 'start_ts=' + start_ts + '&task_type=' + task_type + '&segment=' + segment +'&sentiment='+ sentiment +'&sort_type=timestamp';
+                  if(flag == 'in-domain' || flag == 'in-topic'){
+                      detail_url += '&task_type=' + flag.split('-')[1] ;
+                  }
+                  
+                  console.log(detail_url);
+                  var data = [['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56']]
+                  //call_sync_ajax_request(detail_url, show_detail(data, flag, param.name, param.seriesName));
+                  show_detail(data, flag, param.name, param.seriesName);
+              }
 
-        myChart.on(ecConfig.EVENT.CLICK, eConsole);
-    });
+          myChart.on(ecConfig.EVENT.CLICK, eConsole);
+        });
 
-    // 为echarts对象加载数据 
-    myChart.setOption(option);                
+        // 为echarts对象加载数据 
+        myChart.setOption(option);
+    }              
 }
 
 //排序范围选择

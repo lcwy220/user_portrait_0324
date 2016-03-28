@@ -71,6 +71,8 @@
 <!-- 	<h3></h3>
 	<hr> -->
 	<div id=''>
+		<span id="click_mood"></span>
+		<span id="click_mood"></span>
 		<h4>监测设置</h4>
 		<table class="shadow" style="margin:30px;width:900px; height:150px;border: 2px solid #cccccc;">
 			<tr style="border-bottom: 1px solid #cccccc;">
@@ -122,7 +124,7 @@
 		<div id="result_detect_detail" style="display:none;margin-top:20px;width:900px;margin-bottom:40px;">
 			<div id="" style="border-top: 1px solid #6F6E6E;border-bottom: 1px solid #6F6E6E;padding: 5px;">
 				<b>
-					<span>当前选择时间段：</span>
+					<span>当前选择时间：</span>
 					<span id="click_time" style="color:blue;"></span>
 					<span style="margin-left: 50px;">当前选择情绪：</span>
 					<span id="click_sentiment" style="color:blue;"></span>
@@ -142,13 +144,20 @@
 				</h5>
 				<div id="mood_out_user" style="float:left;width:430px;"></div>
 			</div>
+			<div id="mood_keywords" style="margin-left:25px;float:left;width:420px;height:269px;">
+				<h5 id="keywords_title" style="font-size:16px;color:#983333">
+					<span id="more_keywords_list" style="float:right;cursor:pointer" type="button"data-toggle="modal" data-target="#more_keywords_modal" ><u>查看更多</u></span>
+					<b>关键词云</b>
+				</h5>
+				<div id="mood_keywords_clouds" style="float:left;width:415px;height:"></div>
+			</div>
 			<div>
-				<h5 id="out_user_title">
+				<h5 id="out_user_title" hidden>
 					<b  style="color:#983333;font-size:16px;">相关话题</b>
 					<span style="margin-left:200px;"><input type="checkbox" name='sub_topic'>进一步计算子话题</span>
 				</h5>
-				<div id="topic_key"></div>
-				<div id="related_weibo_div">
+				<div id="topic_key" hidden></div>
+				<div id="related_weibo_div" style="float:left;">
 					<div id="related_weibo_button">
 						<span id="portrait_button_choose0" class="portrait_button_choose" style="margin-left:10px;height:30px;cursor:pointer;margin-right:20px;text-align: center;line-height:30px;">全部</span>
 						<span id="sub_related_weibo_button"></span>
@@ -184,6 +193,19 @@
         <h4 class="modal-title" style="font-size:18px" id="myModalLabel">库外用户</h4>
       </div>
       <div class="modal-body" id='outuser_WordList'>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="more_keywords_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document" style="width:800px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" style="font-size:18px" id="myModalLabel">关键词</h4>
+      </div>
+      <div class="modal-body" id='keywords_WordList'>
       </div>
     </div>
   </div>
