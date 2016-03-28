@@ -465,9 +465,9 @@ function Draw_more_moving_geo(from_city, end_city, dealt_data,fromCity,endCity){
     html += '</tr>';
     for (var i = 0; i < dealt_data[0].length; i++) {
         html += '<tr>';
-        html += '<td style="text-align:center;vertical-align: middle;" value='+fromCity[i]+'>' + from_city[i] + '</td>';
+        html += '<td style="text-align:center;vertical-align: middle;">' + fromCity[i] + '</td>';
         html += '<td style="text-align:center;"><img src="/../../static/img/arrow_geo.png" style="width:30px;"></td>';
-        html += '<td style="text-align:left;vertical-align: middle;" value='+endCity[i]+'>' + end_city[i] + '</td>';
+        html += '<td style="text-align:left;vertical-align: middle;">' + endCity[i] + '</td>';
         html += '<td style="text-align:center;vertical-align: middle;"><a id="moreDetail" data-toggle="modal" data-target="#detailPlace">' + dealt_data[1][i] + '</a></td>';
     html += '</tr>'; 
     };
