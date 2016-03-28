@@ -398,9 +398,8 @@ function moving_geo(data,data2){
 	for(var key in data){
 		citys.push(key);
 	}
-	//console.log(citys);
-	for(var i=0;i < citys.length;i++){
-        var city_split = citys[i].split('&');
+	for(var i=0;i < dealt_data[0].length;i++){
+        var city_split = dealt_data[0][i].split('&');
 		fromCity.push(city_split[0]);
 	    endCity.push(city_split[1]);
 	}
@@ -445,10 +444,9 @@ function moving_geo(data,data2){
     }
     $('#move_location').append(html);
 	$('a[id^="moreDetail"]').click(function(e){
-		var start = $(this).parent().prev().html();
-		var end = $(this).parent().prev().prev().prev().text();
+		var end = $(this).parent().prev().html();
+		var start = $(this).parent().prev().prev().prev().text();
 		var keys = start+"&"+end;
-		//console.log(data2[keys]);
 		Draw2Place(data2[keys],'detail_Place');
 	});
 }
@@ -467,9 +465,9 @@ function Draw_more_moving_geo(from_city, end_city, dealt_data,fromCity,endCity){
     html += '</tr>';
     for (var i = 0; i < dealt_data[0].length; i++) {
         html += '<tr>';
-        html += '<td style="text-align:center;vertical-align: middle;" value='+fromCity[i]+'>' + from_city[i] + '</td>';
+        html += '<td style="text-align:center;vertical-align: middle;">' + fromCity[i] + '</td>';
         html += '<td style="text-align:center;"><img src="/../../static/img/arrow_geo.png" style="width:30px;"></td>';
-        html += '<td style="text-align:left;vertical-align: middle;" value='+endCity[i]+'>' + end_city[i] + '</td>';
+        html += '<td style="text-align:left;vertical-align: middle;">' + endCity[i] + '</td>';
         html += '<td style="text-align:center;vertical-align: middle;"><a id="moreDetail" data-toggle="modal" data-target="#detailPlace">' + dealt_data[1][i] + '</a></td>';
     html += '</tr>'; 
     };
@@ -1032,7 +1030,7 @@ function Drawmoreplace(data,div){
 function Draw2Place(data,div){
 	var html = '';
     $('#'+div).empty();
-	html += '<table class="table table-striped table-bordered" style="width:450px;">';
+	html += '<table class="table table-striped table-bordered" style="width:550px;">';
     html += '<tr><th style="text-align:center">信息</th><th style="text-align:center">昵称</th><th style="text-align:center">出发时间</th><th style="text-align:center">到达时间</th></tr>';
     for (var i = 0; i < data.length; i++) {
         var s = i.toString();
