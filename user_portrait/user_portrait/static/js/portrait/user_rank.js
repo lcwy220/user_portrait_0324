@@ -26,7 +26,7 @@ function user_rank_timepicker(str){
 
 function task_status (data) {
 	var data = data.data;
-	//console.log(data);
+	console.log(data);
 	if (data.length == 0){
 		var html = '<div style="text-align: center;background-color: #cccccc;">暂无任务</div>'
 		$('#task_status').append(html);
@@ -53,12 +53,11 @@ function task_status (data) {
 		for(var i=0;i<data.length;i++){
 			sort_scope = scope_dict[data[i].sort_scope];
 			sort_norm = norm_dict[data[i].sort_norm];
+			var delete_this = '<span style="display:none;">'+data[i].search_id+'</span><span class="delete_this"><b><u class="delete_key_result" style="cursor:pointer;">删除</u></b></span>';
 			if(data[i].status == 0){
 				var status = '正在计算';
-				var delete_this = '<span class="delete_this"><b><u class="delete_key_result" style="cursor:pointer;">删除</u></b></span>';
 			}else{
 				var status = '<span><b><u class="show_key_result" style="cursor:pointer;">计算完成</u></b></span>';
-				var delete_this = '<span style="display:none;">'+data[i].search_id+'</span><span class="delete_this"><b><u class="delete_key_result" style="cursor:pointer;">删除</u></b></span>';
 			}
 			html += '<tr>';
 			html += '<td style="text-align:center;">'+data[i].keyword+'</td>';
@@ -79,7 +78,7 @@ function draw_all_rank_table(data){
 	var data = data;
 		if(data == 0){
 		$('#result_rank_table').empty();
-			var html = '<div style="text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;">暂无数据</div>';
+			var html = '<div style="width: 900px;margin-left: 30px;text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;">暂无数据</div>';
 			$('#result_rank_table').append(html);
 		}else{
 				var html = '';
@@ -111,7 +110,7 @@ function draw_all_rank_table(data){
 						location = '未知'
 					}
 					var fans = data[i].fans;
-					if(fans == null){
+					if(fans == null || fans == undefined){
 						fans = 0
 					}
 					if(data[i].weibo_count == undefined || data[i].weibo_count == null ){
@@ -156,7 +155,7 @@ function draw_all_rank_table(data){
 function draw_rank_table(data){
 	if(data.length == 0){
 		$('#result_rank_table').empty();
-		var html = '<div style="text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;">暂无数据</div>';
+		var html = '<div style="text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;width: 900px;margin-left: 30px;">暂无数据</div>';
 		$('#result_rank_table').append(html);
 
 	}else{
@@ -545,18 +544,21 @@ function draw_key_rank_table(data){
 	console.log(data);
 	if(data.length == 0){
 		$('#result_rank_table').empty();
-		var html = '<div style="text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;">暂无数据</div>';
+		var html = '<div style="width: 900px;margin-left: 30px;text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;">暂无数据</div>';
 		$('#result_rank_table').append(html);
 	}else{
 		
 		//结果分析默认值
 		var sort_norm = data.sort_norm;
 		var sort_scope = data.sort_scope;
+		var key = data.keyword;
 		var time_range = data.start_time + '至' +data.end_time;
 		$('#rec_range').empty();
 		$('#rec_rank_by').empty();
 		$('#rec_time_range').empty();
 		$('#rec_range').append(scope_dict[sort_scope]);
+		$('#rec_range').append('-'+key);
+
 		$('#rec_rank_by').append(norm_dict[sort_norm]);
 		$('#rec_time_range').append(time_range);
 		
@@ -569,13 +571,14 @@ function draw_in_key_rank_table(data){
 	console.log(data);
 	if(data.length == 0){
 		$('#result_rank_table').empty();
-		var html = '<div style="text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;">暂无数据</div>';
+		var html = '<div style="text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;width: 900px;margin-left: 30px;">暂无数据</div>';
 		$('#result_rank_table').append(html);
 	}else{
 		var scope_dict ={'all_limit_keyword':'全网-按关键词','in_limit_keyword':'库内-按关键词','in_limit_hashtag':'库内-按微话题'}
-		var norm_dict ={'weibo_count': '微博数','fans': '粉丝数','bci': '影响力','bci_change':'突发影响力变动','ses':'言论敏感度','ses_change':'突发敏感度变动','imp':'身份敏感度','imp_change':'突发重要度变动','act':'活跃度','act_change':'突发活跃度变动'}
+		var norm_dict ={'weibo_num': '微博数','fans': '粉丝数','bci': '影响力','bci_change':'突发影响力变动','ses':'言论敏感度','ses_change':'突发敏感度变动','imp':'身份敏感度','imp_change':'突发重要度变动','act':'活跃度','act_change':'突发活跃度变动'}
 		var sort_norm = data.sort_norm;
 		var sort_scope = data.sort_scope;
+		var key = data.keyword;
 		console.log(sort_scope);
 		console.log('sort_norm',sort_norm);
 		var time_range = data.start_time + '至' +data.end_time;
@@ -584,6 +587,7 @@ function draw_in_key_rank_table(data){
 		$('#rec_rank_by').empty();
 		$('#rec_time_range').empty();
 		$('#rec_range').append(scope_dict[sort_scope]);
+		$('#rec_range').append('-'+key);
 		$('#rec_rank_by').append(norm_dict[sort_norm]);
 		$('#rec_time_range').append(time_range);
 		
@@ -705,11 +709,11 @@ if(day_select == "30"){
 }
 
 var scope_dict ={'all_limit_keyword':'全网-按关键词','in_limit_keyword':'库内-按关键词','in_limit_hashtag':'库内-按微话题'}
-var norm_dict ={'weibo_count': '微博数','fans': '粉丝数','bci': '影响力','bci_change':'突发影响力变动','ses':'言论敏感度','ses_change':'突发敏感度变动','imp':'身份敏感度','imp_change':'突发重要度变动','act':'活跃度','act_change':'突发活跃度变动'}
+var norm_dict ={'weibo_num': '微博数','fans': '粉丝数','bci': '影响力','bci_change':'突发影响力变动','ses':'言论敏感度','ses_change':'突发敏感度变动','imp':'身份敏感度','imp_change':'突发重要度变动','act':'活跃度','act_change':'突发活跃度变动'}
 //画结果表格
 var rank_url = '/user_rank/user_sort/?username='+ username +'&time='+ day_select +'&sort_norm='+ sort_norm +'&sort_scope='+ sort_scope+'&all=True';
 console.log(rank_url);
-//call_sync_ajax_request(rank_url, draw_all_rank_table);
+call_sync_ajax_request(rank_url, draw_all_rank_table);
 
 //任务状态
 var task_url = '/user_rank/search_task/?username='+username;
@@ -734,7 +738,7 @@ $('.show_key_result').click(function(){
 	}
 
 });
-$('.delete_this').click(function(){
+$('.delete_this').live("click", function(){
 	var a = confirm('确定要删除吗？');
 	if (a == true){
 		var url = '/user_rank/delete_task/?';
@@ -744,4 +748,4 @@ $('.delete_this').click(function(){
 		//window.location.href = url;
 		call_sync_ajax_request(url,del);
 	}
-})
+});
