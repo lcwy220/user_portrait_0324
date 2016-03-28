@@ -110,7 +110,7 @@ function draw_all_rank_table(data){
 						location = '未知'
 					}
 					var fans = data[i].fans;
-					if(fans == null){
+					if(fans == null || fans == undefined){
 						fans = 0
 					}
 					if(data[i].weibo_count == undefined || data[i].weibo_count == null ){
@@ -713,7 +713,7 @@ var norm_dict ={'weibo_num': '微博数','fans': '粉丝数','bci': '影响力',
 //画结果表格
 var rank_url = '/user_rank/user_sort/?username='+ username +'&time='+ day_select +'&sort_norm='+ sort_norm +'&sort_scope='+ sort_scope+'&all=True';
 console.log(rank_url);
-//call_sync_ajax_request(rank_url, draw_all_rank_table);
+call_sync_ajax_request(rank_url, draw_all_rank_table);
 
 //任务状态
 var task_url = '/user_rank/search_task/?username='+username;
