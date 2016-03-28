@@ -1,31 +1,83 @@
-function user_rank_timepicker(str){
-    var date_time = str.split(' ');
-    var dates = date_time[0].split('/');
+function user_detect_timepicker(str){
+    //var date_time = str.split(' ');
+    var dates = str.split('/');
     var yy = parseInt(dates[0]);
     var mm = parseInt(dates[1]) - 1;
     var dd = parseInt(dates[2]);
-    var times = date_time[1].split(':');
-    var hh = parseInt(times[0]);
-    var minute = parseInt(times[1]);
+    //var times = date_time[1].split(':');
+    //var hh = parseInt(times[0]);
+    //var minute = parseInt(times[1]);
     var final_date = new Date();
     final_date.setFullYear(yy,mm,dd);
-    final_date.setHours(hh,minute);
-    final_date = Math.floor(final_date.getTime()/1000);
+    final_date.setHours(0,0);
+    final_date = Math.floor(final_date.getTime()/1000); 
+    console.log(final_date);
     return final_date;
 }
+function call_sync_ajax_request(url, callback){
+    $.ajax({
+      url: url,
+      type: 'GET',
+      dataType: 'json',
+      async: true,
+      success:callback
+    });
+}
 
+// function detect_task_status (data) {
+// 	$('#detect_task_status').empty();
+// 	var html = '';
+// 	html += '<table class="table table-striped" style="margin-left:30px;width:900px;">';
+// 	for(var i=0;i<data.length;i++){
+// 		html += '<tr>';
+// 		html += '<td style="width:200px;text-align:center;">'+data[i][0]+'</td>';
+// 		html += '<td>'+data[i][1]+'</td>';
+// 		html += '</tr>';
+// 	}
+// 	html += '</table>';
+// 	$('#detect_task_status').append(html);
+// }
 function detect_task_status (data) {
-	$('#detect_task_status').empty();
-	var html = '';
-	html += '<table class="table table-striped" style="margin-left:30px;width:900px;">';
-	for(var i=0;i<data.length;i++){
-		html += '<tr>';
-		html += '<td style="width:200px;text-align:center;">'+data[i][0]+'</td>';
-		html += '<td>'+data[i][1]+'</td>';
-		html += '</tr>';
-	}
-	html += '</table>';
-	$('#detect_task_status').append(html);
+    var data = data.data;
+    console.log(data);
+    if (data.length == 0){
+        var html = '<div style="text-align: center;background-color: #cccccc;">暂无任务</div>'
+        $('#detect_task_status').append(html);
+    }else{
+        var sort_scope = data.sort_scope;
+        $('#detect_task_status').empty();
+
+        var html = '';
+        html += '<table class="table table-striped table-bordered bootstrap-datatable datatable responsive" style="margin-left:30px;width:900px;">';
+        html += '<thead>';
+        html += '<th style="width:100px;text-align:center;">关键词</th>';
+        html += '<th style="width:100px;text-align:center;">排序范围</th>';
+        html += '<th style="width:200px;text-align:center;">时间范围</th>';
+        html += '<th style="width:100px;text-align:center;">排序指标</th>';
+        html += '<th style="width:100px;text-align:center;">任务状态</th>';
+        html += '<th style="width:30px;text-align:center;">操作</th>';
+        html += '</thead>';
+        for(var i=0;i<data.length;i++){
+            sort_scope = scope_dict[data[i].sort_scope];
+            sort_norm = norm_dict[data[i].sort_norm];
+            var delete_this = '<span style="display:none;">'+data[i].search_id+'</span><span class="delete_this"><b><u class="delete_key_result" style="cursor:pointer;">删除</u></b></span>';
+            if(data[i].status == 0){
+                var status = '正在计算';
+            }else{
+                var status = '<span><b><u class="show_key_result" style="cursor:pointer;">计算完成</u></b></span>';
+            }
+            html += '<tr>';
+            html += '<td style="text-align:center;">'+data[i].keyword+'</td>';
+            html += '<td style="text-align:center;">'+sort_scope+'</td>';
+            html += '<td style="text-align:center;">'+data[i].start_time+' 至 '+data[i].end_time+'</td>';
+            html += '<td style="text-align:center;">'+sort_norm+'</td>';
+            html += '<td style="text-align:center;"><span style="display:none;">'+data[i].search_id+'</span>'+'<span style="display:none;">'+data[i].sort_scope+'</span>'+status+'</td>';
+            html += '<td style="text-align:center;">'+delete_this+'</td>';
+            html += '</tr>';
+        }
+        html += '</table>';
+        $('#detect_task_status').append(html);
+    }
 }
 
 //入库用户列表
@@ -250,7 +302,7 @@ function show_all_related_weibo(url) {
                  ['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称']]
 
     var sort_type = $('input[name="sort_radio_weibo"]:checked').val();
-    console.log(sort_type);
+    //console.log(sort_type);
     Draw_get_top_weibo(data2, "related_weibo_text0");
 
     $('input[name="sort_radio_weibo"]').off('click').click(function(){
@@ -376,224 +428,255 @@ function show_related_topic(data){
 
 }
 
-function show_detail(flag, time, sentiment){
-    //var data = [['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56']]
-    var data = [['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56']]
-    $('#result_detect_detail').css('display','block');
-    $('#click_time').empty();
-    $('#click_sentiment').empty();
-    $('#click_time').append(time);
-    $('#click_sentiment').append(sentiment);
+function Draw_cloud(){
+
+}
+
+function show_detail( data, flag, time, sentiment){
     console.log(flag);
-    if(flag == 0){
-        draw_user_in_table(data);
-        $('#mood_out_all').empty();
+    //var data = [['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56']]
+    // $('#result_detect_detail').css('display','block');
+    // $('#click_time').empty();
+    // $('#click_sentiment').empty();
+    // $('#click_time').append(time);
+    // $('#click_sentiment').append(sentiment);
+    // console.log(flag);
+    if(flag == 'all' ){
         $('#mood_in_all').css('width', '900px');
-    }else{
-        $('#mood_in_all').css('width', '440px');
+        $('#mood_out_all').css('display', 'block');
         draw_user_in_table(data);
         draw_user_out_table(data);
 
+        //$('#mood_out_all').empty();
+    }else{
+        $('mood_out_all').empty('');
+        $('#mood_in_all').css('width', '440px');
+        draw_user_in_table(data);
+        //draw_user_out_table(data);
+
     }
+    Draw_cloud(data.keywords)
     //相关话题表格及微博详情
     show_related_topic(data);
 
 }
+function Draw_detect_all_charts(data){
+    var flag = 'all';
+    Draw_detect_charts(flag, data);
+}
+function Draw_in_all_detect_charts(data){
+    var flag = 'in-all';
+    Draw_detect_charts(flag, data);
+}
+function Draw_in_domain_detect_charts(data){
+    var flag = 'in-domain';
+    Draw_detect_charts(flag, data);
+}
+function Draw_in_topic_detect_charts(data){
+    var flag = 'in-topic';
+    Draw_detect_charts(flag, data);
+}
+function Draw_all_keyword_detect_charts(data){
+    var flag = 'all-keywords';
+    Draw_detect_charts(flag, data);
+}
 
+function Draw_detect_charts(flag, data){
+    console.log(data);
+    if(data["1"].length == 0){
+        $('#result_detect_charts').append('暂无数据');
+    }else{ 
+        var data_x_ = [];
+        var data_y_1 = [];
+        var data_y_0 = [];
+        var data_y_7 = [];
 
-function Draw_detect_charts(flag){
-    var data_x_ = [];
-    var data_y_ = [];
+        for(var i=0;i<data["1"].length;i++){
+          var time_line  = new Date(parseInt(data["1"][i][0])*1000).format("yyyy-MM-dd hh: mm");
+          data_x_.push(time_line);
+          data_y_1.push(data["1"][i][1]);
 
-    for(var i=0;i<data.length;i++){
-        var time_line  = new Date(parseInt(data[i][0])*1000).format("yyyy-MM-dd hh: mm");
-        data_x_.push(time_line);
-        data_y_.push(data[i][1]);
+        }
+        for(var i=0;i<data["7"].length;i++){
+          data_y_7.push(data["7"][i][1]);
 
-    }
+        }
+        for(var i=0;i<data["0"].length;i++){
+          data_y_0.push(data["0"][i][1]);
 
-    $('#result_detect_charts').highcharts({
-        chart: {
-            type: 'spline',// line,
-            animation: Highcharts.svg, // don't animate in old IE
-            style: {
-                fontSize: '13px',
-                fontFamily: 'Microsoft YaHei'
-            }},
-        title: {
-            text: '微博情绪走势图',
-            x: -20, //-20：center
-            style: {
-                color: '#555555',
-                fontSize: '14px'
-            }
-        },
-        
-        lang: {
-            printChart: "打印",
-            downloadJPEG: "下载JPEG 图片",
-            downloadPDF: "下载PDF文档",
-            downloadPNG: "下载PNG 图片",
-            downloadSVG: "下载SVG 矢量图",
-            exportButtonTitle: "导出图片"
-        },
-        xAxis: {
-            //categories: data_x,
-            categories: ['周一','周二','周三','周四','周午','周六','周日'],
-            labels:{
-              rotation: 0,
-              //step: 15,
-              y:25
-            }
-        },
-        yAxis: {
-            min: 0,
-            title: {
-                text: '微博总量 (条)'
-            },
-            plotLines: [{
-                value: 0,
-                width: 1,
-                color: '#808080'
-            }]
-        },
-        plotOptions:{
-            series:{            
-                cursor:'pointer',
-                events:{
-                    click:function(event){
-                        //用flag标识是库内还是全网
-                        console.log('哪一条线','时间x','值y')
-                        console.log(this.name,event.point.category, event.point.y);
-                        //
-                        show_detail(flag, event.point.category, this.name);
-                    }
-                }
-            }
-        },
-        tooltip: {
-            valueSuffix: '条',
-            xDateFormat: '%Y-%m-%d %H:%M:%S'
-        },
-        legend: {
-            //enabled: false,
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'top',
-            borderWidth: 0
-        },
-        series: [
-            {
-                name:'积极',
-                data: [19,23,45,23,25,32,17]
-            },
-            {
-                name:'消极',
-                data: [21,33,25,23,15,22,37]
-            },            
-            {
-                name:'中性',
-                data: [10,37,15,13,35,12,47]
-            },
-        ]
-    });
+        }
+
+        if(data["1"].length <10){
+          var zoom =false;
+        }else{
+          var zoom = true;
+        }
+
+        var myChart = echarts.init(document.getElementById('result_detect_charts')); 
+        var option = { 
+          title : {
+              text  :'微博情绪走势图',
+              x: 'center',
+              y: 5
+          }, 
+          tooltip : {
+              trigger: 'axis',
+              show : true,
+
+          },
+          toolbox: {
+              show : true,
+              feature : {
+                  mark : {show: true},
+                  dataView : {show: true, readOnly: false},
+                  restore : {show: true},
+                  saveAsImage : {show: true}
+              }
+          },
+          dataZoom: {
+              show: zoom,
+              start : 80
+          },
+          legend : {
+              data : ['积极','消极','中性'],
+              x:'right',
+              y: 37
+          },
+          grid: {
+              y2: 70
+          },
+          xAxis : [
+              {
+                  data :data_x_,
+                  type : 'category',
+                  splitNumber:10
+              }
+          ],
+          yAxis : [
+              {
+                  name: '微博总量 (条)',
+                  type : 'value'
+              }
+          ],
+          series : [
+              {
+                  name: '积极',
+                  type: 'line',
+                  showAllSymbol : true,
+                  symbolSize:2,
+                  symbol: 'circle',
+                  clickable: true,              
+                  data: data_y_1
+              },
+              {
+                  name: '消极',
+                  type: 'line',
+                  showAllSymbol : true,
+                  symbolSize:2,
+                  symbol: 'circle',
+                  data: data_y_7
+              },
+              {
+                  name: '中性',
+                  type: 'line',
+                  showAllSymbol : true,
+                  symbolSize:2,
+                  symbol: 'circle',
+                  data: data_y_0
+              }
+          ]
+        };
+        require([
+              'echarts'
+          ],
+          function(ec){
+              var ecConfig = require('echarts/config');
+              function eConsole(param) {
+                  console.log(param);
+                  var segment = $('#detect_rank_by').text();
+                  segment = segment_dict[segment]
+                  var start_ts = parseInt(new Date(param.name).getTime()/1000);
+                  task_type= flag;
+                  sentiment = mood_dict[param.seriesName];
+                  $('#result_detect_detail').css('display','block');
+                  $('#click_time').empty();
+                  $('#click_sentiment').empty();
+                  $('#click_time').append(param.name);
+                  $('#click_sentiment').append(param.seriesName);
+                  var detail_url = '/sentiment/sentiment_weibo_keywords_user/?'
+                  detail_url += 'start_ts=' + start_ts + '&task_type=' + task_type + '&segment=' + segment +'&sentiment='+ sentiment +'&sort_type=timestamp';
+                  if(flag == 'in-domain' || flag == 'in-topic'){
+                      detail_url += '&task_type=' + flag.split('-')[1] ;
+                  }
+                  
+                  console.log(detail_url);
+                  var data = [['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56']]
+                  //call_sync_ajax_request(detail_url, show_detail(data, flag, param.name, param.seriesName));
+                  show_detail(data, flag, param.name, param.seriesName);
+              }
+
+          myChart.on(ecConfig.EVENT.CLICK, eConsole);
+        });
+
+        // 为echarts对象加载数据 
+        myChart.setOption(option);
+    }              
 }
 
 //排序范围选择
 $('#detect_choose').change(function(){
     $('#detect_choose_detail').empty();
     //库内-不限
-    if($('#detect_choose').val() == 'in_nolimit') {
 
-        $('#detect_time_choose').empty();
-        var time_html = '';     
-        time_html += '<span><input name="time_range" type="radio" value="1" checked="checked"> 过去一天</span>';
-        time_html += '<span><input name="time_range" type="radio" value="7" style="margin-left:20px;"> 过去七天</span>';
-        time_html += '<span><input name="time_range" type="radio" value="30" style="margin-left:20px;"> 过去一个月</span>';
-        $('#detect_time_choose').append(time_html);
-    }
     //库内-领域
     if($('#detect_choose').val() == 'in_limit_domain') {
 
-        $('#detect_time_choose').empty();
-        var time_html = '';     
-        time_html += '<input name="time_range" type="radio" value="1" checked="checked"> 过去一天';
-        time_html += '<input name="time_range" type="radio" value="7" style="margin-left:20px;"> 过去七天';
-        time_html += '<input name="time_range" type="radio" value="30" style="margin-left:20px;"> 过去一个月';
-        $('#detect_time_choose').append(time_html);
-
         var html = '';
         html += '<select id="detect_choose_detail_2">';
-        html += '<option value="">境内机构</option>';
-        html += '<option value="">境外机构</option>';
-        html += '<option value="">民间组织</option>';
-        html += '<option value="">境外媒体</option>';
-        html += '<option value="">活跃人士</option>';
-        html += '<option value="">商业人士</option>';
-        html += '<option value="">媒体人士</option>';
-        html += '<option value="">高校</option>';
-        html += '<option value="">草根</option>';
-        html += '<option value="">媒体</option>';
-        html += '<option value="">法律机构及人士</option>';
-        html += '<option value="">政府机构及人士</option>';
-        html += '<option value="">其他</option>';
-        html += '</select>';
+        html += '<option value="homeadmin">境内机构</option>'
+        html += '<option value="abroadadmin">境外机构</option>'
+        html += '<option value="folkorg">民间组织</option>'
+        html += '<option value="abroadmedia">境外媒体</option>'
+        html += '<option value="activer">活跃人士</option>'
+        html += '<option value="business">商业人士</option>'
+        html += '<option value="mediaworker">媒体人士</option>'
+        html += '<option value="university">高校</option>'
+        html += '<option value="grassroot">草根</option>'
+        html += '<option value="homemedia">媒体</option>'
+        html += '<option value="lawyer">法律机构及人士</option>'
+        html += '<option value="politician">政府机构及人士</option>'
+        html += '<option value="other">其他</option>'
+        html += '</select>'
     };
     //库内-话题
     if($('#detect_choose').val() == 'in_limit_topic') {
 
-        $('#detect_time_choose').empty();
-        var time_html = '';     
-        time_html += '<input name="time_range" type="radio" value="1" checked="checked"> 过去一天';
-        time_html += '<input name="time_range" type="radio" value="7" style="margin-left:20px;"> 过去七天';
-        time_html += '<input name="time_range" type="radio" value="30" style="margin-left:20px;"> 过去一个月';
-        $('#detect_time_choose').append(time_html);
-
         var html = '';
         html += '<select id="detect_choose_detail_2">';
-        html += '<option value="">科技类</option>';
-        html += '<option value="">经济类</option>';
-        html += '<option value="">教育类</option>';
-        html += '<option value="">军事类</option>';
-        html += '<option value="">民生类_健康</option>';
-        html += '<option value="">民生类_住房</option>';
-        html += '<option value="">民生类_环保</option>';
-        html += '<option value="">民生类_就业</option>';
-        html += '<option value="">民生类_社会保障</option>';
-        html += '<option value="">民生类_交通</option>';
-        html += '<option value="">民生类_法律</option>';
-        html += '<option value="">政治类_外交</option>';
-        html += '<option value="">政治类_暴恐</option>';
-        html += '<option value="">政治类_地区和平</option>';
-        html += '<option value="">政治类_反腐</option>';
-        html += '<option value="">政治类_宗教</option>';
-        html += '<option value="">文体类_娱乐</option>';
-        html += '<option value="">文体类_体育</option>';
-        html += '<option value="">其他类</option>';
+        html += '<option value="computer">科技类</option>';
+        html += '<option value="economic">经济类</option>';
+        html += '<option value="education">教育类</option>';
+        html += '<option value="military">军事类</option>';
+        html += '<option value="medicine">民生类_健康</option>';
+        html += '<option value="house">民生类_住房</option>';
+        html += '<option value="environment">民生类_环保</option>';
+        html += '<option value="employment">民生类_就业</option>';
+        html += '<option value="social-security">民生类_社会保障</option>';
+        html += '<option value="traffic">民生类_交通</option>';
+        html += '<option value="law">民生类_法律</option>';
+        html += '<option value="politics">政治类_外交</option>';
+        html += '<option value="fear-of-violence">政治类_暴恐</option>';
+        html += '<option value="peace">政治类_地区和平</option>';
+        html += '<option value="anti-corruption">政治类_反腐</option>';
+        html += '<option value="religion">政治类_宗教</option>';
+        html += '<option value="art">文体类_娱乐</option>';
+        html += '<option value="sports">文体类_体育</option>';
+        html += '<option value="life">其他类</option>';
         html += '</select>';
     };
-    
-    //全网-all
-    if($('#detect_choose').val() == 'all_nolimit') {
 
-        $('#detect_time_choose').empty();
-        var time_html = '';     
-        time_html += '<input name="time_range" type="radio" value="1" checked="checked"> 过去一天';
-        time_html += '<input name="time_range" type="radio" value="7" style="margin-left:20px;"> 过去七天';
-        time_html += '<input name="time_range" type="radio" value="30" style="margin-left:20px;"> 过去一个月';
-        $('#detect_time_choose').append(time_html);
-
-    }
     //全网-关键词
     if($('#detect_choose').val() == 'all_limit_keyword') {
-
-        $('#detect_time_choose').empty();
-        var time_html = '';
-        time_html += '<input id="weibo_from" type="text" class="form-control" style="width:145px; display:inline-block;height:25px;">&nbsp;-&nbsp;';
-        time_html += '<input id="weibo_to" type="text" class="form-control" style="width:145px; display:inline-block;height:25px">';        
-        $('#detect_time_choose').append(time_html);
-        date_init();
-
         var html = '';
         html += '<input id="keyword_hashtag" type="text" class="form-control" style="width:275px;height:25px;" placeholder="请输入关键词，多个词用英文逗号分开">';
 
@@ -605,18 +688,18 @@ $('#detect_choose').change(function(){
 function date_init(){
     var date = choose_time_for_mode();
     date.setHours(0,0,0,0);
-    var max_date = date.format('yyyy/MM/dd hh:mm');
-    var current_date = date.format('yyyy/MM/dd hh:mm');
+    var max_date = date.format('yyyy/MM/dd');
+    var current_date = date.format('yyyy/MM/dd');//获取当前日期，改格式
     var from_date_time = Math.floor(date.getTime()/1000) - 60*60*24;
     var min_date_ms = new Date()
     min_date_ms.setTime(from_date_time*1000);
-    var from_date = min_date_ms.format('yyyy/MM/dd hh:mm');
+    var from_date = min_date_ms.format('yyyy/MM/dd');
     if(global_test_mode==0){
-        $('#detect_time_choose #weibo_from').datetimepicker({value:from_date,step:60});
-        $('#detect_time_choose #weibo_to').datetimepicker({value:current_date,step:60});
+        $('#detect_time_choose #weibo_from').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
+        $('#detect_time_choose #weibo_to').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
     }else{
-        $('#detect_time_choose #weibo_from').datetimepicker({value:from_date,step:60,minDate:'-1970/01/30',maxDate:'+1970/01/01'});
-        $('#detect_time_choose #weibo_to').datetimepicker({value:current_date,step:60,minDate:'-1970/01/30',maxDate:'+1970/01/01'});
+        $('#detect_time_choose #weibo_from').datetimepicker({value:from_date,step:1440,minDate:'-1970/01/30',format:'Y/m/d',timepicker:false,maxDate:'+1970/01/01'});
+        $('#detect_time_choose #weibo_to').datetimepicker({value:from_date,step:1440,minDate:'-1970/01/30',format:'Y/m/d',timepicker:false,maxDate:'+1970/01/01'});
     }
 }
 
@@ -629,56 +712,67 @@ function submit_detect(){
     var keyword = $('#keyword_hashtag').val();
     var sort_scope = $('#detect_choose option:selected').val();
     var sort_norm = $('#sort_select_2 option:selected').val();
-    var arg = $('#detect_choose_detail_2 option:selected').text();
-    var day_select = $("input[name='time_range']:checked").val();
+    var arg = $('#detect_choose_detail_2 option:selected').val();
+
+    var time_from =$('#detect_time_choose #weibo_from').val().split('/').join('-');
+    var time_to =$('#detect_time_choose #weibo_to').val().split('/').join('-');
+    var from_stamp = new Date($('#detect_time_choose #weibo_from').val());
+    var end_stamp = new Date($('#detect_time_choose #weibo_to').val());
+    if(from_stamp > end_stamp){
+    alert('起始时间不得大于终止时间！');
+    return false;
+    }
     //console.log(keyword);
     if(keyword == ''){  //检查输入词是否为空
         alert('请输入关键词！');
     }else{
         if(keyword == undefined){  //没有输入的时候，更新图表
-            var flag = 0; //0是库内，1代表全网
-            var url = 'time='+day_select+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope;
-            var data = [['111关键词：两会','111状态：正在计算'],['关键词：两会','状态：正在计算'],['关键词：两会','状态：正在计算']];
+            var url = 'start_date='+time_from+'&end_date='+time_to+'&segment='+sort_norm;
+            console.log(url);
+            if(sort_scope == 'all_nolimit'){
+                flag = 1;
+                var all_url ='';
+                all_url += '/sentiment/sentiment_all/?' +url;
+                console.log(all_url);
+                call_sync_ajax_request(all_url, Draw_detect_all_charts);
+            };
+            if(sort_scope == 'in_nolimit'){
+                var in_url = '';
+                in_url += '/sentiment/sentiment_all_portrait/?' +url;
+                console.log(in_url);
+                call_sync_ajax_request(in_url, Draw_in_all_detect_charts);
+            }
+            if(sort_scope == 'in_limit_topic'){
+                var topic_url = '/sentiment/sentiment_topic/?' + url +'&topic='+arg;
+                console.log(topic_url);
+                call_sync_ajax_request(topic_url, Draw_in_topic_detect_charts);
+            }
+            if(sort_scope == 'in_limit_domain'){
+                var domain_url = '/sentiment/sentiment_domain/?' + url +'&domain='+arg;
+                console.log(domain_url);
+                call_sync_ajax_request(domain_url, Draw_in_domain_detect_charts);
+            }
+            var data = {"flag": true, "data": [{"sort_norm": "bci", "status": 1, "keyword": "hello2", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459093215.85"}, {"sort_norm": "bci_change", "status": 1, "keyword": "\u4e2d\u56fd\u4eba\u6c11", "sort_scope": "all_limit_keyword", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "keyword", "end_time": "2013-09-06", "search_id": "admin@qq.com1459093370.92"}, {"sort_norm": "imp", "status": 1, "keyword": "456", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459095146.65"}, {"sort_norm": "bci", "status": 1, "keyword": "hello", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-02", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-03", "search_id": "admin@qq.com1459091263.5"}]};
             $('#detect_range').empty();
             $('#detect_detail').empty();
             $('#detect_rank_by').empty();
             $('#detect_time_range').empty();
             $('#detect_range').append(show_scope);
-            console.log(arg);
-            if(sort_scope != 'in_nolimit' && sort_scope != 'all_nolimit' ){  // 参数是可选的时候，加上详细条件
-                $('#detect_detail').append('-');
-                $('#detect_detail').append(show_arg);
-                url += '&arg='+arg;   //该参数为空时不传
+            if(sort_scope == 'in_limit_topic' || sort_scope == 'in_limit_domain' ){  // 参数是可选的时候，加上详细条件
+                $('#detect_range').append('-');
+                $('#detect_range').append(show_arg);
             }
             $('#detect_rank_by').append(show_norm);
-            if(day_select == "1"){
-                $('#detect_time_range').append('过去一天');
-            }
-            if(day_select == "7"){
-                $('#detect_time_range').append('过去七天');
-            }
-            if(day_select == "30"){
-                $('#detect_time_range').append('过去一个月');
-            }
-            if(sort_scope == 'all_nolimit'){
-                flag = 1;
-            }
-            Draw_detect_charts(flag);
+            var time_from_end = time_from + ' 至 ' + time_to;
+            $('#detect_time_range').append(time_from_end);                       
             $('#result_detect_detail').css('display','none');
-            console.log(url);
         }else{ //输入参数的时候，更新任务状态表格
-            var time_from = user_rank_timepicker($('#detect_time_choose #weibo_from').val());
-            console.log(time_from)
-            var time_to = user_rank_timepicker($('#detect_time_choose #weibo_to').val());
-            var time_from_after = new Date(time_from*1000)
-            var time_to_after = new Date(time_to*1000)
-            time_from_after = time_from_after.format('yyyy-MM-dd')
-            time_to_after = time_to_after.format('yyyy-MM-dd')
-            console.log(time_from_after)
-	    //var time_from = user_rank_timepicker($('#detect_time_choose #weibo_from').val());
-            //var time_to = user_rank_timepicker($('#detect_time_choose #weibo_to').val());
-            var url = 'time='+time_from_after+','+time_to_after+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope+'&arg='+keyword;
-            var data = [['121关键词：两会','121状态：正在计算'],['关键词：两会','状态：正在计算'],['关键词：两会','状态：正在计算']];
+
+            var time_from =$('#detect_time_choose #weibo_from').val().split('/').join('-');
+            var time_to =$('#detect_time_choose #time_to').val().split('/').join('-');
+
+            var url = 'time='+time_from+','+time_to+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope+'&arg='+keyword;
+            var data = {"flag": true, "data": [{"sort_norm": "bci", "status": 1, "keyword": "11111hello2", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459093215.85"}, {"sort_norm": "bci_change", "status": 1, "keyword": "\u4e2d\u56fd\u4eba\u6c11", "sort_scope": "all_limit_keyword", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "keyword", "end_time": "2013-09-06", "search_id": "admin@qq.com1459093370.92"}, {"sort_norm": "imp", "status": 1, "keyword": "456", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459095146.65"}, {"sort_norm": "bci", "status": 1, "keyword": "hello", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-02", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-03", "search_id": "admin@qq.com1459091263.5"}]};
             detect_task_status(data);
             console.log(url);
         }
@@ -686,21 +780,25 @@ function submit_detect(){
 }
 
 //结果分析默认值
-$('#detect_range').append($('#detect_choose option:selected').text());
-// $('#detect_detail').append('：');
-// $('#detect_detail').append($('#detect_choose option:selected').text());
-$('#detect_rank_by').append($('#sort_select_2 option:selected').text());
-var day_select = $("input[name='time_range']:checked").val();
-if(day_select == "1"){
-    $('#detect_time_range').append('过去一天')
-}
-if(day_select == "7"){
-    $('#detect_time_range').append('过去七天')
-}
-if(day_select == "30"){
-    $('#detect_time_range').append('过去三十天')
-}
+var mood_dict ={'积极':'1','消极':'7','中性':'0'}
+var segment_dict = {'15分钟':'fifteen','一小时':'hour','一天':'day'};
 
-var data = [['关键词：两会','状态：正在计算'],['关键词：两会','状态：正在计算'],['关键词：两会','状态：正在计算']];
+date_init();
+console.log($('#detect_time_choose #weibo_from').val())
+var time_from =$('#detect_time_choose #weibo_from').val().split('\/').join('-');
+var time_to =$('#detect_time_choose #weibo_to').val().split('\/').join('-');
+// console.log(time_from_after);
+// console.log(time_to_after);
+
+$('#detect_range').append($('#detect_choose option:selected').text());
+$('#detect_rank_by').append($('#sort_select_2 option:selected').text());
+var time_from_end = time_from + ' 至 ' + time_to;
+$('#detect_time_range').append(time_from_end);
+var scope_dict ={'all_limit_keyword':'全网-按关键词','in_limit_keyword':'库内-按关键词','in_limit_hashtag':'库内-按微话题'}
+var norm_dict ={'weibo_num': '微博数','fans': '粉丝数','bci': '影响力','bci_change':'突发影响力变动','ses':'言论敏感度','ses_change':'突发敏感度变动','imp':'身份敏感度','imp_change':'突发重要度变动','act':'活跃度','act_change':'突发活跃度变动'}
+
+var data = {"flag": true, "data": [{"sort_norm": "bci", "status": 1, "keyword": "hello2", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459093215.85"}, {"sort_norm": "bci_change", "status": 1, "keyword": "\u4e2d\u56fd\u4eba\u6c11", "sort_scope": "all_limit_keyword", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "keyword", "end_time": "2013-09-06", "search_id": "admin@qq.com1459093370.92"}, {"sort_norm": "imp", "status": 1, "keyword": "456", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459095146.65"}, {"sort_norm": "bci", "status": 1, "keyword": "hello", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-02", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-03", "search_id": "admin@qq.com1459091263.5"}]};
 detect_task_status(data);
-Draw_detect_charts(1);
+var url = '/sentiment/sentiment_all/?start_date=2013-09-07&end_date=2013-09-07&segment=fifteen';
+call_sync_ajax_request(url, Draw_detect_all_charts) 
+//Draw_detect_charts(1);
