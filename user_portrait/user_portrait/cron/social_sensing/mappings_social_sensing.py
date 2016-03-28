@@ -67,6 +67,10 @@ def mappings_sensing_task(task_name):
                     "clustering_topic":{
                         "type": "string",
                         "index": "no"
+                    },
+                    "sunmit_user":{
+                        "type": "string",
+                        "index": "not_analyzed"
                     }
                 }
             }
@@ -87,6 +91,10 @@ def manage_sensing_task():
                         "index": "not_analyzed"
                     },
                     "task_type":{
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "last_time":{
                         "type": "string",
                         "index": "not_analyzed"
                     },

@@ -69,7 +69,9 @@ function Draw_activity(data){
                 cursor:'pointer',
                 events:{
                     click:function(event){
-                        var activity_weibo_url = '/group/activity_weibo/?task_name='+ name +'&start_ts=' + data[event.point.x][0];
+                        var activity_weibo_url = '/group/activity_weibo/?task_name='+ name +'&start_ts=' + data[event.point.x][0]+'&submit_user='+user;
+						//var activity_weibo_url = '/group/activity_weibo/?task_name=mytest030303&start_ts=' + data[event.point.x][0]+'&submit_user=admin';
+						//console.log(activity_weibo_url);
                         call_sync_ajax_request(activity_weibo_url, ajax_method, draw_content);
                         var html0 = '';
                         $('#line_select_time').empty();  
@@ -84,8 +86,8 @@ function Draw_activity(data){
                             html0 += "<div>当前选择时间段：</div><div style='color:brown;'>"+data_x_[event.point.x]+"</div>";
                         }
                         //data_x_[event.point.x]
-                        console.log(html0);
-                        console.log(event.point.x);
+                        //console.log(html0);
+                        //console.log(event.point.x);
                         $('#line_select_time').append(html0);
                         
                         //console.log(activity_weibo_url);
@@ -292,7 +294,7 @@ function Draw_top_location(data){
 	//console.log(bar_data_2);
 	bar_data_x = bar_data_2;
 	
-		console.log(timeline_data.length);
+		//console.log(timeline_data.length);
     var myChart = echarts.init(document.getElementById('top_active_geo_line')); 
     var option = {
         timeline:{
@@ -383,19 +385,37 @@ function get_max_data (data) {
   return data_result;
 }
 
-function moving_geo(data){
+function moving_geo(data,data2){
     //var data = {'北京&上海2': 150,'北京2&上海': 122,'北京2&上海2': 170,'北京4&上海2': 750, '北京5&上海': 120};
     var dealt_data = get_max_data(data);
     $('#move_location').empty();
     var from_city = [];
     var end_city = [];
+	var fromCity = [];
+	var endCity = [];
+	console.log(data);
+	var citys = [];
+	for(var key in data){
+		citys.push(key);
+	}
+	console.log(citys);
+	for(var i=0;i < citys.length;i++){
+        var city_split = citys[i].split('&');
+		fromCity.push(city_split[0]);
+	    endCity.push(city_split[1]);
+	}
+	/*
     for(var i=0;i < dealt_data[0].length;i++){
         var city_split = dealt_data[0][i].split('&');
         var from_last_city = city_split[0].split('\t');
         var end_last_city = city_split[1].split('\t');
         from_city.push(from_last_city[from_last_city.length-1])
         end_city.push(end_last_city[end_last_city.length-1]);
+		fromCity.push(city_split[0]);
+	    endCity.push(city_split[0]);
     }
+	console.log(endCity);
+	*/
     var html = '';
     if (dealt_data[0].length == 0){
         html += '<span style="margin:20px;">暂无数据</span>';
@@ -405,7 +425,7 @@ function moving_geo(data){
         if(dealt_data[0].length < 5){
             $('#geo_show_more').css('display', 'none');
         };
-            Draw_more_moving_geo(from_city, end_city, dealt_data);
+            Draw_more_moving_geo(from_city, end_city, dealt_data,fromCity,endCity);
             html += '<table class="table table-striped" style="width:100%;font-size:14px;margin-bottom:0px;">';
             html += '<tr><th style="text-align:center">起始地</th>';
             html += '<th style="text-align:right;width:30px;"></th>';
@@ -414,20 +434,29 @@ function moving_geo(data){
             html += '</tr>';
             for (var i = 0; i < 5; i++) {
                 html += '<tr>';
-                html += '<td style="text-align:center;vertical-align: middle;">' + from_city[i] + '</td>';
+                html += '<td style="text-align:center;vertical-align: middle;font-size:10px;" >' +fromCity[i] + '</td>';
                 html += '<td style="text-align:center;"><img src="/../../static/img/arrow_geo.png" style="width:25px;"></td>';
-                html += '<td style="text-align:center;vertical-align: middle;">' + end_city[i] + '</td>';
-                html += '<td style="text-align:center;vertical-align: middle;">' + dealt_data[1][i] + '</td>';
+                html += '<td style="text-align:center;vertical-align: middle;font-size:10px;" >' + endCity[i] + '</td>';
+                html += '<td style="text-align:center;vertical-align: middle;"><a id="moreDetail" data-toggle="modal" data-target="#detailPlace">' + dealt_data[1][i] + '</a></td>';
             html += '</tr>'; 
             };
             html += '</table>'; 
         
     }
     $('#move_location').append(html);
+	$('a[id^="moreDetail"]').click(function(e){
+		var start = $(this).parent().prev().html();
+		var end = $(this).parent().prev().prev().prev().text();
+		var keys = start+"&"+end;
+		console.log(data2[keys]);
+		Draw2Place(data2[keys],'detail_Place');
+	});
 }
 
-function Draw_more_moving_geo(from_city, end_city, dealt_data){
+function Draw_more_moving_geo(from_city, end_city, dealt_data,fromCity,endCity){
     // var data = [['北京', '上海', 100], ['北京', '1上海', 100], ['北京', '上1海', 20],['北京', '1上海', 100],  ['北京', '上海', 30]];
+	//console.log(from_city);
+	//console.log(end_city);
     $('#move_location_more_detail').empty();
     var html = '';
     html += '<table class="table table-striped " font-size:14px">';
@@ -438,10 +467,10 @@ function Draw_more_moving_geo(from_city, end_city, dealt_data){
     html += '</tr>';
     for (var i = 0; i < dealt_data[0].length; i++) {
         html += '<tr>';
-        html += '<td style="text-align:center;vertical-align: middle;">' + from_city[i] + '</td>';
+        html += '<td style="text-align:center;vertical-align: middle;" value='+fromCity[i]+'>' + from_city[i] + '</td>';
         html += '<td style="text-align:center;"><img src="/../../static/img/arrow_geo.png" style="width:30px;"></td>';
-        html += '<td style="text-align:left;vertical-align: middle;">' + end_city[i] + '</td>';
-        html += '<td style="text-align:center;vertical-align: middle;">' + dealt_data[1][i] + '</td>';
+        html += '<td style="text-align:left;vertical-align: middle;" value='+endCity[i]+'>' + end_city[i] + '</td>';
+        html += '<td style="text-align:center;vertical-align: middle;"><a id="moreDetail" data-toggle="modal" data-target="#detailPlace">' + dealt_data[1][i] + '</a></td>';
     html += '</tr>'; 
     };
     html += '</table>'; 
@@ -470,6 +499,54 @@ function Draw_top_platform(dealt_data){
         html += '</table>'; 
     }
     $('#top_platform').append(html);
+}
+
+function Draw_top_place(start,end){
+    
+    var html = '';
+	$('#top_place').empty();
+    var html = '';
+    if(start.length==0){
+		html += '<div style="width:100%;line-height:30px;">主要出发地：暂无数据</div>';
+	}else {
+		
+		if(start.length <=5){
+		    html += '<div style="width:100%;line-height:30px;">主要出发地：';
+		    for(var i=0;i<start.length;j++){
+			    html = html + '<a>' +start[i][0] +'('+start[i][1]+'人次)</a>&nbsp&nbsp';
+		    }
+		    html += '</div>'
+	    }else{
+		    html += '<div style="width:100%;line-height:30px;">主要出发地：';
+		    for(var i=0;i<5;i++){
+			    html = html + '<a>' +start[i][0] +'('+start[i][1]+'人次)</a>&nbsp&nbsp';
+		    }
+		    html += '<span id="more_start" data-toggle="modal" data-target="#moreStart">更多<span></div>';
+			Drawmoreplace(start,'start_WordList');
+	    }
+	}
+		
+	if(end.length==0){
+		html += '<div style="width:100%;line-height:30px;">主要目的地：暂无数据</div>';
+	}else {
+		
+		if(end.length <=5){
+		    html += '<div style="width:100%;line-height:30px;">主要目的地：';
+		    for(var i=0;i<end.length;j++){
+			    html = html + '<a>' +end[i][0] +'('+end[i][1]+'人次)</a>&nbsp&nbsp';
+		    }
+		    html += '</div>'
+	    }else{
+		    html += '<div style="width:100%;line-height:30px;">主要目的地：';
+		    for(var i=0;i<5;i++){
+			    html = html + '<a>'  +end[i][0] +'('+end[i][1]+'人次)</a>&nbsp&nbsp';
+		    }
+		    html += '<span id="more_end" data-toggle="modal" data-target="#moreEnd">更多<span></div>';
+			Drawmoreplace(end,'end_WordList');
+	    }
+	}
+	
+    $('#top_place').append(html);
 }
 
 // function Draw_more_top_platform(data){
@@ -677,6 +754,7 @@ function group_activity(data){
 }
 
 function show_activity(data) {
+	console.log(data);
 	var time_data = [23,3,4,55,22,6]
     // console.log(runtype);
 	//微博走势，点击后显示微博
@@ -688,12 +766,12 @@ function show_activity(data) {
 	Draw_top_location(data.activity_geo_disribution);
 
 	//位置转移统计
-    moving_geo(data.activiy_geo_vary);
+    moving_geo(data.activiy_geo_vary,data.vary_detail_geo);
     //var data333 = {'北京&上海2': 150,'北京2&上海': 122,'北京2&上海2': 170,'北京4&上海2': 750, '北京5&上海': 120};
 
 	Draw_top_platform(data.online_pattern);
 	//Draw_more_top_platform();
-
+    Draw_top_place(data.main_start_geo,data.main_end_geo);
 	draw_active_distribution(data.activeness_his);
 
 	group_activity(data.activeness_trend);
@@ -933,9 +1011,44 @@ function month_process(data){
 }
 
 
-var group_activity_url = '/group/show_group_result/?module=activity&task_name=' + name;
+
+
+function Drawmoreplace(data,div){
+	var html = '';
+    $('#'+div).empty();
+	html += '<table class="table table-striped table-bordered" style="width:450px;">';
+    html += '<tr><th style="text-align:center">排名</th><th style="text-align:center">地点</th><th style="text-align:center">人次</th></tr>';
+    for (var i = 0; i < data.length; i++) {
+        var s = i.toString();
+        var m = i + 1;
+        html += '<tr style=""><th style="text-align:center">' + m + '</th><th style="text-align:center">' + data[i][0] +  '</th><th style="text-align:center">' + data[i][1] + '</th></tr>';
+    };
+    html += '</table>'; 
+    $('#'+ div).append(html);
+}
+
+
+
+function Draw2Place(data,div){
+	var html = '';
+    $('#'+div).empty();
+	html += '<table class="table table-striped table-bordered" style="width:450px;">';
+    html += '<tr><th style="text-align:center">信息</th><th style="text-align:center">昵称</th><th style="text-align:center">出发时间</th><th style="text-align:center">到达时间</th></tr>';
+    for (var i = 0; i < data.length; i++) {
+        var s = i.toString();
+        var m = i + 1;
+        html += '<tr style=""><th style="text-align:center">信息.' + m + '</th><th style="text-align:center">' + data[i][1] +  '</th><th style="text-align:center">' + data[i][2] + '</th><th style="text-align:center">' + data[i][3] + '</th></tr>';
+    };
+    html += '</table>'; 
+    $('#'+ div).append(html);
+}
+user = 'admin';
+var group_activity_url = '/group/show_group_result/?module=activity&task_name=' + name+'&submit_user='+user;
+//var group_activity_url = '/group/show_group_result/?module=activity&task_name=mytest030303&submit_user=admin';
 call_sync_ajax_request(group_activity_url,ajax_method, show_activity);
-var group_user_url =  "/group/show_group_list/?task_name=" + name;
+//var group_user_url =  "/group/show_group_list/?task_name=" + name+'&submit_user=admin';
+var group_user_url =  "/group/show_group_list/?task_name=" + name+'&submit_user='+user;
+console.log(group_user_url);
 call_sync_ajax_request(group_user_url,ajax_method, show_activity_track);
 // var activity_data = []
 

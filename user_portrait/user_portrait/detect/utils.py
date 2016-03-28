@@ -132,6 +132,9 @@ def save_detect_multi_task(input_dict, extend_mark):
     input_uid_list = task_information_dict['uid_list']
     #step1: identify user is in user_portrait and not in user_portrait
     in_user_list, out_user_list = identify_user_out(input_uid_list)
+    if len(in_user_list)==0:
+        return 'invalid seed user', out_user_list
+
     input_dict['task_information']['uid_list'] = in_user_list
     print 'step1'
     #step2: identify task name is valid
@@ -208,7 +211,7 @@ def save_detect_event_task(input_dict):
     task_information = input_dict['task_information']
     task_name = task_information['task_name']
     submit_user = task_information['submit_user']
-    task_id = task_information_dict['task_id']
+    task_id = task_information['task_id']
     try:
         task_exist_result = es_group_result.get(index=group_index_name, doc_type=group_index_type, id=task_id)
     except:

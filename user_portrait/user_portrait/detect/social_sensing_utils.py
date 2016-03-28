@@ -38,12 +38,17 @@ def get_top_influence():
     return result
 
 # 展示所有已经完成的任务，返回任务名
-def show_social_sensing_task():
+def show_social_sensing_task(user):
     query_body = {
         "query":{
             "filtered":{
                 "filter":{
-                    "term": {"finish": "1"}
+                    "bool":{
+                        "must":[
+                            {"term": {"finish": "1"}},
+                            {"term": {"create_by": user}}
+                        ]
+                    }
                 }
             }
         },
@@ -60,10 +65,10 @@ def show_social_sensing_task():
     return results
 
 
-def show_important_users(task_name):
+def show_important_users(_id):
     return_results = dict() # 返回字典
     top_influence = get_top_influence()
-    task_detail = es.get(index=index_manage_social_task, doc_type=task_doc_type, id=task_name)["_source"]
+    task_detail = es.get(index=index_manage_social_task, doc_type=task_doc_type, id=_id)["_source"]
     portrait_detail = []
     important_user_set = set() # 重要人物列表
     history_status = json.loads(task_detail['history_status'])
@@ -92,7 +97,7 @@ def show_important_users(task_name):
     return_results['social_sensors_detail'] = portrait_detail
 
     if time_series:
-        flow_detail = es.mget(index=index_sensing_task, doc_type=task_name, body={"ids": time_series})['docs']
+        flow_detail = es.mget(index=index_sensing_task, doc_type=_id, body={"ids": time_series})['docs']
     else:
         flow_detail = {}
     if flow_detail:

@@ -30,11 +30,10 @@ mod = Blueprint('detect', __name__, url_prefix='/detect')
 #use to deal seed_user info string
 def deal_seed_user_string(seed_info_string, seed_info_type):
     if seed_info_type == 'uid':
-        uid_list = seed_info_string.split(',')
+        uid_list = seed_info_string.split('/')
     elif seed_info_type == 'uname':
         uid_list = []
-        uname_list = seed_info_string.split(',')
-        print 'uname:', uname_list
+        uname_list = seed_info_string.split('/')
         profile_exist_result = es_user_profile.search(index=profile_index_name, doc_type=profile_index_type,\
             body={'query':{'terms':{'nick_name': uname_list}}}, _source=False)['hits']['hits']
         if profile_exist_result:
@@ -42,7 +41,7 @@ def deal_seed_user_string(seed_info_string, seed_info_type):
                 uid_list.append(profile_item['_id'])
     elif seed_info_type == 'url':
         uid_list = []
-        url_list = seed_info_string.split(',')
+        url_list = seed_info_string.split('/')
         for url_item in url_list:
             url_item_list = url_item.split('/')
             url_uid = url_item_list[4][-10:]
@@ -86,8 +85,9 @@ def ajax_user_string():
     seed_info_type = request.args.get('seed_user_type', 'uid') # seed_user_type=uid/uname/url
     seed_info_string = request.args.get('seed_user_string', '') # split by '/'
     seed_uid_list = deal_seed_user_string(seed_info_string, seed_info_type)
-    if not seed_uid_list:
-        return 'no valid seed user'
+    print 'seed_uid_list:', seed_uid_list
+    if seed_uid_list==[]:
+        return json.dumps('invalid seed user')
     #get task information
     task_information_dict['task_name'] = request.args.get('task_name', '')
     task_information_dict['submit_date'] = int(time.time())
@@ -100,7 +100,10 @@ def ajax_user_string():
     if extend_mark == '0':
         task_information_dict['task_type'] = 'analysis'
         task_information_dict['status'] = 0
-        task_information_dict['uid_list'] = seed_uid_list
+        if len(seed_uid_list) > 1:
+            task_information_dict['uid_list'] = seed_uid_list
+        else:
+            return 'invalid seed user'
         input_dict['task_information'] = task_information_dict
         print 'no extend save'
         results = save_detect_multi_task(input_dict, extend_mark)
@@ -151,13 +154,13 @@ def ajax_user_string():
             item_value_to = request.args.get(text_item+'_to', '')
             if item_value_from != '' and item_value_to != '':
                 if int(item_value_from) > int(item_value_to):
-                    return 'invalid input for range'
+                    return json.dumps('invalid input for range')
                 else:
                     text_query_list.append({'range':{text_item:{'gte':int(item_value_from), 'lt':int(item_value_to)}}})
         query_dict['text'] = text_query_list
         #identify the query condition num at least one
         if attribute_condition_num + structure_condition_num == 0:
-            return 'no query condition'
+            return json.dumps('no query condition')
         #get query dict: filter
         filter_dict = {} # filter_dict = {'count':100, 'influence':{'from':0, 'to':50}, 'importance':{'from':0, 'to':50}}
         for filter_item in DETECT_QUERY_FILTER:
@@ -168,11 +171,11 @@ def ajax_user_string():
                 filter_item_from = request.args.get(filter_item+'_from', DETECT_FILTER_VALUE_FROM)
                 filter_item_to = request.args.get(filter_item+'_to', DETECT_FILTER_VALUE_TO)
                 if int(filter_item_from) > int(filter_item_to):
-                    return 'invalid input for filter'
+                    return json.dumps('invalid input for filter')
                 filter_item_value = {'gte':int(filter_item_from), 'lt':int(filter_item_to)}
             filter_dict[filter_item] = filter_item_value
         if filter_dict['count'] == 0:
-            return 'invalid input for count'
+            return json.dumps('invalid input for count')
         query_dict['filter'] = filter_dict
         #identify the task type---single/multi
         if len(seed_uid_list) == 1:
@@ -206,7 +209,7 @@ def ajax_user_file():
     seed_info_type = input_data['seed_user_type']
     seed_uid_list = deal_seed_user_file(upload_data, seed_info_type)
     if not seed_uid_list:
-        return 'no valid seed user'
+        return json.dumps('invalid seed user')
     #task_information
     task_information_dict['task_name'] = input_data['task_name']
     task_information_dict['state'] = input_data['task_name']
@@ -232,7 +235,7 @@ def ajax_user_file():
         for attribute_item in DETECT_QUERY_ATTRIBUTE:
             attribute_mark = input_data[attribute_item]
             if attribute_mark == '1':
-                attribute_list.append(attribute_name)
+                attribute_list.append(attribute_item)
         attribute_condition_num = len(attribute_list)
         if attribute_condition_num != 0:
             attribute_weight = input_data['attribute_weight']
@@ -241,6 +244,7 @@ def ajax_user_file():
         query_dict['attribute_weght'] = float(attribute_weight)
         query_dict['attribute'] = attribute_list
         #get query dict:structure
+        structure_list = {}
         for structure_item in DETECT_QUERY_STRUCTURE:
             structure_mark = input_data[attribute_item]
             structure_list[structure_item] = structure_mark
@@ -256,7 +260,7 @@ def ajax_user_file():
         query_dict['structure'] = structure_list
         #get query_dict:text
         text_query_list = []
-        for text_item in DETECT_FUZZ_ITEM:
+        for text_item in DETECT_TEXT_FUZZ_ITEM:
             item_value_string = input_data[text_item] # a string joint by ' '
             item_value_list = item_value_string.split(' ')
             nest_body_list = []
@@ -275,13 +279,13 @@ def ajax_user_file():
                 ite_value_to = ''
             if item_value_from != '' and item_value_to != '':
                 if int(item_value_from) > int(item_value_to):
-                    return 'invalid input for range'
+                    return json.dumps('invalid input for range')
                 else:
                     text_query_list.append({'range': {text_item: {'gte':int(item_value_from), 'lt':int(item_value_to)}}})
         query_dict['text'] = text_query_list
         #identify the condition num at least 1
         if attribute_condition_num + structure_condition_num == 0:
-            return 'no query condition'
+            return json.dumps('no query condition')
         #get query dict: filter
         filter_dict = {} #filter_dict = {'count':100, 'influence':{'from':0, 'to':50}, 'importance':{'from':0, 'to':50}}
         filter_condition_num = 0
@@ -295,13 +299,13 @@ def ajax_user_file():
                 filter_item_from = input_data[filter_item+'_from']
                 filter_item_to = input_data[filter_item + '_to']
                 if int(filter_item_from) > int(filter_item_to):
-                    return 'valid input for filter'
+                    return json.dumps('invalid input for filter')
                 if filter_item_to != '0':
                     filter_condition_num += 1
                 filter_item_value = {'gte': int(filter_item_from), 'lt':int(filter_item_to)}
             filter_dict[filter_item] = filter_item_value
         if filter_condition_num == 0:
-            return 'valid input for filter'
+            return json.dumps('invalid input for filter')
         query_dict['filter'] = filter_dict
         #save task information
         input_dict['task_information'] = task_information_dict
@@ -327,7 +331,7 @@ def ajax_single_person():
     if seed_uid != '':
         seed_user_dict['uid'] = seed_uid
     if seed_user_dict == {}:
-        return 'no seed user' # if no seed user information return notice
+        return json.dumps('no seed user') # if no seed user information return notice
     query_dict['seed_user'] = seed_user_dict
     #get query dict: attribute
     attribute_list = []
@@ -372,14 +376,14 @@ def ajax_single_person():
         item_value_to = request.args.get(text_item+'_to', '')
         if item_value_from!='' and item_value_to != '':
             if int(item_value_from) > int(item_value_to):
-                return 'invalid input for range'
+                return json.dumps('invalid input for range')
             else:
                 text_query_list.append({'range':{text_item:{'gte':int(item_value_from), 'lt':int(item_value_to)}}})
 
     query_dict['text'] = text_query_list
     #identify the query condition num at least one
     if attribute_condition_num + structure_condition_num == 0:
-        return 'no query condition'
+        return json.dumps('no query condition')
     #get query_dict: filter
     filter_dict = {} # filter_dict = {'count': 100, 'influence':{'from':0, 'to':50}, 'importance':{'from':0, 'to':50}}
     for filter_item in DETECT_QUERY_FILTER:
@@ -390,11 +394,11 @@ def ajax_single_person():
             filter_item_from = request.args.get(filter_item+'_from', DETECT_FILTER_VALUE_FROM)
             filter_item_to = request.args.get(filter_item+'_to', DETECT_FILTER_VALUE_TO)
             if int(filter_item_from) > int(filter_item_to):
-                return 'invalid input for filter'
+                return json.dumps('invalid input for filter')
             filter_item_value = {'gte': int(filter_item_from), 'lt': int(filter_item_to)}
         filter_dict[filter_item] = filter_item_value
     if filter_dict['count'] == 0:
-        return 'invalid input for count'
+        return json.dumps('invalid input for count')
     query_dict['filter'] = filter_dict
     #get detect task information
     task_information_dict = {}
@@ -433,7 +437,7 @@ def ajax_multi_person():
             uid_list.append(uid)
     task_information_dict['uid_list'] = uid_list
     if len(uid_list)==0:
-        return 'no seed user'
+        return json.dumps('no seed user')
     #task information
     task_information_dict['task_name'] = input_data['task_name']
     task_information_dict['state'] = input_data['state']
@@ -502,13 +506,13 @@ def ajax_multi_person():
                 iter_value_to = ''
             if item_value_from != '' and item_value_to != '':
                 if int(item_value_from) > int(item_value_to):
-                    return 'invalid input for range'
+                    return json.dumps('invalid input for range')
                 else:
                     text_query_list.append({'range':{text_item:{'gte':int(item_value_from), 'lt':int(item_value_to)}}})
         query_dict['text'] = text_query_list
         #identify the comdition num at least 1
         if attribute_condition_num + structure_condition_num == 0:
-            return 'no query condition'
+            return json.dumps('no query condition')
         #get query dict: filter
         filter_dict = {} # filter_dict = {'count':100, 'influence':{'from':0, 'to':50}, 'importance':{'from':0, 'to':50}}
         filter_condition_num = 0
@@ -522,13 +526,13 @@ def ajax_multi_person():
                 filter_item_from = input_data[filter_item+'_from']
                 filter_item_to = input_data[filter_item+'_to']
                 if int(filter_item_from) > int(filter_item_to):
-                    return 'valid input for filter'
+                    return json.dumps('invalid input for filter')
                 if filter_item_to != '0':
                     filter_condition_num += 1
                 filter_item_value = {'gte':int(filter_item_from), 'lt':int(filter_item_to)}
             filter_dict[filter_item] = filter_item_value
         if filter_condition_num == 0:
-            return 'valid input for filter'
+            return json.dumps('invalid input for filter')
         query_dict['filter'] = filter_dict
         #save task information
         input_dict = {}
@@ -621,13 +625,13 @@ def ajax_attribute_pattern():
         if item_value_from != '' and item_value_to != '':
             pattern_condition_num += 1
             if int(item_value_from) > int(item_value_to):
-                return 'invalid input for condition'
+                return json.dumps('invalid input for condition')
             else:
                 pattern_query_list.append({'range':{item:{'gte': int(item_value_from), 'lt':int(item_value_to)}}})
         
     #identify attribute and pattern condition num >= 1
     if attribute_condition_num + pattern_condition_num < 1:
-        return 'invalid input for condition'
+        return json.dumps('invalid input for condition')
     query_dict['pattern'] = pattern_query_list
     #step3:get filter query dict
     filter_dict = {}
@@ -639,11 +643,11 @@ def ajax_attribute_pattern():
             filter_item_from = request.args.get(filter_item+'_from', DETECT_FILTER_VALUE_FROM)
             filter_item_to = request.args.get(filter_item+'_to', DETECT_FILTER_VALUE_TO)
             if int(filter_item_from) > int(filter_item_to):
-                return 'invalid input for filter'
+                return json.dumps('invalid input for filter')
             filter_item_value = {'gte': int(filter_item_from), 'lt':int(filter_item_to)}
         filter_dict[filter_item] = filter_item_value
     if filter_dict['count'] == 0:
-        return 'invalid input for count'
+        return json.dumps('invalid input for count')
     query_dict['filter'] = filter_dict
     #save task information
     input_dict = {}
@@ -686,12 +690,12 @@ def ajax_new_pattern_detect():
         if item_value_from != '' and item_value_to != '':
             pattern_condition_num += 1
             if int(item_value_from) > int(item_value_to):
-                return 'invalid input for condition'
+                return json.dumps('invalid input for condition')
             else:
                 pattern_query_list.append({'range':{item:{'gte': int(item_value_from), 'lt':int(item_value_to)}}})
     #identify pattern condition num >= 1
     if pattern_condition_num < 1:
-        return 'invalid input for condition'
+        return json.dumps('invalid input for condition')
     query_dict['pattern'] = pattern_query_list
     query_dict['attribute'] = []
     #step2: get filter query dict
@@ -704,11 +708,11 @@ def ajax_new_pattern_detect():
             filter_item_from = request.args.get(filter_item+'_from', DETECT_FILTER_VALUE_FROM)
             filter_item_to = request.args.get(filter_item+'_to', DETECT_FILTER_VALUE_TO)
             if int(filter_item_from) > int(filter_item_to):
-                return 'invalid input for filter'
+                return json.dumps('invalid input for filter')
             filter_item_value = {'gte': int(filter_item_from), 'lt':int(filter_item_to)}
         filter_dict[filter_item] = filter_item_value
     if filter_dict['count'] == 0:
-        return 'invalid input for count'
+        return json.dumps('invalid input for count')
     query_dict['filter'] = filter_dict
     #step4: get task information dict
     task_information_dict = {}
@@ -771,16 +775,16 @@ def ajax_event_detect():
         item_value_to = request.args.get(item+'_to', now_date_ts)
         if item_value_from != '' and item_value_to != '':
             if int(item_value_from) > int(item_value_to):
-                return 'invalid input for range'
+                return json.dumps('invalid input for range')
             else:
                 query_condition_num += 1
                 event_query_list.append({'range':{item: {'gte': int(item_value_from), 'lt':int(item_value_to)}}})
         else:
-            return 'invalid input for range'
+            return json.dumps('invalid input for range')
     query_dict['event'] =  event_query_list
     #identify the query condition at least 1
     if query_condition_num < 1:
-        return 'invalid input for query'
+        return json.dumps('invalid input for query')
     #step3: get filter dict
     filter_dict = {}
     for filter_item in DETECT_QUERY_FILTER:
@@ -791,11 +795,11 @@ def ajax_event_detect():
             filter_item_from = request.args.get(filter_item+'_from', DETECT_FILTER_VALUE_FROM)
             filter_item_to = request.args.get(filter_item+'_to', DETECT_FILTER_VALUE_TO)
             if int(filter_item_from) > int(filter_item_to) or (not item_value_from) or (not item_value_to):
-                return 'invalid input for filter'
+                return json.dumps('invalid input for filter')
             filter_item_value = {'gte': int(filter_item_from), 'lt': int(filter_item_to)}
         filter_dict[filter_item] = filter_item_value
     if filter_dict['count'] == 0:
-        return 'invalid input for count'
+        return json.dumps('invalid input for count')
     query_dict['filter'] = filter_dict
     #step4: get task information dict
     task_information_dict = {}
@@ -844,7 +848,7 @@ def ajax_search_detect_task():
 def ajax_show_detect_result():
     results = {}
     task_name = request.args.get('task_name', '')
-    submit_user = request.args.get('submit_user', '')
+    submit_user = request.args.get('submit_user', 'admin')
     results = show_detect_result(task_name, submit_user)
     return json.dumps(results)
 
@@ -864,7 +868,7 @@ def ajax_add_detect2analysis():
 def ajax_delete_task():
     status = True
     task_name = request.args.get('task_name', '')
-    submit_user = request.args.get('submit_user', '')
+    submit_user = request.args.get('submit_user', 'admin')
     status = delete_task(task_name, submit_user)
     return json.dumps(status)
 
@@ -873,14 +877,17 @@ def ajax_delete_task():
 #output:
 @mod.route('/show_sensing_task/') #获得所有的已经完成的社会感知任务列表
 def ajax_socail_sensing():
+    user = request.args.get("user", "")
     results = []
-    results = show_social_sensing_task()
+    results = show_social_sensing_task(user)
     return json.dumps(results)
 
 @mod.route('/show_user_in_sensing_task/')
 def ajax_show_user_in_sensing_task():
     task_name = request.args.get('task_name', '') # 获取某个任务名，返回相应重要的人
-    results = show_important_users(task_name)
+    user = request.args.get("user", "")
+    _id = user + '-' + task_name
+    results = show_important_users(_id)
 
     return json.dumps(results)
 

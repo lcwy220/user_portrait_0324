@@ -19,7 +19,8 @@ mod = Blueprint('sentiment', __name__, url_prefix='/sentiment')
 def ajax_sentiment_all():
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '') # limited by latest month
-    results = search_sentiment_all(start_date, end_date)
+    time_segment = request.args.get('segment', 'fifteen') # fifteen/hour/day
+    results = search_sentiment_all(start_date, end_date, time_segment)
     if not results:
         results = {}
     return json.dumps(results)
@@ -63,6 +64,7 @@ def ajax_sentiment_domain():
     domain = request.args.get('domain', '')
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '') #limited by lastest month
+    time_segment = request.args.get('segment', 'fifteen') #fifteen/hour/day
     results = search_sentiment_domain(domain, start_date, end_date)
     if not results:
         results = {}
