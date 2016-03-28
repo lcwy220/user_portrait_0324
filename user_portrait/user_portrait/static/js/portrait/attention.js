@@ -543,7 +543,6 @@ function bind_social_mode_choose(){
       var select_graph = $('input[name="graph-type"]:checked').val();
       var select_num=document.getElementById('num-range').value;
       var UserName = document.getElementById('username').innerHTML;
-      console.log(username);
         $("#test1").empty();
         $("#test0").empty();
         $("#field").empty();

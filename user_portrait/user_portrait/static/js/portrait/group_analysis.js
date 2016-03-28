@@ -68,28 +68,28 @@ Draw_overview: function(data){
     }else{
     var importance_star = '';
     for(var i=0;i<data.importance_star;i++){
-        importance_star += '<img src="/static/img/star-yellow.png" style="width:25px">'
+        importance_star += '<img src="/static/img/star-yellow.png" style="width:23px;">'
     };}
     if(data.activeness_star==undefined){
         activeness_star = '无此数据';
     }else{
      var activeness_star = '';
     for(var i=0;i<data.activeness_star;i++){
-        activeness_star += '<img src="/static/img/star-yellow.png" style="width:25px">'
+        activeness_star += '<img src="/static/img/star-yellow.png" style="width:23px;">'
     };}
     if(data.density_star==undefined){
         density_star = '无此数据';
     }else{
      var density_star = '';
     for(var i=0;i<data.density_star;i++){
-        density_star += '<img src="/static/img/star-yellow.png" style="width:25px" >'
+        density_star += '<img src="/static/img/star-yellow.png" style="width:23px;" >'
     };}
     if(data.influence_star==undefined){
         influence_star = '无此数据';
     }else{    
      var influence_star = '';
     for(var i=0;i<data.influence_star;i++){
-        influence_star += '<img src="/static/img/star-yellow.png" style="width:25px" >'
+        influence_star += '<img src="/static/img/star-yellow.png" style="width:23px;" >'
     };}
     // if(data.importance_star==undefined){
     //     importance_star = '无此数据';
@@ -145,16 +145,27 @@ Draw_overview: function(data){
     };
     $('#overview').empty();
     html = '';
-    html += '<p style="font-size:13px;padding: 5px 5px 5px 5px;">群体名称：<a style="cursor:pointer;" onclick="group_table();">' + name +'</a></p><p style="font-size:13px;padding: 5px 5px 5px 5px;">创建时间：' + submit_date +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">创建人员：' + submit_user +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;" id="group_states">群体备注：' + state +'</p>';
+    html += '<p style="font-size:13px;padding: 5px 5px 5px 5px;">群体名称：<a style="cursor:pointer;" onclick="group_table();">' + name +'</a></p><p style="font-size:13px;padding: 5px 5px 5px 5px;">创建时间：' + submit_date +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;">创建人员：' + submit_user +'</p><p style="font-size:13px;padding: 5px 5px 5px 5px;" id="group_states">群体备注：<span id="g_states">' + state +'</p>';
     html += '</a></li></ul></div>';
     $('#overview').append(html);
     $('#g_tag').empty();
     var html = '';
     html += '<table style="height:100px;width:100%;">';//border-bottom:1px solid #ccc;
-    html += '<tr style="padding:2px;"><td><span style="color:red;margin-left:20px;font-size:13px;">紧密度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员相互转发行为的多少程度，通过聚类系数、微博转发频率及参与转发的成员比例计算得到"></i></span><span>&nbsp;'+importance_star+'</span></td>';
-    html += '<td><span style="color:red;margin-left:20px;font-size:13px;">活跃度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员线上线下的活跃程度，通过发布微博综述、活跃地区数、发布微博的时间走势计算得到"></i></span><span>&nbsp;'+activeness_star+'</span></td>';
-    html += '<tr><td><span style="color:red;margin-left:20px;font-size:13px;">重要度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员对社会网络安全业务的重要程度，通过群体成员的所属领域和偏好话题计算得到"></i></span><span>&nbsp;'+density_star+'</span></td>';
-    html += '<td ><span style="color:red;margin-left:20px;font-size:13px;">影响力<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员整体的影响力，通过群体成员原创微博、转发微博的评论和转发的最高值、均值、总量计算得到"></i></span><span>&nbsp;'+influence_star+'</span></td></tr>';
+    html += '<tr><td style="padding:5px;text-align:center;vertical-align:middle"><img src="/static/img/closeness.png" style="height:60px"></td>';
+    html += '<td style="padding:5px;text-align:center;vertical-align:middle"><img src="/static/img/activeness.png" style="height:60px"></td>';
+    html += '<td style="padding:5px;text-align:center;vertical-align:middle"><img src="/static/img/importance.png" style="height:60px"></td>';
+    html += '<td style="padding:5px;text-align:center;vertical-align:middle"><img src="/static/img/influence.png" style="height:60px"></td></tr>';
+    html += '<tr><td style="text-align:center;vertical-align:middle;padding: 0px;/* width: 100px; */">' + density_star + '</td><td style="text-align:center;vertical-align:middle;padding: 0px;/* width: 100px; */">' + activeness_star + '</td>';
+    html += '<td style="text-align:center;vertical-align:middle;padding: 0px;/* width: 100px; */">' + importance_star + '</td><td style="text-align:center;vertical-align:middle;padding: 0px;/* width: 100px; */">' + influence_star + '</td></tr>';
+    html += '<tr><td style="padding:0px;font-size:14px;text-align:center;vertical-align:middle"><b>&nbsp;&nbsp;&nbsp;&nbsp;紧密度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员相互转发行为的多少程度，通过聚类系数、微博转发频率及参与转发的成员比例计算得到"></i>&nbsp;&nbsp;</</td>';
+    html += '<td style="padding:0px;font-size:14px;text-align:center;vertical-align:middle"><b>&nbsp;&nbsp;&nbsp;&nbsp;活跃度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员线上线下的活跃程度，通过发布微博综述、活跃地区数、发布微博的时间走势计算得到"></i>&nbsp;&nbsp;</b></td>';
+    html += '<td style="padding:0px;font-size:14px;text-align:center;vertical-align:middle"><b>&nbsp;&nbsp;&nbsp;&nbsp;重要度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员对社会网络安全业务的重要程度，通过群体成员的所属领域和偏好话题计算得到"></i>&nbsp;&nbsp;</b></td>';
+    html += '<td style="padding:0px;font-size:14px;text-align:center;vertical-align:middle"><b>&nbsp;&nbsp;&nbsp;&nbsp;影响力<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员整体的影响力，通过群体成员原创微博、转发微博的评论和转发的最高值、均值、总量计算得到"></i>&nbsp;&nbsp;</b></td></tr>';
+
+    //html += '<tr style="padding:2px;"><td><span style="color:red;margin-left:20px;font-size:13px;">紧密度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员相互转发行为的多少程度，通过聚类系数、微博转发频率及参与转发的成员比例计算得到"></i></span><span>&nbsp;'+importance_star+'</span></td>';
+    //html += '<td><span style="color:red;margin-left:20px;font-size:13px;">活跃度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员线上线下的活跃程度，通过发布微博综述、活跃地区数、发布微博的时间走势计算得到"></i></span><span>&nbsp;'+activeness_star+'</span></td>';
+    //html += '<tr><td><span style="color:red;margin-left:20px;font-size:13px;">重要度<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员对社会网络安全业务的重要程度，通过群体成员的所属领域和偏好话题计算得到"></i></span><span>&nbsp;'+density_star+'</span></td>';
+    //html += '<td ><span style="color:red;margin-left:20px;font-size:13px;">影响力<i id="" class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="衡量群体内部成员整体的影响力，通过群体成员原创微博、转发微博的评论和转发的最高值、均值、总量计算得到"></i></span><span>&nbsp;'+influence_star+'</span></td></tr>';
     $('#g_tag').append(html);
 },
 
@@ -319,59 +330,6 @@ function add_group_tag(){
 
 }
 
-function g_bind_remark_edit(Search_weibo){
-    $('#group_states').click(function(){
-        var td = $(this);
-        var txt = td.html();
-        var input = "<input id='g_editremark' style='width:100px;' type='text' value='" + txt + "'/>";
-        td.html(input);
-        $('#g_editremark').click(function(){
-            return false;
-        });
-        $('#g_editremark').trigger('focus');
-        $('#g_editremark').bind('keyup', function(e){
-            var ev = document.all?window.event:e;
-            if (ev.keyCode == 13){
-                var newtxt = $(this).val();
-                if (newtxt == ''){
-                    td.html('暂无');
-                }
-                else{    
-                    td.html(newtxt);
-                }
-                if (newtxt != txt){
-                    var url = '/attribute/edit_remark/?uid=' + uid + '&remark=' + newtxt;
-                    Search_weibo.call_sync_ajax_request(url, Search_weibo.ajax_method, confirm_edit);
-                    //console.log('diff');
-                }
-            }
-        }).bind('keydown', function(e){
-            var ev = document.all?window.event:e;
-            if (ev.keyCode == 13){
-                return false;
-            }
-        });
-        $('#g_editremark').blur(function(){
-            var newtxt = $(this).val();
-            if (newtxt == ''){
-                td.html('暂无');
-            }
-            else{    
-                td.html(newtxt);
-            }
-            if (newtxt != txt){
-                var url = '/attribute/edit_remark/?uid=' + uid + '&remark=' + newtxt;
-                Search_weibo.call_sync_ajax_request(url, Search_weibo.ajax_method, confirm_edit);
-                //console.log('diff');
-            }
-        });
-        function confirm_edit(data){
-            //alert(data);
-        }
-    });
-}
-g_bind_remark_edit(Search_weibo);
-
 
 
 $(document).ready(function(){
@@ -386,7 +344,7 @@ $(document).ready(function(){
     var attribute_value_url = '';
     attribute_value_url = '/tag/show_attribute_value/?attribute_name=' + select_attribute_name;
     Search_weibo.call_sync_ajax_request(attribute_value_url, Search_weibo.ajax_method, Search_weibo.Draw_attribute_value);
-
+g_bind_remark_edit(Search_weibo);
     $('#select_attribute_name').change(function(){
             var attribute_value_url = '/tag/show_attribute_value/?attribute_name=' ;
             attribute_value_url += $(this).val();
@@ -422,6 +380,60 @@ function group_tag_vector(data){
     html += '</table>'
     $('#group_tag_vector').html(html);
 }
+
+function g_bind_remark_edit(Search_weibo){
+    $('#g_states').click(function(){
+        console.log('ddd');
+        var td = $(this);
+        var txt = td.html();
+        var input = "<input id='g_editremark' style='width:100px;' type='text' value='" + txt + "'/>";
+        td.html(input);
+        $('#g_editremark').click(function(){
+            return false;
+        });
+        $('#g_editremark').trigger('focus');
+        $('#g_editremark').bind('keyup', function(e){
+            var ev = document.all?window.event:e;
+            if (ev.keyCode == 13){
+                var newtxt = $(this).val();
+                if (newtxt == ''){
+                    td.html('暂无');
+                }
+                else{    
+                    td.html(newtxt);
+                }
+                if (newtxt != txt){
+                    var url = '/group/edit_states/?task_name=' + name + '&submit_user='+$('#g_useremail').text()+'&new_state=' + newtxt;
+                    Search_weibo.call_sync_ajax_request(url, Search_weibo.ajax_method, confirm_edit);
+                    //console.log('diff');
+                }
+            }
+        }).bind('keydown', function(e){
+            var ev = document.all?window.event:e;
+            if (ev.keyCode == 13){
+                return false;
+            }
+        });
+        $('#g_editremark').blur(function(){
+            var newtxt = $(this).val();
+            if (newtxt == ''){
+                td.html('暂无');
+            }
+            else{    
+                td.html(newtxt);
+            }
+            if (newtxt != txt){
+                var url = '/group/edit_states/?task_name=' + name + '&submit_user='+$('#g_useremail').text()+'&new_state=' + newtxt;
+                Search_weibo.call_sync_ajax_request(url, Search_weibo.ajax_method, confirm_edit);
+                console.log('dif');
+            }
+        });
+        function confirm_edit(data){
+            //alert(data);
+        }
+    });
+}
+// g_bind_remark_edit(Search_weibo);
 
 function group_table(){
     var model_url =   "/group/show_group_list/?task_name=" + name;
@@ -468,12 +480,6 @@ function group_table(){
                 "sLengthMenu": "_MENU_ 每页"
             }
         });
-          var tag_url =  '/tag/show_attribute_name/';
-    Search_weibo.call_sync_ajax_request(tag_url, Search_weibo.ajax_method, Search_weibo.Draw_attribute_name);
-    var select_attribute_name =document.getElementById("select_attribute_name").value;
-    var attribute_value_url = '';
-    attribute_value_url = '/tag/show_attribute_value/?attribute_name=' + select_attribute_name;
-    Search_weibo.call_sync_ajax_request(attribute_value_url, Search_weibo.ajax_method, Search_weibo.Draw_attribute_value);
 
     }
 
