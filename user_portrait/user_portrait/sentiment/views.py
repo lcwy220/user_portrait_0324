@@ -5,8 +5,8 @@ import json
 from flask import Blueprint, url_for, render_template, request,\
                     abort, flash, session, redirect
 from utils import search_sentiment_all, search_sentiment_all_keywords,\
-                  search_sentiment_domain, search_senitment_topic,\
-                  search_sentiment_weibo_keywords
+                  search_sentiment_domain, search_sentiment_topic,\
+                  search_sentiment_weibo_keywords, search_sentiment_all_portrait
 from user_portrait.global_utils import es_flow_text, flow_text_index_name_pre, \
                 flow_text_index_type, es_user_portrait, portrait_index_name ,\
                 portrait_index_type
@@ -21,6 +21,17 @@ def ajax_sentiment_all():
     end_date = request.args.get('end_date', '') # limited by latest month
     time_segment = request.args.get('segment', 'fifteen') # fifteen/hour/day
     results = search_sentiment_all(start_date, end_date, time_segment)
+    if not results:
+        results = {}
+    return json.dumps(results)
+
+#use to get all portrait sentiment trend
+@mod.route('/sentiment_all_portrait/')
+def ajax_sentiment_all_portrait():
+    start_date = request.args.get('start_date', '')
+    end_date = request.args.get('end_date', '')
+    time_segment = request.args.get('segment', 'fifteen') # fifteen/hour/day
+    results = search_sentiment_all_portrait(start_date, end_date, time_segment)
     if not results:
         results = {}
     return json.dumps(results)
@@ -75,8 +86,9 @@ def ajax_sentiment_domain():
 def ajax_senitment_topic():
     topic = request.args.get('topic', '')
     start_date = request.args.get('start_date', '')
-    end_date = request.arg.get('end_date', '') #limited by latest month
-    results = search_sentiment_topic(topic, start_date, end_date)
+    end_date = request.args.get('end_date', '') #limited by latest month
+    time_segment = request.args.get('segment', 'fifteen') #fifteen/hour/day
+    results = search_sentiment_topic(topic, start_date, end_date, time_segment)
     if not results:
         results = {}
     return json.dumps(results)
