@@ -2,6 +2,7 @@
 import sys
 import json
 import time
+import math
 from influence_appendix import weiboinfo2url
 
 from user_portrait.global_utils import es_user_portrait, portrait_index_name,\
@@ -17,7 +18,7 @@ from user_portrait.global_utils import R_DOMAIN_SENTIMENT, r_domain_sentiment_pr
 from user_portrait.time_utils import ts2datetime, datetime2ts, ts2date
 from user_portrait.parameter import DAY, domain_en2ch_dict, SENTIMENT_MAX_TEXT,\
         SENTIMENT_TEXT_SORT, SENTIMENT_MAX_KEYWORDS, SENTIMENT_SECOND,\
-        SENTIMENT_ITER_USER_COUNT, MAX_VALUE, RUN_TYPE
+        SENTIMENT_ITER_USER_COUNT, MAX_VALUE, RUN_TYPE, SENTIMENT_MAX_USER
 
 sentiment_type_list = ['0', '1', '7']
 str2segment = {'fifteen': 900, 'hour': 3600, 'day':3600*24}
@@ -269,9 +270,12 @@ def identify_user_portrait(user_set):
                 normal_activeness = math.log(activeness / max_result['activeness'] * 9 + 1 , 10)
                 importance = in_portrait_item['fields']['importance'][0]
                 normal_importance = math.log(importance / max_result['importance'] * 9 + 1 , 10)
-                sensitive = in_portrait_item['fields']['sensitive'][0]
-                normal_sensitive = math.log(sensitive / max_result['sensitive'] * 9 + 1 , 10)
-                all_in_portrait_user[in_portrait_item['_id']] = [uname, normal_infuence, normal_activeness, \
+                try:
+                    sensitive = in_portrait_item['fields']['sensitive'][0]
+                    normal_sensitive = math.log(sensitive / max_result['sensitive'] * 9 + 1 , 10)
+                except:
+                    normal_sensitive = 0
+                all_in_portrait_user[in_portrait_item['_id']] = [uname, normal_influence, normal_activeness, \
                     normal_importance, normal_sensitive]
             else:
                 all_out_portrait_user_list.append(int(in_portrait_item['_id']))
@@ -316,7 +320,7 @@ def add_uname2weibo(weibo_list, in_portrait_dict, out_portrait_dict):
 
 
 
-def search_sentiment_detail_all(start_ts, task_type, task_detail, time_segment, sentiment):
+def search_sentiment_detail_all(start_ts, task_type, task_detail, time_segment, sentiment, sort_type):
     results = {}
     #step1:get weibo from flow_text
     start_ts = int(start_ts)
@@ -346,7 +350,7 @@ def search_sentiment_detail_all(start_ts, task_type, task_detail, time_segment, 
                     }
                 },
             'size': SENTIMENT_MAX_TEXT,
-            'sort': SENTIMENT_TEXT_SORT
+            'sort': sort_type
             }
     flow_text_index_name = flow_text_index_name_pre + start_date
     print 'flow_text_index_name:', flow_text_index_name
@@ -391,43 +395,43 @@ def search_sentiment_detail_all(start_ts, task_type, task_detail, time_segment, 
     show_weibo_list = add_uname2weibo(show_weibo_list, in_portrait_result, out_portrait_result)
     #step4: results
     results['weibo'] = show_weibo_list
-    results['in_portrait_result'] = sorted(in_portrait_result.items(), key=lambda x:x[1][1], reverse=True)[:100]
-    results['out_portrait_result'] = sorted(out_portrait_result.items(), key=lambda x:x[1][3], reverse=True)[:100]
+    results['in_portrait_result'] = sorted(in_portrait_result.items(), key=lambda x:x[1][1], reverse=True)[:SENTIMENT_MAX_USER]
+    results['out_portrait_result'] = sorted(out_portrait_result.items(), key=lambda x:x[1][3], reverse=True)[:SENTIMENT_MAX_USER]
     results['keywords'] = keywords_list
     return results
 
-def search_sentiment_detail_all_keywords(start_ts, task_type, task_detail, time_segment, sentiment):
+def search_sentiment_detail_all_keywords(start_ts, task_type, task_detail, time_segment, sentiment, sort_type):
     results = {}
     return results
 
-def search_sentiment_detail_in_all(start_ts, task_type, task_detail, time_segment, sentiment):
+def search_sentiment_detail_in_all(start_ts, task_type, task_detail, time_segment, sentiment, sort_type):
     results = {}
     return results
 
-def search_sentiment_detail_in_domain(start_ts, task_type, task_detail, time_segment, sentiment):
+def search_sentiment_detail_in_domain(start_ts, task_type, task_detail, time_segment, sentiment, sort_type):
     results = {}
     return results
 
-def search_sentiment_detail_in_topic(start_ts, task_type, task_detail, time_segment, sentiment):
+def search_sentiment_detail_in_topic(start_ts, task_type, task_detail, time_segment, sentiment, sort_type):
     results = {}
     return results
 
 #use to get sentiment trend point weibo and keywords and user
-def search_sentiment_weibo_keywords(start_ts, task_type, task_detail, time_segment, sentiment):
+def search_sentiment_weibo_keywords(start_ts, task_type, task_detail, time_segment, sentiment,sort_type):
     results = {}
     #step1: identify the task type
     #step2: get weibo
     #step3: get keywords
     #step4: get user who in user_portrait or not
     if task_type=='all':
-        results = search_sentiment_detail_all(start_ts, task_type, task_detail, time_segment, sentiment)
+        results = search_sentiment_detail_all(start_ts, task_type, task_detail, time_segment, sentiment, sort_type)
     elif task_type=='all-keywords':
-        results = search_sentiment_detail_all_keywords(start_ts, task_type, task_detail, time_segment, sentiment)
+        results = search_sentiment_detail_all_keywords(start_ts, task_type, task_detail, time_segment, sentiment, sort_type)
     elif task_type=='in-all':
-        results = search_sentiment_detail_in_all(start_ts, task_type, task_detail, time_segment, sentiment)
+        results = search_sentiment_detail_in_all(start_ts, task_type, task_detail, time_segment, sentiment, sort_type)
     elif task_type=='in-domain':
-        results = search_sentiment_detail_in_domain(start_ts, task_type, task_detail, time_segment, sentiment)
+        results = search_sentiment_detail_in_domain(start_ts, task_type, task_detail, time_segment, sentiment, sort_type)
     elif task_type=='in-topic':
-        results = search_sentiment_detail_in_topic(task_type, task_detail, time_segment, sentiment)
+        results = search_sentiment_detail_in_topic(task_type, task_detail, time_segment, sentiment, sort_type)
 
     return results
