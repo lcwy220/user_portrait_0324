@@ -50,10 +50,7 @@ def search_sentiment_all(start_date, end_date, time_segment):
             #get ts_count_dict in one day
             ts_count_result = R_SENTIMENT_ALL.hgetall(iter_r_name)
             #get x and y list by timesegment
-            if time_segment != 'fifteen':
-                new_ts_count_dict = get_new_ts_count_dict(ts_count_result, time_segment, date_item)
-            else:
-                new_ts_count_dict = ts_count_result
+            new_ts_count_dict = get_new_ts_count_dict(ts_count_result, time_segment, date_item)
             sort_new_ts_count = sorted(new_ts_count_dict.items(), key=lambda x:x[0])
             sentiment_ts_count_dict[sentiment].extend(sort_new_ts_count)
 
@@ -96,10 +93,27 @@ def submit_sentiment_all_keywords(keywords_string, start_date, end_date, submit_
     return True
 
 #use to get domain sentiment trend by date for user in user_portrait
-def search_sentiment_domain(domain, start_date, end_date):
+def search_sentiment_domain(domain, start_date, end_date, time_segment):
     results = {}
+    start_ts = datetime2ts(start_date)
+    end_ts = datetime2ts(end_date)
+    search_date_list = []
+    for i in range(start_ts, end_ts+DAY, DAY):
+        iter_date = ts2datetime(i)
+        search_date_list.append(iter_date)
+    sentiment_ts_count_dict = {}
+    for sentiment in sentiment_type_list:
+        sentiment_ts_count_dict[sentiment] = []
+        for date_item in search_date_list:
+            iter_r_name = r_domain_sentiment_pre + date_item + '_' + sentiment + '_' + domain
+            #get ts_count_dict in one day
+            ts_count_result = R_DOMAIN_SENTIMENT.hgetall(iter_r_name)
+            #get x and y list by timesegment
+            new_ts_count_dict = get_new_ts_count_dict(ts_count_result, time_segment, date_item)
+            sort_new_ts_count = sorted(new_ts_count_dict.items(), key=lambda x:x[0])
+            sentiment_ts_count_dict[sentiment].extend(sort_new_ts_count)
 
-    return results
+    return sentiment_ts_count_dict
 
 #use to get topic sentiment trend by date for user in user_portrait
 def search_senitment_topic(topic, start_date, end_date):
