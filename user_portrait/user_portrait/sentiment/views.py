@@ -94,12 +94,14 @@ def ajax_senitment_topic():
     return json.dumps(results)
 
 #use to get sentiment trend point weibo and keywords and user
-@mod.route('/sentiment_weibo_keywords/')
+@mod.route('/sentiment_weibo_keywords_user/')
 def ajax_sentiment_weibo_keywords():
     start_ts = request.args.get('start_ts', '')
     task_type = request.args.get('task_type', '') # task_type=all/all-keywords/in-all/in-domain/in-topic
-    time_segment = request.args.get('segment', '') # segment = 15/30/..
-    results = search_sentiment_weibo_keywords(start_ts, task_type, time_segment)
+    task_detail = request.args.get('task_detail', '')  # domain/topic detail type
+    time_segment = request.args.get('segment', '') # fifteen/hour/day
+    sentiment = request.args.get('sentiment', '0') # 0/1/7
+    results = search_sentiment_weibo_keywords(start_ts, task_type, task_detail, time_segment, sentiment)
     if not results:
         results = {}
     return json.dumps(results)
