@@ -100,7 +100,8 @@ def ajax_sentiment_weibo_keywords():
     task_type = request.args.get('task_type', '') # task_type=all/all-keywords/in-all/in-domain/in-topic
     task_detail = request.args.get('task_detail', '')  # domain/topic detail type
     time_segment = request.args.get('segment', '') # fifteen/hour/day
-    results = search_sentiment_weibo_keywords(start_ts, task_type, task_detail, time_segment)
+    sentiment = request.args.get('sentiment', '0') # 0/1/7
+    results = search_sentiment_weibo_keywords(start_ts, task_type, task_detail, time_segment, sentiment)
     if not results:
         results = {}
     return json.dumps(results)
