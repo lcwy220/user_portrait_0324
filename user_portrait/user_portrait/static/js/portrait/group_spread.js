@@ -1,6 +1,3 @@
-//粉丝、朋友、微博
-//console.log('tttttttt');
-
 //影响力分布
 function draw_influ_distribution(data,radar_div, title){
     //console.log(data);
@@ -456,6 +453,7 @@ function Draw_group_influ_weibo(data, div_name, sub_div_name){
     //console.log(div_name);
     if (data.length < page_num) {
         //console.log('data_length', data.length);
+        $('#'+ div_name + ' #pageGro').css('display', 'none');
         $('#'+ div_name + ' #pageGro .pageUp').css('display', 'none');
         $('#'+ div_name + ' #pageGro .pageList').css('display', 'none'); 
         $('#'+ div_name + ' #pageGro .pageDown').css('display', 'none'); 
@@ -463,13 +461,16 @@ function Draw_group_influ_weibo(data, div_name, sub_div_name){
             $('#' + sub_div_name).empty();
             $('#' + sub_div_name).append('此条件下没有与此事件相关的微博！');
         }else{
-            $('#'+ div_name + ' #pageGro').css('display', 'block');
+            //$('#'+ div_name + ' #pageGro').css('display', 'block');
             page_num = data.length
             page_group_influ_weibo( 0, page_num, data, sub_div_name);
         }
       }
       else {
           $('#'+ div_name + ' #pageGro').css('display', 'block');
+          $('#'+ div_name + ' #pageGro .pageUp').css('display', 'block');
+          $('#'+ div_name + ' #pageGro .pageList').css('display', 'block'); 
+          $('#'+ div_name + ' #pageGro .pageDown').css('display', 'block'); 
           page_group_influ_weibo( 0, page_num, data, sub_div_name);
           var total_pages = 0;
           if (data.length % page_num == 0) {
@@ -871,4 +872,5 @@ var timestamp_to_url = '';
 timestamp_to_url = 'timestamp_to=' + time_to;
 url_all.push(timestamp_to_url);
 */
+
 
