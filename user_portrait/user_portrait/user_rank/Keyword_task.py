@@ -110,7 +110,8 @@ def scan_offlice_task():
     
 
 if __name__ == "__main__":
-    scan_offlice_task();
+    while 1:
+        scan_offlice_task();
     
 
     

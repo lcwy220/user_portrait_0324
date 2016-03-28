@@ -49,7 +49,8 @@ def all_makeup_info(id , sort_norm , time):
         item['location'] = None
         item['uname'] = None
         item['weibo_count'] = None
-        
+    
+    item['uid'] = id
     query = {"query":{"bool":{"must":[{"term":{"user.uid":id}}],"must_not":[],"should":[]}},"from":0,"size":10,"sort":[],"facets":{},"fields":[]}
     result = es.search(index=USER_INDEX_NAME , doc_type=USER_INDEX_TYPE , body=query)['hits']
     if result['total'] != 0 :
@@ -83,6 +84,8 @@ def in_makeup_info(id , sort_norm , time):
         item['location'] = None
         item['uname'] = None
         item['fans'] = None
+
+    item['uid'] = id
     field_bci , field_sen ,field_imp ,field_act = get_in_filed(sort_norm,time)
     
     item['bci'] = history_info(BCI_INDEX_NAME,BCI_INDEX_TYPE,id,field_bci)

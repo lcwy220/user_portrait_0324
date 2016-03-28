@@ -157,7 +157,7 @@ function group_control_data(){
         function con_callback(data){
             if(data==1){
                 alert('操作成功！');
-                window.location.reload();
+                //window.location.reload();
             }else if(data==0){
                 alert('已存在相同名称的监控任务，请重试！');
             }else if(data ==-1){
