@@ -9,29 +9,28 @@ from Makeup_info import make_up_user_info
 import json
 
 def user_sort_interface(username , time ,sort_scope , sort_norm , arg = None, st = None, et = None, isall = False):
+
     user_list = []
     if isall:
         #deal with the situation of all net user
         if sort_scope == 'all_limit_keyword':
             #offline job
             #add job to es index
-            search_id =  add_task(username , arg ,'keyword' ,'all')
-            #deal with the offline task   
-
-            during = ( datetime2ts(st) - datetime2ts(st) ) / DAY + 1
+            during = ( datetime2ts(et) - datetime2ts(st) ) / DAY + 1
             time = 1
             if during > 3:
                 time = 7
             elif during > 16:
                 time = 30
-            return key_words_search(  "flow_text_" , during, st , arg ,  'all' , search_id , sort_norm  ,time , isall = True)
+            search_id = add_task( username ,"keyword" , "all" ,'flow_text_' , during , st ,et, arg , sort_norm , sort_scope, time, isall)
+            #deal with the offline task   
+            return {"flag":True , "search_id" : search_id }
         elif sort_scope == 'all_nolimit':
             #online job
             user_list = all_sort_filter(None,sort_norm,time)
     else:
         if sort_scope == 'in_limit_keyword':
             #offline job
-            search_id = add_task(username , arg ,'keyword' ,'all')
             #deal with the offline task
             during = ( datetime2ts(et) - datetime2ts(st) ) / DAY + 1
             time = 1
@@ -39,18 +38,25 @@ def user_sort_interface(username , time ,sort_scope , sort_norm , arg = None, st
                 time = 7
             elif during > 16:
                 time = 30
-            return key_words_search(  "flow_text_" , during, st , arg ,  'in' , search_id , sort_norm  ,time , isall = False)
+            search_id = add_task( username ,"keyword" , "in" ,'flow_text_' , during , st ,et , arg , sort_norm , sort_scope, time, isall)
+            return {"flag":True , "search_id" : search_id }
+        elif sort_scope == 'in_limit_hashtag':
+            during = ( datetime2ts(et) - datetime2ts(st) ) / DAY + 1
+            time = 1
+            if during > 3:
+                time = 7
+            elif during > 16:
+                time = 30
+            search_id = add_task( username ,"hashtag" , "in" ,'flow_text_' , during , st ,et, arg , sort_norm , sort_scope, time, isall)
+            return {"flag":True , "search_id" : search_id }
         else:
-            print sort_norm
-            print sort_scope
             #find the scope
             user_list = in_sort_filter(time , sort_norm,sort_scope , arg)
     
-    result = make_up_user_info(user_list,isall)
+    result = make_up_user_info(user_list,isall , time , sort_norm)
     return result
     
-if __name__ == "__main__":
-    
-    print json.dumps(user_sort_interface(username = "kanon", time = 1, sort_scope =  "in_limit_topic", sort_norm = "bci" , arg = '' , st = "2013-09-01"  ,et =  "2013-09-01" , isall = False) )
+if __name__ == "__main__":    
+    print json.dumps(user_sort_interface(username = "kanon", time = 1, sort_scope =  "all_limit_keyword", sort_norm = "fans" , arg = 'hello' , st = "2013-09-01"  ,et =  "2013-09-01" , isall = True) )
             
             
