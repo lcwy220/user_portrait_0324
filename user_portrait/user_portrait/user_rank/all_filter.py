@@ -10,31 +10,28 @@ from global_utils import es_user_portrait as es
 
 MAX_SIZE = 2 ** 10
 
-def all_sort_filter( uid_list = [] , sort_norm = 'imp' , time = 1  ):
+def all_sort_filter( uid_list = [] , sort_norm = 'imp' , time = 1 , key_search = False ):
     uid = []
     if sort_norm == 'bci':
-        uid = history_sort('bci_',BCIHIS_INDEX_NAME,BCIHIS_INDEX_TYPE,uid_list,time,False)
+        uid = history_sort('bci_',BCIHIS_INDEX_NAME,BCIHIS_INDEX_TYPE,uid_list,time,False , key_search)
     elif sort_norm == 'bci_change':
-        uid = history_sort('bci_',BCIHIS_INDEX_NAME,BCIHIS_INDEX_TYPE,uid_list,time,True)
+        uid = history_sort('bci_',BCIHIS_INDEX_NAME,BCIHIS_INDEX_TYPE,uid_list,time,True ,  key_search)
     elif sort_norm == 'ses':
-        uid = history_sort('sensitive_',SESHIS_INDEX_NAME,SESHIS_INDEX_TYPE,uid_list,time,False)
+        uid = history_sort('sensitive_',SESHIS_INDEX_NAME,SESHIS_INDEX_TYPE,uid_list,time,False, key_search)
     elif sort_norm == 'ses_change':
-        uid = history_sort('sensitive_',SESHIS_INDEX_NAME,SESHIS_INDEX_TYPE,uid_list,time,True)
+        uid = history_sort('sensitive_',SESHIS_INDEX_NAME,SESHIS_INDEX_TYPE,uid_list,time,True, key_search)
     elif sort_norm == 'fans':
-        uid = es_get_userlist_by_all("fansnum" , uid_list)
-    elif sort_norm == 'weibo_count':
-        uid = es_get_userlist_by_all("statusnum" , uid_list)
+        uid = es_get_userlist_by_all("fansnum" , uid_list, key_search)
+    elif sort_norm == 'weibo_num':
+        uid = es_get_userlist_by_all("statusnum" , uid_list, key_search)
     return uid
 
 
 
-def history_sort( prefix ,index_name , index_type , uid_list , time , ischange = False):
+def history_sort( prefix ,index_name , index_type , uid_list , time , ischange = False ,key_search = False):
     sort_field = prefix
     if time == 1 :
-        if ischange:
-            sort_field += "day_change"
-        else:
-            sort_field += "day_last"
+        sort_field += "day_change"
     elif time == 7:
         if ischange:
             sort_field += "week_change"
@@ -47,7 +44,7 @@ def history_sort( prefix ,index_name , index_type , uid_list , time , ischange =
             sort_field += "month_ave"
 
     query = {}
-    if uid_list:
+    if key_search:
         query = {
                 "query": {
                     "filtered": {
@@ -80,10 +77,10 @@ def history_sort( prefix ,index_name , index_type , uid_list , time , ischange =
 
 
 
-def es_get_userlist_by_all(fieldname , uid):
+def es_get_userlist_by_all(fieldname , uid, key_search = False):
     sort = [{ fieldname : { "order": "desc" } }]
     query = {}
-    if uid:
+    if key_search:
         query = {
                 "query": {
                 "filtered": {
@@ -99,6 +96,7 @@ def es_get_userlist_by_all(fieldname , uid):
                 "size" : MAX_SIZE
         }    
     else :
+        print "aa"
         query = {
             "query": {
                 "bool": {
@@ -116,11 +114,12 @@ def es_get_userlist_by_all(fieldname , uid):
         }
 
     try:
+        print str(query).replace("\'","\"")
         result = es.search(index = WEIBO_USER_INDEX_NAME , doc_type = WEIBO_USER_INDEX_TYPE , body = query)['hits']['hits']
         uid_list = []
         for item in result :
             uid_list.append(item['_id'].encode("utf-8") )
-        return list(set(uid_list))
+        return uid_list
     except Exception,e:
         print e
         raise  Exception('user_list failed!')  

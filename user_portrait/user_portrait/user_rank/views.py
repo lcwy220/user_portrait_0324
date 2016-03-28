@@ -5,7 +5,7 @@ import json
 from flask import Blueprint, url_for, render_template, request, abort, flash, session, redirect
 from user_portrait.time_utils import ts2datetime
 from User_sort_interface import user_sort_interface
-from Offline_task import search_user_task
+from Offline_task import search_user_task , getResult , delOfflineTask
 
 
 mod = Blueprint('user_rank', __name__, url_prefix='/user_rank')
@@ -29,7 +29,7 @@ def user_sort():
         pass
     else :
         arg = None
-    results = user_sort_interface(username,search_time,sort_scope,sort_norm,arg,st,et,all)
+    results = user_sort_interface(username,int(search_time),sort_scope,sort_norm,arg,st,et,all)
     return json.dumps(results)
 
 @mod.route('/search_task/', methods=['GET', 'POST'])
@@ -38,4 +38,15 @@ def search_task():
     results = search_user_task(username)
     return json.dumps(results)
 
+@mod.route('/get_result/' , methods=['GET','POST'])
+def get_result():
+    search_id = request.args.get('search_id','')
+    results = getResult(search_id)
+    return json.dumps(results)
 
+@mod.route('/delete_task/' , methods =['GET','POST'])
+def delete_task():
+    search_id = request.args.get('search_id','')
+    result = {}
+    result['flag'] = delOfflineTask(search_id)
+    return json.dumps(result)
