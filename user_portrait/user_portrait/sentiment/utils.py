@@ -176,12 +176,43 @@ def search_sentiment_topic(topic, start_date, end_date, time_segment):
 
     return sentiment_ts_count_dict
 
+
+def search_sentiment_detail_all(start_ts, task_type, task_detail, time_segment):
+    results = {}
+    return results
+
+def search_sentiment_detail_all_keywords(start_ts, task_type, task_detail, time_segment):
+    results = {}
+    return results
+
+def search_sentiment_detail_in_all(start_ts, task_type, task_detail, time_segment):
+    results = {}
+    return results
+
+def search_sentiment_detail_in_domain(start_ts, task_type, task_detail, time_segment):
+    results = {}
+    return results
+
+def search_sentiment_detail_in_topic(start_ts, task_type, task_detail, time_segment):
+    results = {}
+    return results
+
 #use to get sentiment trend point weibo and keywords and user
-def search_sentiment_weibo_keywords(start_ts, task_type, time_segment):
+def search_sentiment_weibo_keywords(start_ts, task_type, task_detail, time_segment):
     results = {}
     #step1: identify the task type
     #step2: get weibo
     #step3: get keywords
     #step4: get user who in user_portrait or not
+    if task_type=='all':
+        results = search_sentiment_detail_all(start_ts, task_type, task_detail, time_segment)
+    elif task_type=='all-keywords':
+        results = search_sentiment_detail_all_keywords(start_ts, task_type, task_detail, time_segment)
+    elif task_type=='in-all':
+        results = search_sentiment_detail_in_all(start_ts, task_type, task_detail, time_segment)
+    elif task_type=='in-domain':
+        results = search_sentiment_detail_in_domain(start_ts, task_type, task_detail, time_segment)
+    elif task_type=='in-topic':
+        results = search_sentiment_detail_in_topic(task_type, task_detail, time_segment)
 
     return results
