@@ -18,7 +18,8 @@ from user_portrait.global_utils import R_DOMAIN_SENTIMENT, r_domain_sentiment_pr
 from user_portrait.time_utils import ts2datetime, datetime2ts, ts2date
 from user_portrait.parameter import DAY, domain_en2ch_dict, SENTIMENT_MAX_TEXT,\
         SENTIMENT_TEXT_SORT, SENTIMENT_MAX_KEYWORDS, SENTIMENT_SECOND,\
-        SENTIMENT_ITER_USER_COUNT, MAX_VALUE, RUN_TYPE, SENTIMENT_MAX_USER
+        SENTIMENT_ITER_USER_COUNT, MAX_VALUE, RUN_TYPE, SENTIMENT_MAX_USER,\
+        SENTIMENT_ITER_TEXT_COUNT
 
 sentiment_type_list = ['0', '1', '7']
 str2segment = {'fifteen': 900, 'hour': 3600, 'day':3600*24}
@@ -241,7 +242,7 @@ def get_evaluate_max():
     return max_result
 
 
-def identify_user_portrait(user_set):
+def identify_user_portrait(user_set, filter_type):
     in_portrait_result = []
     out_portrait_result = []
     user_list = list(user_set)
@@ -280,6 +281,8 @@ def identify_user_portrait(user_set):
             else:
                 all_out_portrait_user_list.append(int(in_portrait_item['_id']))
         iter_count += SENTIMENT_ITER_USER_COUNT
+    if filter_type == 'in':
+        return all_in_portrait_user
     #get out portrait user info
     iter_count = 0
     all_out_portrait_user = dict()
@@ -390,7 +393,8 @@ def search_sentiment_detail_all(start_ts, task_type, task_detail, time_segment, 
     keywords_list = [[item['key'], item['doc_count']] for item in show_keywords_dict]
     #step3:get user information
     print 'get user'
-    in_portrait_result, out_portrait_result = identify_user_portrait(user_set)
+    filter_type = 'in-out'
+    in_portrait_result, out_portrait_result = identify_user_portrait(user_set, filter_type)
     #step4: add uname to show weibo list
     show_weibo_list = add_uname2weibo(show_weibo_list, in_portrait_result, out_portrait_result)
     #step4: results
@@ -404,8 +408,113 @@ def search_sentiment_detail_all_keywords(start_ts, task_type, task_detail, time_
     results = {}
     return results
 
+
+def filter_weibo_in(weibo_list, in_portrait_dict):
+    filter_weibo_list = []
+    for weibo_item in weibo_list:
+        uid = weibo_item[1]
+        try:
+            uname = in_portrait_dict[uid][0]
+        except:
+            uname = ''
+        if uname:
+            new_weibo_item = weibo_item
+            new_weibo_item.extend(uname)
+            filter_weibo_list.extend(new_weibo_item)
+
+    return filter_weibo_list
+
+
+
+
 def search_sentiment_detail_in_all(start_ts, task_type, task_detail, time_segment, sentiment, sort_type):
     results = {}
+    start_ts = int(start_ts)
+    start_date = ts2datetime(start_ts)
+    end_ts = start_ts + str2segment[time_segment]
+    print 'start_ts:', start_ts
+    print 'end_ts:', end_ts
+    if sentiment == '7':
+        query_sentiment_list = SENTIMENT_SECOND
+    else:
+        query_sentiment_list = [sentiment]
+    #step1: iter get weibo and user in portrait
+    in_user_count = 0
+    in_user_result = {}
+    all_filter_weibo_list = []
+    sort_evaluate_max = '99999999999'
+    flow_text_index_name = flow_text_index_name_pre + start_date
+    print 'flow_text_index_name:', flow_text_index_name
+    while len(in_user_result)< SENTIMENT_MAX_USER:
+        print 'in_user_count:', len(in_user_result)
+        print 'sort_evaluate_max:', sort_evaluate_max
+        query_body = {
+            'query':{
+                'filtered':{
+                    'filter':{
+                        'bool':{
+                            'must':[
+                                {'range':{sort_type: {'lt': sort_evaluate_max}}},
+                                {'terms':{'sentiment': query_sentiment_list}},
+                                {'range': {'timestamp': {'gte': start_ts, 'lt': end_ts}}}
+                                ]
+                            }
+                        }
+                    }
+                },
+            'sort': [{sort_type: {'order': 'desc'}}],
+            'size': SENTIMENT_ITER_TEXT_COUNT
+            }
+        print 'query_body:', query_body
+        try:
+            flow_text_result = es_flow_text.search(index=flow_text_index_name, doc_type=flow_text_index_type,\
+                body=query_body)['hits']['hits']
+        except:
+            flow_text_result = []
+        print 'flow_text_result:', len(flow_text_result)
+        if not flow_text_result:
+            break
+        weibo_list, user_set = deal_show_weibo_list(flow_text_result)
+        filter_type = 'in'
+        in_portrait_result = identify_user_portrait(user_set, filter_type)
+        filter_weibo_list = filter_weibo_in(weibo_list, in_portrait_result)
+        if filter_weibo_list:
+            all_filter_weibo_list.extend(filter_weibo_list)
+        if in_portrait_result:
+            in_user_result = dict(in_user_result, **in_portrait_result)
+        sort_evaluate_max = flow_text_result[-1]['_source'][sort_type]
+    query_uid_list = in_user_result.keys()
+    #step2: get keywords from flow_text
+    print 'get keyword'
+    keyword_query_dict = {
+            'query':{
+                'filtered':{
+                    'filter':{
+                        'bool':{
+                            'must':[
+                                {'range': {'timestamp':{'gte': start_ts, 'lt': end_ts}}},
+                                {'terms': {'uid': query_uid_list}}
+                            ]
+                        }
+                    }
+                }
+            },
+            'aggs':{
+                'all_interests':{
+                    'terms':{
+                        'field': 'keywords_string',
+                        'size': SENTIMENT_MAX_KEYWORDS
+                    }
+                    }
+            }
+        }
+    show_keywords_dict = es_flow_text.search(index=flow_text_index_name, doc_type=flow_text_index_type,\
+            body=keyword_query_dict)['aggregations']['all_interests']['buckets']
+    keywords_list = [[item['key'], item['doc_count']] for item in show_keywords_dict]
+    #step3: get results
+    results['weibo'] = all_filter_weibo_list
+    results['in_portrait_result'] = sorted(in_user_result.items(), key=lambda x:x[1][1], reverse=True)
+    results['keywords'] = keywords_list
     return results
 
 def search_sentiment_detail_in_domain(start_ts, task_type, task_detail, time_segment, sentiment, sort_type):
