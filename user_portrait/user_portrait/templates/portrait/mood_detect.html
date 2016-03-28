@@ -49,6 +49,9 @@
 	.weibo_info .m a {
 		color: #666;
 	}
+	.xdsoft_timepicker .active{
+		display: none
+	}
 </style>
 
 {% endblock css %}
@@ -88,10 +91,9 @@
 				<td>
 					<div id="sort_select">
 						<select id="sort_select_2" class="type_sub">
-							<option value="imp">15分钟</option>
-							<option value="act">1小时</option>
-							<option value="bci">一天</option>
-							<option value="ses">一周</option>
+							<option value="fifteen">15分钟</option>
+							<option value="hour">一小时</option>
+							<option value="day">一天</option>
 						</select>
 					</div>
 				</td>
@@ -100,9 +102,8 @@
 				<th  style="width:150px;height:50px;background-color: #E4E4E4;text-align: center;">时间范围</th>
 				<td>
 					<span id="detect_time_choose">
-						<input name="time_range" type="radio" value="1" checked='checked'> 过去一天
-						<input name="time_range" type="radio" value="7" style="margin-left:20px;"> 过去七天
-						<input name="time_range" type="radio" value="30" style="margin-left:20px;"> 过去一个月
+						<input id="weibo_from" type="text" class="form-control" style="width:145px; display:inline-block;height:25px;">&nbsp;-&nbsp;
+						<input id="weibo_to" type="text" class="form-control" style="width:145px; display:inline-block;height:25px">				
 					</span>
 					<span id="detect_submit" onclick="submit_detect()" class="portrait_button" style='float:right;cursor:pointer;margin-right:20px;width: 45px;height: 25px;text-align: center;line-height: 25px;'>监测</span>		
 				</td>

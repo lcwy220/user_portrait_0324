@@ -96,8 +96,8 @@ function draw_all_rank_table(data){
 				for(var i=0;i<data.length;i++){
 					var uid = data[i].uid;
 					var uname = data[i].uname;
-					if(uname == 'unknown'){
-						uname = uid
+					if(uname == 'unknown' || uname == null){
+						uname = uid;
 					}
 					var is_warehousing = '';
 					if(data[i].is_warehousing == true){
