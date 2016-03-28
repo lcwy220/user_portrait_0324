@@ -393,12 +393,12 @@ function moving_geo(data,data2){
     var end_city = [];
 	var fromCity = [];
 	var endCity = [];
-	console.log(data);
+	//console.log(data);
 	var citys = [];
 	for(var key in data){
 		citys.push(key);
 	}
-	console.log(citys);
+	//console.log(citys);
 	for(var i=0;i < citys.length;i++){
         var city_split = citys[i].split('&');
 		fromCity.push(city_split[0]);
@@ -437,7 +437,7 @@ function moving_geo(data,data2){
                 html += '<td style="text-align:center;vertical-align: middle;font-size:10px;" >' +fromCity[i] + '</td>';
                 html += '<td style="text-align:center;"><img src="/../../static/img/arrow_geo.png" style="width:25px;"></td>';
                 html += '<td style="text-align:center;vertical-align: middle;font-size:10px;" >' + endCity[i] + '</td>';
-                html += '<td style="text-align:center;vertical-align: middle;"><a id="moreDetail" data-toggle="modal" data-target="#detailPlace">' + dealt_data[1][i] + '</a></td>';
+                html += '<td style="text-align:center;vertical-align: middle;"><a style="cursor:pointer;" id="moreDetail" data-toggle="modal" data-target="#detailPlace">' + dealt_data[1][i] + '</a></td>';
             html += '</tr>'; 
             };
             html += '</table>'; 
@@ -448,7 +448,7 @@ function moving_geo(data,data2){
 		var start = $(this).parent().prev().html();
 		var end = $(this).parent().prev().prev().prev().text();
 		var keys = start+"&"+end;
-		console.log(data2[keys]);
+		//console.log(data2[keys]);
 		Draw2Place(data2[keys],'detail_Place');
 	});
 }
@@ -513,15 +513,15 @@ function Draw_top_place(start,end){
 		if(start.length <=5){
 		    html += '<div style="width:100%;line-height:30px;">主要出发地：';
 		    for(var i=0;i<start.length;j++){
-			    html = html + '<a>' +start[i][0] +'('+start[i][1]+'人次)</a>&nbsp&nbsp';
+			    html = html + '<span>' +start[i][0] +'('+start[i][1]+'人次)</span>&nbsp&nbsp';
 		    }
 		    html += '</div>'
 	    }else{
 		    html += '<div style="width:100%;line-height:30px;">主要出发地：';
 		    for(var i=0;i<5;i++){
-			    html = html + '<a>' +start[i][0] +'('+start[i][1]+'人次)</a>&nbsp&nbsp';
+			    html = html + '<span>' +start[i][0] +'('+start[i][1]+'人次)</span>&nbsp&nbsp';
 		    }
-		    html += '<span id="more_start" data-toggle="modal" data-target="#moreStart">更多<span></div>';
+		    html += '<a style="cursor:pointer;" id="more_start" data-toggle="modal" data-target="#moreStart">更多</a>';
 			Drawmoreplace(start,'start_WordList');
 	    }
 	}
@@ -533,15 +533,15 @@ function Draw_top_place(start,end){
 		if(end.length <=5){
 		    html += '<div style="width:100%;line-height:30px;">主要目的地：';
 		    for(var i=0;i<end.length;j++){
-			    html = html + '<a>' +end[i][0] +'('+end[i][1]+'人次)</a>&nbsp&nbsp';
+			    html = html + '<span>' +end[i][0] +'('+end[i][1]+'人次)</span>&nbsp&nbsp';
 		    }
 		    html += '</div>'
 	    }else{
 		    html += '<div style="width:100%;line-height:30px;">主要目的地：';
 		    for(var i=0;i<5;i++){
-			    html = html + '<a>'  +end[i][0] +'('+end[i][1]+'人次)</a>&nbsp&nbsp';
+			    html = html + '<span>'  +end[i][0] +'('+end[i][1]+'人次)</span>&nbsp&nbsp';
 		    }
-		    html += '<span id="more_end" data-toggle="modal" data-target="#moreEnd">更多<span></div>';
+		    html += '<a style="cursor:pointer;" id="more_end" data-toggle="modal" data-target="#moreEnd">更多</a></div>';
 			Drawmoreplace(end,'end_WordList');
 	    }
 	}
@@ -754,7 +754,7 @@ function group_activity(data){
 }
 
 function show_activity(data) {
-	console.log(data);
+	//console.log(data);
 	var time_data = [23,3,4,55,22,6]
     // console.log(runtype);
 	//微博走势，点击后显示微博
@@ -1042,13 +1042,13 @@ function Draw2Place(data,div){
     html += '</table>'; 
     $('#'+ div).append(html);
 }
-user = 'admin';
+var user = 'admin';
 var group_activity_url = '/group/show_group_result/?module=activity&task_name=' + name+'&submit_user='+user;
 //var group_activity_url = '/group/show_group_result/?module=activity&task_name=mytest030303&submit_user=admin';
 call_sync_ajax_request(group_activity_url,ajax_method, show_activity);
 //var group_user_url =  "/group/show_group_list/?task_name=" + name+'&submit_user=admin';
 var group_user_url =  "/group/show_group_list/?task_name=" + name+'&submit_user='+user;
-console.log(group_user_url);
+//console.log(group_user_url);
 call_sync_ajax_request(group_user_url,ajax_method, show_activity_track);
 // var activity_data = []
 
