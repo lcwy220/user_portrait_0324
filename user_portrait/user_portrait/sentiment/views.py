@@ -26,7 +26,7 @@ def ajax_sentiment_all():
     return json.dumps(results)
 
 #use to submit all keywords sentiment trend compute task to redis and es
-@mod.route('submit_sentiment_all_keywords')
+@mod.route('/submit_sentiment_all_keywords/')
 def ajax_submit_sentiment_all_keywords():
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
@@ -38,7 +38,7 @@ def ajax_submit_sentiment_all_keywords():
     return json.dumps(results)
 
 #use to show all keywords sentiment task compute status
-@mod.route('show_sentiment_all_keywords_task')
+@mod.route('/show_sentiment_all_keywords_task/')
 def ajax_show_sentiment_all_keywords_task():
     submit_user = request.args.get('submit_user','')
     results = show_submit_sentiment_all_keywords_task(submit_user)
@@ -48,7 +48,7 @@ def ajax_show_sentiment_all_keywords_task():
 
 
 #use to get all keywords sentiment trend
-@mod.route('show_sentiment_all_keywords_results')
+@mod.route('/show_sentiment_all_keywords_results/')
 def ajax_senitment_all_keywords():
     keywords_string = request.args.get('keywords', '')
     start_date = request.args.get('start_date','')
@@ -59,19 +59,19 @@ def ajax_senitment_all_keywords():
     return json.dumps(results)
 
 #use to get domain sentiment trend for user in user_portrait
-@mod.route('sentiment_domain')
+@mod.route('/sentiment_domain/')
 def ajax_sentiment_domain():
     domain = request.args.get('domain', '')
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '') #limited by lastest month
     time_segment = request.args.get('segment', 'fifteen') #fifteen/hour/day
-    results = search_sentiment_domain(domain, start_date, end_date)
+    results = search_sentiment_domain(domain, start_date, end_date, time_segment)
     if not results:
         results = {}
     return json.dumps(results)
 
 #use to get topic sentiment trend for user in user_portrait
-@mod.route('sentiment_topic')
+@mod.route('/sentiment_topic/')
 def ajax_senitment_topic():
     topic = request.args.get('topic', '')
     start_date = request.args.get('start_date', '')
@@ -82,7 +82,7 @@ def ajax_senitment_topic():
     return json.dumps(results)
 
 #use to get sentiment trend point weibo and keywords and user
-@mod.route('sentiment_weibo_keywords')
+@mod.route('/sentiment_weibo_keywords/')
 def ajax_sentiment_weibo_keywords():
     start_ts = request.args.get('start_ts', '')
     task_type = request.args.get('task_type', '') # task_type=all/all-keywords/in-all/in-domain/in-topic
