@@ -14,7 +14,7 @@ USER_RANK_KEYWORD_TASK_TYPE = 'user_rank_task'
 
 MAX_ITEMS = 2 ** 10
 
-def add_task( user_name ,type = "keyword",range = "all"  ,pre ='flow_text_' , during = '1' , start_time ='2013-09-07' ,end_time ='2013-09-07', keyword = 'hello,world' , sort_norm = 'bci' , sort_scope  = 'in_limit_keyword', time = 1, isall = False  ):
+def add_task( user_name ,type = "keyword",range = "all"  ,pre ='flow_text_' , during = '1' , start_time ='2013-09-07' , keyword = 'hello,world' , sort_norm = 'bci' , sort_scope  = 'in_limit_keyword', time = 1, isall = False  ):
     time_now = TIME.time()
         
        
@@ -22,7 +22,7 @@ def add_task( user_name ,type = "keyword",range = "all"  ,pre ='flow_text_' , du
                 'submit_user' : user_name ,
                 'keyword' : keyword,
                 'submit_time' : str(ts2date(time_now)) ,
-                'end_time' : end_time,
+                'end_time' : "not finish",
                 'search_type' : type,
                 'status':0,
                 'range' : range , 
@@ -43,7 +43,7 @@ def add_task( user_name ,type = "keyword",range = "all"  ,pre ='flow_text_' , du
 
 def search_user_task(user_name):
     c_result = {}
-    query = {"query":{"bool":{"must":[{"term":{"user_rank_task.submit_user":user_name}}],"must_not":[],"should":[]}},"from":0,"size":MAX_ITEMS,"sort":[],"facets":{},"fields":["status","search_type","keyword","submit_user","sort_scope","sort_norm","start_time","user_ts","end_time"]}
+    query = {"query":{"bool":{"must":[{"term":{"user_rank_task.submit_user":user_name}}],"must_not":[],"should":[]}},"from":0,"size":MAX_ITEMS,"sort":[],"facets":{},"fields":["status","search_type","keyword","submit_user","sort_scope","sort_norm","submit_time","user_ts","end_time"]}
     try:
         return_list = []
         result = es.search(index=USER_RANK_KEYWORD_TASK_INDEX , doc_type=USER_RANK_KEYWORD_TASK_TYPE , body=query)['hits']
@@ -55,7 +55,7 @@ def search_user_task(user_name):
             result_temp['keyword'] = item['fields']['keyword'][0]
             result_temp['sort_scope'] = item['fields']['sort_scope'][0]
             result_temp['sort_norm'] = item['fields']['sort_norm'][0]
-            result_temp['start_time'] = item['fields']['start_time'][0]
+            result_temp['start_time'] = item['fields']['submit_time'][0]
             result_temp['end_time'] = item['fields']['end_time'][0]
             result_temp['status'] = item['fields']['status'][0]
             result_temp['search_id'] = item['fields']['user_ts'][0]
@@ -84,14 +84,11 @@ def getResult(search_id):
     else :
         return []    
 
-def delOfflineTask(search_id):
-    query = {"query":{"bool":{"must":[{"term":{"user_rank_task.user_ts":search_id}}],"must_not":[],"should":[]}},"from":0,"size":10,"sort":[],"facets":{}}
-    result = es.searresult = es.search(index=USER_RANK_KEYWORD_TASK_INDEX , doc_type=USER_RANK_KEYWORD_TASK_TYPE , body=query)['hits']['hits'][0]
-    task_id = result['_id']
-    es.delete(index=USER_RANK_KEYWORD_TASK_INDEX , doc_type=USER_RANK_KEYWORD_TASK_TYPE , id = task_id )
-    return True
-
-
 if __name__ == "__main__":
-    print delOfflineTask('admin@qq.com1459089864.09')       
+    print json.dumps(getResult("admin@qq.com1459080307.79"))
+
+    
+    
+
+        
             

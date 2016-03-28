@@ -4,13 +4,14 @@ import sys
 import datetime
 import time as TIME
 from INDEX_TABLE import *
+ 
 from time_utils import ts2datetime, datetime2ts
 from global_utils import es_user_portrait as es
 
 
 MAX_SIZE = 300
 
-def in_sort_filter( time = 1 , sort_norm = 'bci' , sort_scope = 'in_nolimit' , arg = None , uid = []):
+def in_sort_filter( time = 1 , sort_norm = 'bci' , sort_scope = 'in_nolimit' , arg = None , uid = [] ,key_search = False):
     ischange = False
     scope = None
     norm = None
@@ -73,16 +74,17 @@ def in_sort_filter( time = 1 , sort_norm = 'bci' , sort_scope = 'in_nolimit' , a
         index = SES_INDEX_NAME
         type = SES_INDEX_TYPE 
     
-    return es_search(pre ,scope ,arg,index,type,time,ischange , uid)
+    return es_search(pre ,scope ,arg,index,type,time,ischange , uid , key_search)
         
  
-def es_search( pre , scope , arg , index_name , type_name  , time , ischange = False , uid_list = []):
+def es_search( pre , scope , arg , index_name , type_name  , time , ischange = False , uid_list = [] ,key_search = False):
     today = TIME.time()
     
-    sort = [] 
-    sort_field = []
+    print pre 
+    print time
+    sort_field = ''
     if time == 1:
-            sort_field = pre + 'day_' + 'change'
+        sort_field = pre + 'day_' + 'change'
     elif time == 7 :
         if ischange :
             sort_field = pre + 'week_' + 'change'
@@ -93,15 +95,15 @@ def es_search( pre , scope , arg , index_name , type_name  , time , ischange = F
             sort_field = pre + 'month_' + 'change'
         else :
             sort_field = pre + 'month_' + 'ave'
-
+    print sort_field
     must = []
     if arg :
         must = [{"prefix": {scope: arg }} ]
-
+    sort = []
     if sort_field:
         sort = [{ sort_field : { "order": "desc" } }]
-        
-    if not uid_list:
+    print sort   
+    if not key_search:
         query = {
             "query": {
                 "bool": {
@@ -128,7 +130,7 @@ def es_search( pre , scope , arg , index_name , type_name  , time , ischange = F
                        }       
                   }           
                 },
-            "sort": [{ sort_field : { "order": "desc" } }],
+            "sort": sort,
             "fields" : [],
             "size" : MAX_SIZE
         }        
@@ -140,7 +142,7 @@ def es_search( pre , scope , arg , index_name , type_name  , time , ischange = F
         uid_list = []
         for item in result :
             uid_list.append(item['_id'].encode("utf-8") )
-        return list(set(uid_list))
+        return uid_list
     except Exception,e:
         print e
         raise  Exception(index_name + " " + type_name + " " + str(query).replace("\'","\""))
