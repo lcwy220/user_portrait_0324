@@ -128,7 +128,7 @@ $(function(){
 群体分析
 {% endblock head_title %}
 {% block main %}
-<div id="d_useremail" hidden>{{g.user.email}}</div>
+<div id="g_useremail" hidden>{{g.user.email}}</div>
 <div id="basicwrapper" style="width:1100px;">
     <!-- end #menu -->
     <div id="basicpage">
@@ -137,13 +137,13 @@ $(function(){
         <div id="framesidebar" style="margin-left: 55px;"  >
             <h3  style="padding:5px;color:white">群组分析</h3>
             <li>
-                <ul style="padding:0px;height:110px;">
+                <ul style="padding:0px;height:120px;">
                     <div style='height:190px;width:100%' id='overview'> </div>
                 </ul>
             </li>
         </div>
         <div id="framecontent" style="width: 687px;float: left;margin-left: 20px;">
-            <div class ="framepost" style="height:148px;">
+            <div class ="framepost" style="height:158px;">
                 <h3 class="title">群体属性</h3>
                 <div  id="g_tag">
                 </div>
@@ -287,6 +287,8 @@ function pageDown(pageNum,pageCount){
         break;
     }
 }
+
+
 </script>
     <script type="text/javascript" src="/static/js/portrait/group_analysis.js"></script>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=aBrX8X2tEjcqiKwL78DLmanZ"></script>

@@ -162,7 +162,7 @@
                 <span class="mode" style="">转发数</span>
 			</li>
 			<li>
-				<input type="radio" name="mode_choose" value="count_count" >
+				<input type="radio" name="mode_choose" value="comment_count" >
 				<span class="mode" style="">评论数</span>
 			</li>
 			<li>
@@ -1119,7 +1119,7 @@ $(function(){
     }
 });
 
-var url = "/attribute/new_user_weibo/?uid="+uid+"&sort_type="+sort_type;
+var url = "/attribute/new_user_weibo/?uid="+uid+"&sort_type=timestamp";
 Personal.call_sync_ajax_request(url, Personal.ajax_method, Personal.weiboData);
 $(function(){
 	$('#add_tag').click(function(){
