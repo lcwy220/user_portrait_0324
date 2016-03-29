@@ -85,7 +85,8 @@ function draw_user_in_table(data){
     //var data = [];
     $('#mood_in_user').empty();
     if(data.length == 0){
-        $('#mood_in_user').append('<h4 style="text-align:center;">暂无数据</h4>');
+        $('#showmore_inuser').css('display', 'none');
+        $('#mood_in_user').append('<h4 style="text-align:center;min-height: 100px;background-color: #cccccc;line-height: 100px;">暂无数据</h4>');
     }else{
         if(data.length > 5){
             show_more_inuser(data);
@@ -104,11 +105,11 @@ function draw_user_in_table(data){
         for(var i=0;i<data.length;i++){
             html += '<tr>';
             html += '<td style="text-align:center;">'+data[i][0]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][1]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][2]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][3]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][4]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][5]+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][0]+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][1]+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][3]+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][2]+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][4]+'</td>';
             html += '</tr>';
         }
         html += '</table>';
@@ -131,11 +132,11 @@ function show_more_inuser(data){
     for(var i=0;i<data.length;i++){
         html += '<tr>';
         html += '<td style="text-align:center;">'+data[i][0]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][1]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][2]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][3]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][4]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][5]+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][0]+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][1]+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][3]+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][2]+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][4]+'</td>';
         html += '</tr>';
     }
     html += '</table>';
@@ -156,7 +157,8 @@ function draw_user_out_table(data){
     $('#out_user_title').css('display', 'block');
     $('#mood_out_user').empty();
     if(data.length == 0){
-        $('#mood_out_user').append('<h4 style="text-align:center;">暂无数据</h4>');
+        $('#showmore_outuser').css('display', 'none');
+        $('#mood_out_user').append('<h4 style="text-align:center;min-height: 100px;background-color: #cccccc;line-height: 100px;">暂无数据</h4>');
     }else{
         if(data.length > 5){
             show_more_outuser(data);
@@ -174,10 +176,14 @@ function draw_user_out_table(data){
         for(var i=0;i<data.length;i++){
             html += '<tr>';
             html += '<td style="text-align:center;">'+data[i][0]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][1]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][2]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][3]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][4]+'</td>';
+            var name = data[i][1][0];
+            if(data[i][1][0] == 'unknown'){
+                name = data[i][0];
+            }
+            html += '<td style="text-align:center;">'+name+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][1]+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][3]+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][2]+'</td>';
             html += '</tr>';
         }
         html += '</table>';
@@ -198,10 +204,10 @@ function show_more_outuser(data){
     for(var i=0;i<data.length;i++){
         html += '<tr>';
         html += '<td style="text-align:center;">'+data[i][0]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][1]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][2]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][3]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][4]+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][0]+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][1]+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][3]+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][2]+'</td>';
         html += '</tr>';
     }
     html += '</table>';
@@ -214,6 +220,98 @@ function show_more_outuser(data){
         "sLengthMenu": "每页 _MENU_ 条 ",
         }
     });
+}
+
+function createRandomItemStyle() {
+    return {
+        normal: {
+            color: 'rgb(' + [
+                Math.round(Math.random() * 160),
+                Math.round(Math.random() * 160),
+                Math.round(Math.random() * 160)
+            ].join(',') + ')'
+        }
+    };
+}
+function Draw_keyword(data){
+
+  var keyword = [];
+  var html = '';
+  $('#keywords_WordList').empty();
+  if(data.length == 0){
+     //console.log(div_name);
+      html = '<h4 style="text-align:center;min-height: 100px;background-color: #cccccc;line-height: 100px;">暂无数据</h4>';
+      //$('#'+ more_div).append(html);
+      $('#mood_keywords_clouds').append(html);
+      $('#more_keywords_list').empty();
+  }else{   
+
+      html = '';
+      html += '<table class="table table-striped table-bordered" style="width:450px;">';
+      html += '<tr><th style="text-align:center">排名</th><th style="text-align:center">关键词</th><th style="text-align:center">频数</th></tr>';
+      for (var i = 0; i < data.length; i++) {
+         var s = i.toString();
+         var m = i + 1;
+         html += '<tr style=""><th style="text-align:center">' + m + '</th><th style="text-align:center"><a href="/index/search_result/?stype=2&uid=&uname=&location=&hashtag=&adkeyword=' + data[i][0] +  '&psycho_status=&domain&topic" target="_blank">' + data[i][0] +  '</a></th><th style="text-align:center">' + data[i][1] + '</th></tr>';
+      };
+      html += '</table>'; 
+      $('#keywords_WordList').append(html);
+
+     //最大是50
+    var key_value = [];
+    var key_name = [];
+    for(var i=0;i<data.length;i++){
+      //key_value.push(data[i][1]+Math.random());
+      key_value.push(data[i][1]);
+      key_name.push(data[i][0]);
+    };
+
+    var word_num = Math.min(50, data.length);
+    // var key_value2 = [];
+    // var key_name2 = [];
+    // for(var i=0; i<word_num; i++){ //最多取前30个最大值
+    //   a=key_value.indexOf(Math.max.apply(Math, key_value));
+    //   key_value2.push(key_value[a]);
+    //   key_name2.push(key_name[a]);
+    //   key_value[a]=0;
+    // }      
+    //console.log(key_value);
+    for (i=0;i<word_num;i++){
+      var word = {};
+      word['name'] = key_name[i];
+      word['value'] =key_value[i];
+      //console.log(word['value']);
+      word['itemStyle'] = createRandomItemStyle();
+      keyword.push(word);
+      //console.log(keyword)
+    }
+    $('#mood_keywords_clouds').empty();
+    var myChart = echarts.init(document.getElementById('mood_keywords_clouds')); 
+    var option = {
+      tooltip: {
+          show: true,
+          // formatter:  function (params){
+          //   var res  = '';
+          //   var value_after = parseInt(params.value);
+          //   res += params.name+' : '+value_after;
+          //   return res;
+          // }
+      },
+      series: [{
+          type: 'wordCloud',
+          size: ['120%', '120%'],
+          textRotation : [0, 45, 90, -45],
+          textPadding: 0,
+          autoSize: {
+              enable: true,
+              minSize: 14
+          },
+          data: keyword
+      }]
+    };
+    myChart.setOption(option);  
+    console.log('sdvjn');
+  }
 }
 
 //展示微博
@@ -232,15 +330,19 @@ function Draw_get_top_weibo(data, div_name){
         s = (i+1).toString();
         var weibo = data[i]
         var mid = weibo[0];
-        var uid = weibo[9];
+        var uid = weibo[1];
         var name = weibo[10];
+        if(name == 'unknown'){
+            name = uid;
+        }
         var date = weibo[5];
-        var text = weibo[3];
-        var geo = weibo[4];
-        var reposts_count = weibo[1];
-        var comments_count = weibo[2];
-        var weibo_link = weibo[7];
-        var user_link = weibo[8];
+        var text = weibo[2];
+        var geo = weibo[3];
+        var reposts_count = weibo[6];
+        var comments_count = weibo[7];
+        var sensitive_score = weibo[8];
+        var weibo_link = weibo[9];
+        //var user_link = weibo[8];
         var profile_image_url = 'http://tp2.sinaimg.cn/1878376757/50/0/1';
         var repost_tree_link = '/show_graph/' + mid;
         if (geo==''){
@@ -254,7 +356,8 @@ function Draw_get_top_weibo(data, div_name){
         html += '<div class="weibo_pz">';
         html += '<div id="topweibo_mid" class="hidden">'+mid+'</div>';
         html += '<span class="retweet_count">转发数(' + reposts_count + ')</span>&nbsp;&nbsp;|&nbsp;&nbsp;';
-        html += '<span class="comment_count">评论数(' + comments_count + ')</span></div>';
+        html += '<span class="retweet_count">评论数(' + comments_count + ')</span>&nbsp;&nbsp;|&nbsp;&nbsp;';
+        html += '<span class="comment_count">敏感度(' + sensitive_score + ')</span></div>';
         html += '<div class="m">';
         html += '<u>' + date + '</u>&nbsp;-&nbsp;';
         html += '<a target="_blank" href="' + weibo_link + '">微博</a>&nbsp;-&nbsp;';
@@ -281,7 +384,7 @@ function Draw_get_top_weibo(data, div_name){
 }
 
 //显示所有的相关微博
-function show_all_related_weibo(url) {
+function show_all_related_weibo(data) {
     $('#weibo_sort').empty();
     //$('#related_weibo').empty();
     var html = '';
@@ -297,13 +400,13 @@ function show_all_related_weibo(url) {
     var sub_html = '<div id="related_weibo_text0" class="shadow_weibo" style="width:100%;"></div>'; 
     $('#sub_related_weibo').append(sub_html);
 
-    var data2 = [['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称'],
-                 ['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称'],
-                 ['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称']]
+    //var data2 = [['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称'],
+                 // ['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称'],
+                 // ['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称']]
 
     var sort_type = $('input[name="sort_radio_weibo"]:checked').val();
     //console.log(sort_type);
-    Draw_get_top_weibo(data2, "related_weibo_text0");
+    Draw_get_top_weibo(data, "related_weibo_text0");
 
     $('input[name="sort_radio_weibo"]').off('click').click(function(){
         var sort_type = $('input[name="sort_radio_weibo"]:checked').val();
@@ -420,71 +523,74 @@ function show_related_topic(data){
     //显示所有微博,请求数据
     var call_all_url;
 
-    show_all_related_weibo(call_all_url);
+    //show_all_related_weibo(call_all_url);
 
     //点击事件选择微博，传有几个子话题
     var call_url;
     choose_related_weibo(call_url, topic_count);
-
 }
 
-function Draw_cloud(){
 
-}
-
-function show_detail( data, flag, time, sentiment){
-    console.log(flag);
+function show_detail(data){
+    console.log(data);
+    //console.log(flag);
     //var data = [['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56']]
     // $('#result_detect_detail').css('display','block');
     // $('#click_time').empty();
     // $('#click_sentiment').empty();
     // $('#click_time').append(time);
     // $('#click_sentiment').append(sentiment);
-    // console.log(flag);
+    console.log(flag);
+    //var flag = 'all';
     if(flag == 'all' ){
         $('#mood_in_all').css('width', '900px');
         $('#mood_out_all').css('display', 'block');
-        draw_user_in_table(data);
-        draw_user_out_table(data);
+        $('#mood_out_all').css('margin-left', '0');
+        draw_user_in_table(data.in_portrait_result);
+        draw_user_out_table(data.out_portrait_result);
 
         //$('#mood_out_all').empty();
     }else{
         $('mood_out_all').empty('');
+        $('#mood_out_all').css('display', 'none');
         $('#mood_in_all').css('width', '440px');
-        draw_user_in_table(data);
+        draw_user_in_table(data.in_portrait_result);
         //draw_user_out_table(data);
 
     }
-    Draw_cloud(data.keywords)
+
+    Draw_keyword(data.keywords)
     //相关话题表格及微博详情
-    show_related_topic(data);
+    //展示微博
+    show_all_related_weibo(data.weibo);
+    //show_related_topic(data.weibo);
 
 }
 function Draw_detect_all_charts(data){
-    var flag = 'all';
+    flag = 'all';
     Draw_detect_charts(flag, data);
 }
 function Draw_in_all_detect_charts(data){
-    var flag = 'in-all';
+    flag = 'in-all';
     Draw_detect_charts(flag, data);
 }
 function Draw_in_domain_detect_charts(data){
-    var flag = 'in-domain';
+    flag = 'in-domain';
     Draw_detect_charts(flag, data);
 }
 function Draw_in_topic_detect_charts(data){
-    var flag = 'in-topic';
+    flag = 'in-topic';
     Draw_detect_charts(flag, data);
 }
 function Draw_all_keyword_detect_charts(data){
-    var flag = 'all-keywords';
+    flag = 'all-keywords';
     Draw_detect_charts(flag, data);
 }
 
 function Draw_detect_charts(flag, data){
     console.log(data);
     if(data["1"].length == 0){
-        $('#result_detect_charts').append('暂无数据');
+        $('#result_detect_charts').append('<h4 style="text-align:center;min-height: 100px;background-color: #cccccc;line-height: 100px;">暂无数据</h4>');
     }else{ 
         var data_x_ = [];
         var data_y_1 = [];
@@ -598,6 +704,7 @@ function Draw_detect_charts(flag, data){
                   var start_ts = parseInt(new Date(param.name).getTime()/1000);
                   task_type= flag;
                   sentiment = mood_dict[param.seriesName];
+                  //显示总体情况
                   $('#result_detect_detail').css('display','block');
                   $('#click_time').empty();
                   $('#click_sentiment').empty();
@@ -606,13 +713,13 @@ function Draw_detect_charts(flag, data){
                   var detail_url = '/sentiment/sentiment_weibo_keywords_user/?'
                   detail_url += 'start_ts=' + start_ts + '&task_type=' + task_type + '&segment=' + segment +'&sentiment='+ sentiment +'&sort_type=timestamp';
                   if(flag == 'in-domain' || flag == 'in-topic'){
-                      detail_url += '&task_type=' + flag.split('-')[1] ;
+                      detail_url += '&task_detail=' + flag.split('-')[1] ;
                   }
                   
                   console.log(detail_url);
-                  var data = [['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56']]
-                  //call_sync_ajax_request(detail_url, show_detail(data, flag, param.name, param.seriesName));
-                  show_detail(data, flag, param.name, param.seriesName);
+                  //var data = [['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56']]
+                  call_sync_ajax_request(detail_url, show_detail);
+                  //show_detail(data, flag, param.name, param.seriesName);
               }
 
           myChart.on(ecConfig.EVENT.CLICK, eConsole);
@@ -730,7 +837,7 @@ function submit_detect(){
             var url = 'start_date='+time_from+'&end_date='+time_to+'&segment='+sort_norm;
             console.log(url);
             if(sort_scope == 'all_nolimit'){
-                flag = 1;
+                //flag = 1;
                 var all_url ='';
                 all_url += '/sentiment/sentiment_all/?' +url;
                 console.log(all_url);
@@ -782,6 +889,7 @@ function submit_detect(){
 //结果分析默认值
 var mood_dict ={'积极':'1','消极':'7','中性':'0'}
 var segment_dict = {'15分钟':'fifteen','一小时':'hour','一天':'day'};
+var flag = '';
 
 date_init();
 console.log($('#detect_time_choose #weibo_from').val())
