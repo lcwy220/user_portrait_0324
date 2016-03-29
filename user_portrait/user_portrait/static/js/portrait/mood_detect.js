@@ -571,8 +571,9 @@ function show_detail(data){
     Draw_keyword(data.keywords)
     //相关话题表格及微博详情
     //展示微博
-    show_all_related_weibo(data.weibo);
+    //show_all_related_weibo(data.weibo);
     //show_related_topic(data.weibo);
+    //control();
 
 }
 function control(){
@@ -711,6 +712,8 @@ function Draw_detect_charts(flag, data){
           function(ec){
               var ecConfig = require('echarts/config');
               function eConsole(param) {
+                  $('#result_detect_detail').css('display','none');
+                  $('#loading_message').css('display','block');
                   console.log(param);
                   var segment = $('#detect_rank_by').text();
                   segment = segment_dict[segment]
@@ -718,7 +721,7 @@ function Draw_detect_charts(flag, data){
                   task_type= flag;
                   sentiment = mood_dict[param.seriesName];
                   //显示总体情况
-                  $('#loading_message').css('display','block');
+
                   $('#click_time').empty();
                   $('#click_sentiment').empty();
                   $('#click_time').append(param.name);
@@ -730,7 +733,6 @@ function Draw_detect_charts(flag, data){
                   }
                   
                   console.log(detail_url);
-                  //var data = [['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56']]
                   call_sync_ajax_request(detail_url, show_detail);
                   //show_detail(data, flag, param.name, param.seriesName);
                   control();
