@@ -6,7 +6,9 @@ from flask import Blueprint, url_for, render_template, request,\
                     abort, flash, session, redirect
 from utils import search_sentiment_all, search_sentiment_all_keywords,\
                   search_sentiment_domain, search_sentiment_topic,\
-                  search_sentiment_weibo_keywords, search_sentiment_all_portrait
+                  search_sentiment_weibo_keywords, search_sentiment_all_portrait ,\
+                  submit_sentiment_all_keywords, show_sentiment_all_keywords_results, \
+                  delete_sentiment_all_keywords_task, search_sentiment_all_keywords_task
 from user_portrait.global_utils import es_flow_text, flow_text_index_name_pre, \
                 flow_text_index_type, es_user_portrait, portrait_index_name ,\
                 portrait_index_type
@@ -48,11 +50,21 @@ def ajax_submit_sentiment_all_keywords():
         results = {}
     return json.dumps(results)
 
-#use to show all keywords sentiment task compute status
-@mod.route('/show_sentiment_all_keywords_task/')
-def ajax_show_sentiment_all_keywords_task():
-    submit_user = request.args.get('submit_user','')
-    results = show_submit_sentiment_all_keywords_task(submit_user)
+
+#use to delete all keywords sentiment task compute status
+@mod.route('/delete_sentiment_all_keywords_task/')
+def ajax_delete_sentiment_all_keywords_task():
+    task_id = request.args.get('task_id', '')
+    status = delete_sentiment_all_keywords_task(task_id)
+    return json.dumps(status)
+
+#use to search all keywords sentiment task
+@mod.route('/search_sentiment_all_keywords_task/')
+def ajax_search_sentiment_all_keywords_task():
+    submit_date = request.args.get('submit_date', '')  #2016-03-29
+    keywords_string = request.args.get('keywords', '') # word1,word2
+    submit_user = request.args.get('submit_user', '') # admin@qq.com
+    results = search_sentiment_all_keywords_task(submit_date, keywords_string, submit_user)
     if not results:
         results = {}
     return json.dumps(results)
@@ -61,10 +73,8 @@ def ajax_show_sentiment_all_keywords_task():
 #use to get all keywords sentiment trend
 @mod.route('/show_sentiment_all_keywords_results/')
 def ajax_senitment_all_keywords():
-    keywords_string = request.args.get('keywords', '')
-    start_date = request.args.get('start_date','')
-    end_date = request.args.get('end_date', '') #limited by lastest month
-    results = search_sentiment_all_keywords(keywords_string, start_date, end_date)
+    task_id = request.args.get('task_id', '') # ts_admin_keywords
+    results = show_sentiment_all_keywords_results(task_id)
     if not results:
         results = {}
     return json.dumps(results)
