@@ -403,18 +403,14 @@ function moving_geo(data,data2){
 		fromCity.push(city_split[0]);
 	    endCity.push(city_split[1]);
 	}
-	/*
+	
     for(var i=0;i < dealt_data[0].length;i++){
         var city_split = dealt_data[0][i].split('&');
         var from_last_city = city_split[0].split('\t');
         var end_last_city = city_split[1].split('\t');
         from_city.push(from_last_city[from_last_city.length-1])
         end_city.push(end_last_city[end_last_city.length-1]);
-		fromCity.push(city_split[0]);
-	    endCity.push(city_split[0]);
     }
-	console.log(endCity);
-	*/
     var html = '';
     if (dealt_data[0].length == 0){
         html += '<span style="margin:20px;">暂无数据</span>';
@@ -425,6 +421,7 @@ function moving_geo(data,data2){
             $('#geo_show_more').css('display', 'none');
         };
             Draw_more_moving_geo(from_city, end_city, dealt_data,fromCity,endCity);
+            Draw_moving(from_city, end_city, dealt_data[1]);
             html += '<table class="table table-striped" style="width:100%;font-size:14px;margin-bottom:0px;">';
             html += '<tr><th style="text-align:center">起始地</th>';
             html += '<th style="text-align:right;width:30px;"></th>';
@@ -474,6 +471,127 @@ function Draw_more_moving_geo(from_city, end_city, dealt_data,fromCity,endCity){
     html += '</table>'; 
     $('#move_location_more_detail').append(html);
 }
+/*
+
+*/
+
+
+
+
+//迁徙图
+function Draw_moving(from_city, end_city, dealt_data){
+   var geolist = new Array();
+   for(var i=0;i<from_city.length;i++){
+	   geolist.push(from_city[i]);
+	   geolist.push(end_city[i]);
+   }
+    var newgeo = new Array();
+    var myGeo = new BMap.Geocoder();
+    var index = 0;
+    bdGEO();  
+    function bdGEO(){
+        var geoname = geolist[index]
+        geocodeSearch(geoname);
+        index ++;
+    }
+    function geocodeSearch(geoname){
+        if (index < geolist.length-1){
+            setTimeout(bdGEO,400);
+        }
+        else{
+            setTimeout(drawroute, 400);
+        }
+        myGeo.getPoint(geoname, function(point){
+            if (point){
+                var fixpoint= new BMap.Point(point.lng+3.5,point.lat-0.5);
+                var marker = new BMap.Marker(fixpoint);
+                newgeo[geoname] = [fixpoint.lng,fixpoint.lat];
+            }
+            else{
+                 //alert("no such point!");
+            }
+        }, geoname);
+    }
+    function drawroute(){
+        var route = new Array();
+        for(var i=0;i<from_city.length;i++){
+            route.push([{'name':from_city[i]},{'name':end_city[i],'value':dealt_data[i]}]);
+            //route.push(basic_route);
+        }
+        console.log(newgeo);
+        console.log(route);
+        var myChart = echarts.init(document.getElementById('moving_location_detail')); 
+        var option = {
+            backgroundColor: '#1b1b1b',
+            color: ['gold','aqua','lime'],
+            tooltip : {
+                trigger: 'item',
+                formatter: '{b}'
+            },
+            series : [
+                {
+                    name: '全国',
+                    type: 'map',
+                    roam: true,
+                    hoverable: false,
+                    mapType: 'china',
+                    itemStyle:{
+                        normal:{
+                            borderColor:'rgba(100,149,237,1)',
+                            borderWidth:0.5,
+                            areaStyle:{
+                                color: '#1b1b1b'
+                            }
+                        }
+                    },
+                    data:[],
+                    markLine : {
+                        smooth:true,
+                        symbol: ['none', 'circle'],  
+                        symbolSize : 1,
+                        itemStyle : {
+                            normal: {
+                                color:'#fff',
+                                borderWidth:1,
+                                borderColor:'rgba(30,144,255,0.5)'
+                            }
+                        },
+                        data :[]
+                    },
+
+                    geoCoord: newgeo, 
+                    },
+                    {
+                        type: 'map',
+                        mapType: 'china',
+                        data:[],
+                        markLine : {
+                            smooth:true,
+                            effect : {
+                                show: true,
+                                scaleSize: 1,
+                                period: 30,
+                                color: '#fff',
+                                shadowBlur: 10
+                            },
+                            itemStyle : {
+                                normal: {
+                                    borderWidth:1,
+                                    lineStyle: {
+                                        type: 'solid',
+                                    shadowBlur: 10
+                                }
+                            }
+                        },
+                        data : route
+                    },
+                },        
+            ]
+        };
+        myChart.setOption(option);
+    }
+}
+
 
 function Draw_top_platform(dealt_data){
     var data = get_max_data(dealt_data)

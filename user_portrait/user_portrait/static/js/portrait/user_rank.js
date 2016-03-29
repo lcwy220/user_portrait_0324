@@ -9,18 +9,19 @@ function call_sync_ajax_request(url, callback){
 }
 
 function user_rank_timepicker(str){
-    var date_time = str.split(' ');
-    var dates = date_time[0].split('/');
+	//var date_time = str.split(' ');
+    var dates = str.split('/');
     var yy = parseInt(dates[0]);
     var mm = parseInt(dates[1]) - 1;
     var dd = parseInt(dates[2]);
-    var times = date_time[1].split(':');
-    var hh = parseInt(times[0]);
-    var minute = parseInt(times[1]);
+    //var times = date_time[1].split(':');
+    //var hh = parseInt(times[0]);
+    //var minute = parseInt(times[1]);
     var final_date = new Date();
     final_date.setFullYear(yy,mm,dd);
-    final_date.setHours(hh,minute);
-    final_date = Math.floor(final_date.getTime()/1000);
+    final_date.setHours(0,0);
+    final_date = Math.floor(final_date.getTime()/1000); 
+    console.log(final_date);
     return final_date;
 }
 
@@ -96,8 +97,8 @@ function draw_all_rank_table(data){
 				for(var i=0;i<data.length;i++){
 					var uid = data[i].uid;
 					var uname = data[i].uname;
-					if(uname == 'unknown'){
-						uname = uid
+					if(uname == 'unknown' || uname == null){
+						uname = uid;
 					}
 					var is_warehousing = '';
 					if(data[i].is_warehousing == true){
@@ -515,19 +516,19 @@ function date_init(){
 	var date = choose_time_for_mode();
 	//console.log(date)
 	date.setHours(0,0,0,0);
-	var max_date = date.format('yyyy/MM/dd hh:mm');
-	var current_date = date.format('yyyy/MM/dd hh:mm');
+	var max_date = date.format('yyyy/MM/dd');
+	var current_date = date.format('yyyy/MM/dd');
 	var from_date_time = Math.floor(date.getTime()/1000) - 60*60*24;
 	var min_date_ms = new Date()
 	min_date_ms.setTime(from_date_time*1000);
-	var from_date = min_date_ms.format('yyyy/MM/dd hh:mm');
-	if(global_test_mode==0){
-	    $('#time_choose #weibo_from').datetimepicker({value:from_date,step:60});
-	    $('#time_choose #weibo_to').datetimepicker({value:current_date,step:60});
-	}else{
-	    $('#time_choose #weibo_from').datetimepicker({value:from_date,step:60,minDate:'-1970/01/30',maxDate:'+1970/01/01'});
-	    $('#time_choose #weibo_to').datetimepicker({value:current_date,step:60,minDate:'-1970/01/30',maxDate:'+1970/01/01'});
-	}
+	var from_date = min_date_ms.format('yyyy/MM/dd');
+	    if(global_test_mode==0){
+        $('#time_choose #weibo_from').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
+        $('#time_choose #weibo_to').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
+    }else{
+        $('#time_choose #weibo_from').datetimepicker({value:from_date,step:1440,minDate:'-1970/01/30',format:'Y/m/d',timepicker:false,maxDate:'+1970/01/01'});
+        $('#time_choose #weibo_to').datetimepicker({value:from_date,step:1440,minDate:'-1970/01/30',format:'Y/m/d',timepicker:false,maxDate:'+1970/01/01'});
+    }
 }
 function submit_offline(data){
 	console.log(data)
@@ -660,18 +661,15 @@ function submit_rank(){
 			var keyword_array = [];
 			var keyword_array = keyword.split(',');
 			var keyword_string = keyword_array.join(',');
-			var time_from = user_rank_timepicker($('#time_choose #weibo_from').val());
-			//console.log(time_from)
-			var time_to = user_rank_timepicker($('#time_choose #weibo_to').val());
-			if($('#time_choose #weibo_from').val() > $('#time_choose #weibo_to').val()){
-				alert('起始时间不得大于终止时间！');
-				return false;
+			var time_from =$('#time_choose #weibo_from').val().split('/').join('-');
+			var time_to =$('#time_choose #weibo_to').val().split('/').join('-');
+			var from_stamp = new Date($('#time_choose #weibo_from').val());
+			var end_stamp = new Date($('#time_choose #weibo_to').val());
+		    if(from_stamp > end_stamp){
+			    alert('起始时间不得大于终止时间！');
+			    return false;
 			}
-			var time_from_after = new Date(time_from*1000)
-			var time_to_after = new Date(time_to*1000)
-			time_from_after = time_from_after.format('yyyy-MM-dd')
-			time_to_after = time_to_after.format('yyyy-MM-dd')
-			var url = '/user_rank/user_sort/?time=-1&username='+username+'&st='+time_from_after +'&et='+time_to_after+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope+'&arg='+keyword;
+			var url = '/user_rank/user_sort/?time=-1&username='+username+'&st='+time_from +'&et='+time_to+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope+'&arg='+keyword;
 			console.log(url);
 			if(sort_scope == 'all_limit_keyword'){
 				url +='&all=True';
