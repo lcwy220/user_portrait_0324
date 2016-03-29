@@ -651,7 +651,7 @@ def search_sentiment_detail_in_domain(start_ts, task_type, task_detail, time_seg
                     'bool':{
                         'must':[
                             {'range':{'timestamp': {'gte': start_ts, 'lt': end_ts}}},
-                            {'term': {'uid': query_uid_list}}
+                            {'terms': {'uid': query_uid_list}}
                             ]
                         }
                     }
