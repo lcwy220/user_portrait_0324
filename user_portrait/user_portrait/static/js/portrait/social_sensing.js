@@ -281,7 +281,7 @@ function so_draw_search_results(data){
     var html = '';
     html += '<table id="search_result_table" class="table table-striped table-bordered bootstrap-datatable datatable responsive">';
     html += '<thead><tr><th>用户ID</th><th>昵称</th><th>注册地</th><th>活跃度</th><th>重要度</th><th>影响力</th><th>相关度</th>';
-    html += '<th>操作</th></tr></thead>';
+    html += '<th>操作</th><th><input  name="search_table_choose" id="search_table_choose" type="checkbox" value="" onclick="search_table_choose()" />全选</th></tr></thead>';
     html += '<tbody>';
     for(var i = 0; i<data.length;i++){
       var item = data[i];
@@ -303,6 +303,7 @@ function so_draw_search_results(data){
       html += '<td class="center" style="width:100px;">'+ item[5] +'</td>';
       html += '<td class="center" style="width:100px;">'+ item[6] +'</td>';
       html += '<td class="center" style="width:120px;"><a class="portrait_href" href=' + user_url + ' target="_blank">查看人物属性页</a></td>';
+      html += '<td class="center"><input name="search_table_choose_option" class="search_result_option" type="checkbox"  /></td>'
       html += '</tr>';
     }
     html += '</tbody>';
