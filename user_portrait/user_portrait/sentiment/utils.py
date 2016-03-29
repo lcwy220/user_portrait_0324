@@ -330,16 +330,17 @@ def identify_user_portrait_domain_topic(user_set, filter_type, task_detail):
             for r_item in r_result:
                 if r_item == task_detail:
                     in_user_list.append(iter_user_list[iter_in_count])
-                    iter_in_count += 1
+                iter_in_count += 1
             iter_count += SENTIMENT_ITER_USER_COUNT
         elif filter_type == 'topic':
             iter_in_count = 0
             for r_item in r_result:
-                r_item_list = json.loads(r_item)
-                if task_detail in r_item_list:
-                    in_user_list.append(iter_user_list[iter_in_count])
-                    iter_in_count += 1
-            iter_count += SENTIMENT_ITER_COUNT
+                if r_item:
+                    r_item_list = json.loads(r_item)
+                    if task_detail in r_item_list:
+                        in_user_list.append(iter_user_list[iter_in_count])
+                iter_in_count += 1
+            iter_count += SENTIMENT_ITER_USER_COUNT
     #step2:get in_portrait_user
     iter_count = 0
     all_in_user_count = len(in_user_list)
