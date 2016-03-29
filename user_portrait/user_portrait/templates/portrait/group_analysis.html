@@ -11,15 +11,6 @@
 <link href="/static/css/timeline.css" rel="stylesheet" type="text/css">
 <link  type="text/css" href="/static/personal/css/framestyle.css" rel="stylesheet"/>
 <link rel="stylesheet" type="text/css" href="/static/css/jquery.datetimepicker.css"/>
-{% endblock css %}
-
-{% block head_js %}
-{{ super() }}
-    <script type="text/javascript" src="/static/js/highstock.js" charset="utf-8"></script>  
-    <script type="text/javascript" src="/static/js/exporting.js" charset="utf-8"></script>
-    <script type="text/javascript" src='/static/js/esl.js'></script>
-    <script type="text/javascript" src="/static/js/jquery.datetimepicker.js"></script>
-    <script type="text/javascript" src="/static/js/portrait/group_table.js"></script>
 <style type="text/css">
 .terms{
     /*height:30px;width:237px;float:left;*/
@@ -95,6 +86,15 @@ body {
     font-family: '微软雅黑';
     font-size: 14px; }
 </style>
+{% endblock css %}
+
+{% block head_js %}
+{{ super() }}
+    <script type="text/javascript" src="/static/js/highstock.js" charset="utf-8"></script>  
+    <script type="text/javascript" src="/static/js/exporting.js" charset="utf-8"></script>
+    <script type="text/javascript" src='/static/js/esl.js'></script>
+    <script type="text/javascript" src="/static/js/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="/static/js/portrait/group_table.js"></script>
 
 <script type="text/javascript">
 $(function(){
