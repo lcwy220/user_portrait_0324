@@ -23,21 +23,8 @@ function call_sync_ajax_request(url, callback){
     });
 }
 
-// function detect_task_status (data) {
-// 	$('#detect_task_status').empty();
-// 	var html = '';
-// 	html += '<table class="table table-striped" style="margin-left:30px;width:900px;">';
-// 	for(var i=0;i<data.length;i++){
-// 		html += '<tr>';
-// 		html += '<td style="width:200px;text-align:center;">'+data[i][0]+'</td>';
-// 		html += '<td>'+data[i][1]+'</td>';
-// 		html += '</tr>';
-// 	}
-// 	html += '</table>';
-// 	$('#detect_task_status').append(html);
-// }
 function detect_task_status (data) {
-    var data = data.data;
+    console.log(data);
     if (data.length == 0){
         var html = '<div style="text-align: center;background-color: #cccccc;">暂无任务</div>'
         $('#detect_task_status').append(html);
@@ -49,27 +36,27 @@ function detect_task_status (data) {
         html += '<table class="table table-striped table-bordered bootstrap-datatable datatable responsive" style="margin-left:30px;width:900px;">';
         html += '<thead>';
         html += '<th style="width:100px;text-align:center;">关键词</th>';
-        html += '<th style="width:100px;text-align:center;">排序范围</th>';
-        html += '<th style="width:200px;text-align:center;">时间范围</th>';
-        html += '<th style="width:100px;text-align:center;">排序指标</th>';
+        html += '<th style="width:150px;text-align:center;">监控时间</th>';
+        html += '<th style="width:100px;text-align:center;">时间间隔</th>';
+        html += '<th style="width:200px;text-align:center;">提交时间</th>';
         html += '<th style="width:100px;text-align:center;">任务状态</th>';
-        html += '<th style="width:30px;text-align:center;">操作</th>';
+        html += '<th style="width:60px;text-align:center;">操作</th>';
         html += '</thead>';
         for(var i=0;i<data.length;i++){
-            sort_scope = scope_dict[data[i].sort_scope];
-            sort_norm = norm_dict[data[i].sort_norm];
-            var delete_this = '<span style="display:none;">'+data[i].search_id+'</span><span class="delete_this"><b><u class="delete_key_result" style="cursor:pointer;">删除</u></b></span>';
-            if(data[i].status == 0){
+            // sort_scope = scope_dict[data[i].sort_scope];
+            // sort_norm = norm_dict[data[i].sort_norm];
+            var delete_this = '<span style="display:none;">'+data[i][0]+'</span><span class="de_delete_this"><b><u class="delete_key_result" style="cursor:pointer;">删除</u></b></span>';
+            if(data[i][5] == 0){
                 var status = '正在计算';
             }else{
-                var status = '<span><b><u class="show_key_result" style="cursor:pointer;">计算完成</u></b></span>';
+                var status = '<span><b><u class="show_detect_key_result" style="cursor:pointer;">计算完成</u></b></span>';
             }
             html += '<tr>';
-            html += '<td style="text-align:center;">'+data[i].keyword+'</td>';
-            html += '<td style="text-align:center;">'+sort_scope+'</td>';
-            html += '<td style="text-align:center;">'+data[i].start_time+' 至 '+data[i].end_time+'</td>';
-            html += '<td style="text-align:center;">'+sort_norm+'</td>';
-            html += '<td style="text-align:center;"><span style="display:none;">'+data[i].search_id+'</span>'+'<span style="display:none;">'+data[i].sort_scope+'</span>'+status+'</td>';
+            html += '<td style="text-align:center;">'+data[i][3]+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1]+' 至 '+data[i][2]+'</td>';
+            html += '<td style="text-align:center;">'+'shijianjiange'+'</td>';
+            html += '<td style="text-align:center;">'+data[i][4]+'</td>';
+            html += '<td style="text-align:center;"><span style="display:none;">'+data[i][0]+'</span>'+status+'</td>';
             html += '<td style="text-align:center;">'+delete_this+'</td>';
             html += '</tr>';
         }
@@ -793,6 +780,18 @@ function Draw_detect_charts(flag, data){
     }              
 }
 
+function submit_detect_offline(data){
+    console.log(data)
+    if(data.flag == true){
+        alert('提交成功！已添加至离线任务');
+        var task_url = '/sentiment/search_sentiment_all_keywords_task/?submit_user='+username;
+        console.log(task_url)
+        call_sync_ajax_request(task_url, detect_task_status);
+    }else{
+        alert('添加失败，请重试！')
+    }
+}
+
 //排序范围选择
 $('#detect_choose').change(function(){
     $('#detect_choose_detail').empty();
@@ -848,7 +847,7 @@ $('#detect_choose').change(function(){
     //全网-关键词
     if($('#detect_choose').val() == 'all_limit_keyword') {
         var html = '';
-        html += '<input id="keyword_hashtag" type="text" class="form-control" style="width:275px;height:25px;" placeholder="请输入关键词，多个词用英文逗号分开">';
+        html += '<input id="keyword_detect" type="text" class="form-control" style="width:275px;height:25px;" placeholder="请输入关键词，多个词用英文逗号分开">';
 
     };
     $('#detect_choose_detail').append(html);
@@ -879,11 +878,11 @@ function submit_detect(){
     var show_scope = $('#detect_choose option:selected').text();
     var show_arg = $('#detect_choose_detail_2 option:selected').text();
     var show_norm = $('#sort_select_2 option:selected').text();
-    var keyword = $('#keyword_hashtag').val();
+    var keyword = $('#keyword_detect').val();
     var sort_scope = $('#detect_choose option:selected').val();
     var sort_norm = $('#sort_select_2 option:selected').val();
     var arg = $('#detect_choose_detail_2 option:selected').val();
-    scope_arg = arg;
+    scope_arg = arg; 
 
     var time_from =$('#detect_time_choose #weibo_from').val().split('/').join('-');
     var time_to =$('#detect_time_choose #weibo_to').val().split('/').join('-');
@@ -939,21 +938,23 @@ function submit_detect(){
             $('#result_detect_detail').css('display','none');
 
         }else{ //输入参数的时候，更新任务状态表格
-
-            var time_from =$('#detect_time_choose #weibo_from').val().split('/').join('-');
-            var time_to =$('#detect_time_choose #time_to').val().split('/').join('-');
-
-            var url = 'time='+time_from+','+time_to+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope+'&arg='+keyword;
-            var data = {"flag": true, "data": [{"sort_norm": "bci", "status": 1, "keyword": "11111hello2", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459093215.85"}, {"sort_norm": "bci_change", "status": 1, "keyword": "\u4e2d\u56fd\u4eba\u6c11", "sort_scope": "all_limit_keyword", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "keyword", "end_time": "2013-09-06", "search_id": "admin@qq.com1459093370.92"}, {"sort_norm": "imp", "status": 1, "keyword": "456", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459095146.65"}, {"sort_norm": "bci", "status": 1, "keyword": "hello", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-02", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-03", "search_id": "admin@qq.com1459091263.5"}]};
-            detect_task_status(data);
+            var keyword_array = [];
+            var keyword_array = keyword.split(',');
+            var keyword_string = keyword_array.join(',');
+            var url = '/sentiment/submit_sentiment_all_keywords/?start_date='+time_from+'&end_date='+time_to+'&keywords='+keyword_string +'&submit_user=' + username;
+            call_sync_ajax_request(url, submit_detect_offline)
+            //detect_task_status(data);
             console.log(url);
         }
     }
 }
 
 //结果分析默认值
+var username = $('#de_username').text();
+console.log(username);
 var mood_dict ={'积极':'1','消极':'7','中性':'0'}
 var segment_dict = {'15分钟':'fifteen','一小时':'hour','一天':'day'};
+var re_segment_dict = {'fifteen': '15分钟', 'hour':'一小时', 'day':'一天'};
 var flag = '';
 var global_url = '';
 var scope_arg = '';
@@ -972,8 +973,9 @@ $('#detect_time_range').append(time_from_end);
 var scope_dict ={'all_limit_keyword':'全网-按关键词','in_limit_keyword':'库内-按关键词','in_limit_hashtag':'库内-按微话题'}
 var norm_dict ={'weibo_num': '微博数','fans': '粉丝数','bci': '影响力','bci_change':'突发影响力变动','ses':'言论敏感度','ses_change':'突发敏感度变动','imp':'身份敏感度','imp_change':'突发重要度变动','act':'活跃度','act_change':'突发活跃度变动'}
 
-var data = {"flag": true, "data": [{"sort_norm": "bci", "status": 1, "keyword": "hello2", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459093215.85"}, {"sort_norm": "bci_change", "status": 1, "keyword": "\u4e2d\u56fd\u4eba\u6c11", "sort_scope": "all_limit_keyword", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "keyword", "end_time": "2013-09-06", "search_id": "admin@qq.com1459093370.92"}, {"sort_norm": "imp", "status": 1, "keyword": "456", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459095146.65"}, {"sort_norm": "bci", "status": 1, "keyword": "hello", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-02", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-03", "search_id": "admin@qq.com1459091263.5"}]};
-detect_task_status(data);
+var task_url_all = '/sentiment/search_sentiment_all_keywords_task/?submit_user='+username;
+console.log(task_url_all)
+call_sync_ajax_request(task_url_all, detect_task_status);
+
 var url = '/sentiment/sentiment_all/?start_date=2013-09-07&end_date=2013-09-07&segment=fifteen';
 call_sync_ajax_request(url, Draw_detect_all_charts);
-//Draw_detect_charts(1);
