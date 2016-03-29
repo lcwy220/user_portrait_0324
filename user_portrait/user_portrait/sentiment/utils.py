@@ -120,12 +120,14 @@ def submit_sentiment_all_keywords(keywords_string, start_date, end_date, submit_
     task_information['submit_ts'] = submit_ts
     task_information['start_date'] = start_date
     task_information['end_date'] = end_date
-    task_id = submit_ts + '_' + submit_user + '_' + add_keywords_string
+    task_id = str(submit_ts) + '_' + submit_user + '_' + add_keywords_string
     task_information['task_id'] = task_id
+    task_information['status'] = '0'
+    task_information['results'] = ''
     #add to sentiment task information
     try:
-        es_sentiment_task.index(index_name=sentiment_keywords_index_name, \
-            index_type=sentiment_keywords_index_type, id=task_id, \
+        es_sentiment_task.index(index=sentiment_keywords_index_name, \
+            doc_type=sentiment_keywords_index_type, id=task_id, \
             body=task_information)
     except:
         return 'es error'
@@ -136,6 +138,58 @@ def submit_sentiment_all_keywords(keywords_string, start_date, end_date, submit_
         return 'redis error'
 
     return True
+
+#use to delete sentiment all keywords task
+def delete_sentiment_all_keywords_task(task_id):
+    status = False
+    es_sentiment_task.delete(index=sentiment_keywords_index_name, \
+                doc_type=sentiment_keywords_index_type, id=task_id)
+    status = True
+    return status
+
+#use to search all keywords sentiment task
+def search_sentiment_all_keywords_task(submit_date, keywords_string, submit_user):
+    results = []
+    query_list = []
+    if submit_date:
+        submit_ts_start = datetime2ts(submit_date)
+        submit_ts_end = submit_ts_start + DAY
+        query_list.append({'range': {'submit_ts': {'gte': submit_ts_start, 'lt':submit_ts_end}}})
+    if keywords_string:
+        keywords_list = keywords_string.split(',')
+        query_list.append({'terms':{'query_keywords': keywords_list}})
+    if submit_user:
+        query_list.append({'term': {'submit_user': submit_user}})
+    try:
+        task_results = es_sentiment_task.search(index=sentiment_keywords_index_name, \
+                doc_type=sentiment_keywords_index_type, body={'query':{'bool':{'must':query_list}}})['hits']['hits']
+    except:
+        task_results = []
+    for task_item in task_results:
+        task_source = task_item['_source']
+        task_id = task_source['task_id']
+        start_date = task_source['start_date']
+        end_date = task_source['end_date']
+        keywords = task_source['query_keywords']
+        submit_ts = ts2date(task_source['submit_ts'])
+        status = task_source['status']
+        results.append([task_id, start_date, end_date, keywords, submit_ts, status])
+
+    return results
+
+def show_sentiment_all_keywords_results(task_id):
+    results = []
+    try:
+        task_results = es_sentiment_task.get(index=sentiment_keywords_index_name,\
+            doc_type=sentiment_keywords_index_type, id=task_id)['_source']
+    except:
+        task_results = {}
+    if not task_result:
+        return results
+    results = json.loads(task_results['results'])
+    return results
+
+
 
 #use to get domain sentiment trend by date for user in user_portrait
 def search_sentiment_domain(domain, start_date, end_date, time_segment):
@@ -652,7 +706,7 @@ def search_sentiment_detail_in_domain(start_ts, task_type, task_detail, time_seg
                     'bool':{
                         'must':[
                             {'range':{'timestamp': {'gte': start_ts, 'lt': end_ts}}},
-                            {'term': {'uid': query_uid_list}}
+                            {'terms': {'uid': query_uid_list}}
                             ]
                         }
                     }

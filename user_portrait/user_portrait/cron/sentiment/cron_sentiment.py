@@ -35,6 +35,18 @@ def identify_task_exist(task_information_dict):
     else:
         return True
 
+#use to compute task sentiment trend
+def compute_sentiment_task(sentiment_task_information):
+    results = {}
+    return results
+
+def save_task_results(results):
+    status = False
+    return status
+
+def push_task_information(sentiment_task_information):
+    status = False
+    return status
 
 #use to read task information from queue
 def scan_sentiment_keywords_task():
@@ -56,7 +68,9 @@ def scan_sentiment_keywords_task():
             #identify save status
             if not save_mark:
                 #status fail: push task information to redis queue
-                push_task_information(sentiment_task_information)
+                push_mark = push_task_information(sentiment_task_information)
+                if not push_mark:
+                    print 'error push task queue'
         else:
             #if no exist - pass
             pass
