@@ -19,7 +19,7 @@ function call_sync_ajax_request(url, callback){
       url: url,
       type: 'GET',
       dataType: 'json',
-      async: true,
+      async: false,
       success:callback
     });
 }
@@ -105,11 +105,15 @@ function draw_user_in_table(data){
         for(var i=0;i<data.length;i++){
             html += '<tr>';
             html += '<td style="text-align:center;">'+data[i][0]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][1][0]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][1][1]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][1][3]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][1][2]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][1][4]+'</td>';
+            var name = data[i][1][0];
+            if(data[i][1][0] == 'unknown'){
+                name = data[i][0];
+            }
+            html += '<td style="text-align:center;">'+name+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][1].toFixed(2)+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][3].toFixed(2)+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][2].toFixed(2)+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][4].toFixed(2)+'</td>';
             html += '</tr>';
         }
         html += '</table>';
@@ -132,11 +136,15 @@ function show_more_inuser(data){
     for(var i=0;i<data.length;i++){
         html += '<tr>';
         html += '<td style="text-align:center;">'+data[i][0]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][1][0]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][1][1]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][1][3]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][1][2]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][1][4]+'</td>';
+        var name = data[i][1][0];
+        if(data[i][1][0] == 'unknown'){
+            name = data[i][0];
+        }
+        html += '<td style="text-align:center;">'+name+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][1].toFixed(2)+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][3].toFixed(2)+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][2].toFixed(2)+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][4].toFixed(2)+'</td>';
         html += '</tr>';
     }
     html += '</table>';
@@ -144,6 +152,7 @@ function show_more_inuser(data){
     $('#more_inuser_table').dataTable({
     "sDom": "<'row'<'col-md-6'l ><'col-md-6'f>r>t<'row'<'col-md-12'i><'col-md-12 center-block'p>>",
     "sPaginationType": "bootstrap",
+     "aaSorting": [[ 2, "desc" ]],
     //"aoColumnDefs":[ {"bSortable": false, "aTargets":[1]}],
     "oLanguage": {
         "sLengthMenu": "每页 _MENU_ 条 ",
@@ -566,6 +575,10 @@ function show_detail(data){
     //show_related_topic(data.weibo);
 
 }
+function control(){
+    $('#result_detect_detail').css('display','block');
+    $('#loading_message').css('display','none');
+};
 function Draw_detect_all_charts(data){
     flag = 'all';
     Draw_detect_charts(flag, data);
@@ -705,7 +718,7 @@ function Draw_detect_charts(flag, data){
                   task_type= flag;
                   sentiment = mood_dict[param.seriesName];
                   //显示总体情况
-                  $('#result_detect_detail').css('display','block');
+                  $('#loading_message').css('display','block');
                   $('#click_time').empty();
                   $('#click_sentiment').empty();
                   $('#click_time').append(param.name);
@@ -720,6 +733,9 @@ function Draw_detect_charts(flag, data){
                   //var data = [['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56']]
                   call_sync_ajax_request(detail_url, show_detail);
                   //show_detail(data, flag, param.name, param.seriesName);
+                  control();
+
+
               }
 
           myChart.on(ecConfig.EVENT.CLICK, eConsole);

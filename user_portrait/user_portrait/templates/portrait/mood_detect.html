@@ -121,6 +121,9 @@
 			<span style="margin-left: 20px;">时间范围：<span id="detect_time_range"></span></span>
 		</b></div>
 		<div id="result_detect_charts" style="margin-top:20px;width:900px;height:300px;"></div>
+		<div id="loading_message" style="display:none;">
+			<p style="text-align:center;min-height: 100px;background-color: #cccccc;line-height: 100px;">数据正在加载...请稍后</p>
+		</div>
 		<div id="result_detect_detail" style="display:none;margin-top:20px;width:900px;margin-bottom:40px;">
 			<div id="" style="border-top: 1px solid #6F6E6E;border-bottom: 1px solid #6F6E6E;padding: 5px;">
 				<b>
@@ -135,24 +138,24 @@
 					<span id="showmore_inuser" style="float:right;cursor:pointer" type="button"data-toggle="modal" data-target="#more_inuser" ><u>查看更多</u></span>
 					<b>库内用户</b>
 				</h5>
-				<div id="mood_in_user"></div>
+				<div id="mood_in_user" class="call_data"></div>
 			</div>
 			<div id="mood_out_all" style="margin-left:25px;float:left;">
 				<h5 id="out_user_title" style="font-size:16px;display:none;color:#983333">
 					<span id="showmore_outuser" style="float:right;cursor:pointer" type="button"data-toggle="modal" data-target="#more_outuser" ><u>查看更多</u></span>
 					<b>库外用户</b>
 				</h5>
-				<div id="mood_out_user" style="float:left;width:430px;"></div>
+				<div id="mood_out_user" class="call_data" style="float:left;width:440px;"></div>
 			</div>
 			<div id="mood_keywords" style="margin-left:25px;float:left;width:420px;height:269px;">
 				<h5 id="keywords_title" style="font-size:16px;color:#983333">
 					<span id="more_keywords_list" style="float:right;cursor:pointer" type="button"data-toggle="modal" data-target="#more_keywords_modal" ><u>查看更多</u></span>
 					<b>关键词云</b>
 				</h5>
-				<div id="mood_keywords_clouds" style="float:left;width:415px;height:230px;"></div>
+				<div id="mood_keywords_clouds" class="call_data" style="float:left;width:415px;height:230px;"></div>
 			</div>
 			<div>
-				<h5 id="out_user_title" hidden>
+				<h5 id="out_user_title">
 					<b  style="color:#983333;font-size:16px;">相关话题</b>
 					<span style="margin-left:200px;"><input type="checkbox" name='sub_topic'>进一步计算子话题</span>
 				</h5>
