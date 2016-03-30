@@ -65,7 +65,9 @@ def ajax_search_sentiment_all_keywords_task():
     submit_date = request.args.get('submit_date', '')  #2016-03-29
     keywords_string = request.args.get('keywords', '') # word1,word2
     submit_user = request.args.get('submit_user', '') # admin@qq.com
-    results = search_sentiment_all_keywords_task(submit_date, keywords_string, submit_user)
+    start_date = request.args.get('start_date', '') # 2013-09-07
+    end_date = request.args.get('end_date', '') # 2013-09-08
+    results = search_sentiment_all_keywords_task(submit_date, keywords_string, submit_user, start_date, end_date)
     if not results:
         results = ''
     return json.dumps(results)
