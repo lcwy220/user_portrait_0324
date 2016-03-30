@@ -408,8 +408,12 @@ function moving_geo(data,data2){
         var city_split = dealt_data[0][i].split('&');
         var from_last_city = city_split[0].split('\t');
         var end_last_city = city_split[1].split('\t');
-        from_city.push(from_last_city[from_last_city.length-1])
-        end_city.push(end_last_city[end_last_city.length-1]);
+        console.log(from_last_city);
+        if(from_last_city[0]=='中国' && from_last_city.length==3 && end_last_city[0]=='中国' && end_last_city.length==3){
+			from_city.push(from_last_city[from_last_city.length-1]);
+			end_city.push(end_last_city[end_last_city.length-1]);
+		}
+        
     }
     var html = '';
     if (dealt_data[0].length == 0){
@@ -421,6 +425,7 @@ function moving_geo(data,data2){
             $('#geo_show_more').css('display', 'none');
         };
             Draw_more_moving_geo(from_city, end_city, dealt_data,fromCity,endCity);
+
             Draw_moving(from_city, end_city, dealt_data[1]);
             html += '<table class="table table-striped" style="width:100%;font-size:14px;margin-bottom:0px;">';
             html += '<tr><th style="text-align:center">起始地</th>';
@@ -480,6 +485,10 @@ function Draw_more_moving_geo(from_city, end_city, dealt_data,fromCity,endCity){
 
 //迁徙图
 function Draw_moving(from_city, end_city, dealt_data){
+	$('#moving').click(function(){
+			drawroute();
+		})
+	/*
    var geolist = new Array();
    for(var i=0;i<from_city.length;i++){
 	   geolist.push(from_city[i]);
@@ -499,9 +508,10 @@ function Draw_moving(from_city, end_city, dealt_data){
             setTimeout(bdGEO,400);
         }
         else{
-            setTimeout(drawroute, 400);
+            setTimeout(DrawRoute, 400);
+			//DrawRoute;
         }
-        myGeo.getPoint(geoname, function(point){
+		myGeo.getPoint(geoname, function(point){
             if (point){
                 var fixpoint= new BMap.Point(point.lng+3.5,point.lat-0.5);
                 var marker = new BMap.Marker(fixpoint);
@@ -511,15 +521,21 @@ function Draw_moving(from_city, end_city, dealt_data){
                  //alert("no such point!");
             }
         }, geoname);
+		//console.log(newgeo);
+        
     }
+	function DrawRoute(){
+		$('#moving').click(function(){
+			drawroute();
+		})
+	}*/
     function drawroute(){
         var route = new Array();
         for(var i=0;i<from_city.length;i++){
             route.push([{'name':from_city[i]},{'name':end_city[i],'value':dealt_data[i]}]);
             //route.push(basic_route);
         }
-        console.log(newgeo);
-        console.log(route);
+        //console.log(route);
         var myChart = echarts.init(document.getElementById('moving_location_detail')); 
         var option = {
             backgroundColor: '#1b1b1b',
@@ -559,7 +575,7 @@ function Draw_moving(from_city, end_city, dealt_data){
                         data :[]
                     },
 
-                    geoCoord: newgeo, 
+                    geoCoord: cityLW, 
                     },
                     {
                         type: 'map',
@@ -618,7 +634,7 @@ function Draw_top_platform(dealt_data){
 }
 
 function Draw_top_place(start,end){
-    
+    console.log(end);
     var html = '';
 	$('#top_place').empty();
     var html = '';
@@ -887,6 +903,7 @@ function show_activity(data) {
 
 	Draw_top_platform(data.online_pattern);
 	//Draw_more_top_platform();
+	console.log(data);
     Draw_top_place(data.main_start_geo,data.main_end_geo);
 	draw_active_distribution(data.activeness_his);
 

@@ -67,11 +67,12 @@ var min_date = '-1970/01/30';
 $('input[name="con_end_time"]').datetimepicker({value:current_date,minDate:current_date,step:10});
 var Group_identify_task = new Group_identify_task();
 redraw_result();
+/*
 var con_sen_word_url='/social_sensing/get_sensitive_words';
 Group_identify_task.call_sync_ajax_request(con_sen_word_url,Group_identify_task.ajax_method,draw_con_sen_more);
 var con_nor_word_url='/social_sensing/get_sensing_words';
 Group_identify_task.call_sync_ajax_request(con_nor_word_url,Group_identify_task.ajax_method,draw_con_nor_more);
-
+*/
 
 $('#group_control_confirm_button').click(function(){
 	group_control_data();
@@ -105,14 +106,15 @@ function group_control_data(){
     a['task_name'] = $('input[name="con_group_name"]').val();
     a['remark'] = $('input[name="con_remark"]').val();
 	a['stop_time'] = Date.parse($('input[name="con_end_time"]').val())/1000;
-	a['keywords'] = '';
-	a['sensitive_words'] = '';
+	//a['keywords'] = '';
+	//a['sensitive_words'] = '';
 	a['create_at'] =  Date.parse(new Date())/1000;
 	a['social_sensors'] ='';
 	var url0 = [];
 	var url1 = '';
 	var url_create = '/social_sensing/create_task/?';
 	if(flag = true){
+        /*
 	   a['keywords'] = $('input[name="con_nor_keywords"]').val();
 	    if(a['keywords'].length){
 		 	a['keywords'] = a['keywords'].split(/\s+/g);
@@ -131,6 +133,7 @@ function group_control_data(){
 	    $('[name="con_more_option_1"]:checked').each(function(){
 		  	    a['sensitive_words'].push($(this).val());
 		  	});
+        */
     	$('[name="control_list_option"]:checked').each(function(){
 	  	    a['social_sensors'].push($(this).parent().prev().prev().prev().prev().prev().prev().prev().attr('name'));
 	  	});
@@ -175,6 +178,7 @@ function del(data){
 			//window.location.href=window.location.href;
 		}
 }
+/*
 function draw_con_sen_more(data){
 	var item = data;
 	//$('#so_more_content').empty();
@@ -203,7 +207,7 @@ function con_more_all_0(){
 function con_more_all_1(){
   $('input[name="con_more_option_1"]').prop('checked', $("#con_more_all_1").prop('checked'));
 }
-
+*/
 function control_click(){
 	$('a[id^="commit_control"]').click(function(){
 		var temp = $(this).parent().prev().prev().prev().prev().prev().html();

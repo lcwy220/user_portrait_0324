@@ -19,10 +19,8 @@ from user_portrait.time_utils import ts2datetime, datetime2ts, ts2date
 from user_portrait.parameter import DAY, domain_en2ch_dict, SENTIMENT_MAX_TEXT,\
         SENTIMENT_TEXT_SORT, SENTIMENT_MAX_KEYWORDS, SENTIMENT_SECOND,\
         SENTIMENT_ITER_USER_COUNT, MAX_VALUE, RUN_TYPE, SENTIMENT_MAX_USER,\
-        SENTIMENT_ITER_TEXT_COUNT, SENTIMENT_SORT_EVALUATE_MAX
+        SENTIMENT_ITER_TEXT_COUNT, SENTIMENT_SORT_EVALUATE_MAX, str2segment, sentiment_type_list
 
-sentiment_type_list = ['0', '1', '7']
-str2segment = {'fifteen': 900, 'hour': 3600, 'day':3600*24}
 
 def get_new_ts_count_dict(ts_count_result, time_segment, date_item):
     result = {}
@@ -98,17 +96,8 @@ def search_sentiment_all_portrait(start_date, end_date, time_segment):
             sentiment_ts_count_dict[sentiment].extend(sort_new_ts_count)
     return sentiment_ts_count_dict
     
-
-
-
-#use to get all keywords sentiment trend by date
-def search_sentiment_all_keywords(keywords_string, start_date, end_date):
-    results = {}
-    return results
-
-
 #use to submit keywords sentiment trend task to date
-def submit_sentiment_all_keywords(keywords_string, start_date, end_date, submit_user):
+def submit_sentiment_all_keywords(keywords_string, start_date, end_date, submit_user, segment):
     task_information = {}
     #step1: add task to sentiment_keywords es
     #step2: add task to redis queue
@@ -116,6 +105,7 @@ def submit_sentiment_all_keywords(keywords_string, start_date, end_date, submit_
     task_information['query_keywords'] = add_keywords_string
     task_information['query_range'] = 'all_keywords'
     task_information['submit_user'] = submit_user
+    task_information['segment'] = segment
     submit_ts = int(time.time())
     task_information['submit_ts'] = submit_ts
     task_information['start_date'] = start_date
@@ -173,23 +163,22 @@ def search_sentiment_all_keywords_task(submit_date, keywords_string, submit_user
         keywords = task_source['query_keywords']
         submit_ts = ts2date(task_source['submit_ts'])
         status = task_source['status']
-        results.append([task_id, start_date, end_date, keywords, submit_ts, status])
+        segment = task_source['segment']
+        results.append([task_id, start_date, end_date, keywords, submit_ts, status, segment])
 
     return results
 
-def show_sentiment_all_keywords_results(task_id):
+def show_sentiment_all_keywords_results(task_id, time_segment):
     results = []
     try:
         task_results = es_sentiment_task.get(index=sentiment_keywords_index_name,\
             doc_type=sentiment_keywords_index_type, id=task_id)['_source']
     except:
         task_results = {}
-    if not task_result:
+    if not task_results:
         return results
     results = json.loads(task_results['results'])
     return results
-
-
 
 #use to get domain sentiment trend by date for user in user_portrait
 def search_sentiment_domain(domain, start_date, end_date, time_segment):
@@ -527,8 +516,73 @@ def search_sentiment_detail_all(start_ts, task_type, task_detail, time_segment, 
 
 def search_sentiment_detail_all_keywords(start_ts, task_type, task_detail, time_segment, sentiment, sort_type):
     results = {}
+    must_query_list = []
+    #step0: get query keywords list
+    keyword_nest_body_list = []
+    keywords_list = task_detail.split(',')
+    print 'keywords_list:', keywords_list
+    for keywords_item in keywords_list:
+        keyword_nest_body_list.append({'wildcard':{'text': '*' + keywords_item + '*'}})
+    must_query_list.append({'bool':{'should': keyword_nest_body_list}})
+    #step1: get weibo from flow_text
+    start_ts = int(start_ts)
+    start_date = ts2datetime(start_ts)
+    end_ts = start_ts + str2segment(time_segment)
+    if sentiment == '7':
+        query_sentiment_list = SENTIMENT_SECOND
+    else:
+        query_sentiment_list = [sentiment]
+    must_query_list.append({'range': {'timestamp': {'gte': start_ts, 'lt':end_ts}}})
+    must_query_list.append({'terms': {'sentiment': query_sentiment_list}})
+    quer_body = {
+        'query':{
+            'bool':{
+                'must': must_query_list
+                }
+            },
+        'size': SENTIMENT_MAX_TYPE,
+        'sort': sort_type
+        }
+    flow_text_index_name = flow_text_index_name_pre + start_date
+    print 'flow_text_index_name:', flow_text_index_name
+    try:
+        flow_text_result = es_flow_text.search(index=flow_text_index_name, doc_type=flow_text_index_type,\
+                body=query_body)['hits']['hits']
+    except:
+        flow_text_result = []
+    print 'show weibo list'
+    show_weibo_list, user_set = deal_show_weibo_list(flow_text_result)
+    print 'get keyword'
+    #step2: get keywords from flow_text
+    keyword_query_dict = {
+        'query':{
+            'bool':{
+                'must':must_query_list
+                }
+            },
+        'aggs':{
+            'all_interests': {
+                'terms': {
+                    'field': 'keywords_strinf',
+                    'size': SENTIMENT_MAX_KEYWORDS
+                    }
+                }
+            }
+        }
+    show_keywords_dict = es_flow_text.search(index=flow_text_index_name, doc_type=flow_text_index_type,\
+            body=keyword_query_dict)['aggregations']['all_interests']['buckets']
+    keywords_list = [[item['key'], item['doc_count']] for item in show_keywords_dict]
+    #step3: get user information
+    filter_type = 'in-out'
+    in_portrait_result, out_portrait_result = identify_user_portrait(user_set, filter_type)
+    #step4: add uname to show weibo list
+    show_weibo_list = add_uname2weibo(show_weibo_list, in_portrait_result, out_portrait_result)
+    #step5: results
+    results['weibo'] = show_weibo_list
+    results['in_portrait_result'] = sorted(in_portrait_result.items(), key=lambda x:x[1][1], reverse=True)[:SENTIMENT_MAX_USER]
+    results['out_portrait_result'] = sorted(out_portrait_result.items(), key=lambda x:x[1][3], reverse=True)[:SENTIMENT_MAX_USER]
+    results['keywords'] = keywords_list
     return results
-
 
 def filter_weibo_in(weibo_list, in_portrait_dict):
     filter_weibo_list = []

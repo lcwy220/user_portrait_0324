@@ -48,6 +48,10 @@ index_info = {
                 'end_date':{
                     'type': 'string',
                     'index': 'not_analyzed'
+                    },
+                'segment':{
+                    'type': 'string',
+                    'index': 'not_analyzed'
                     }
                 }
             }
