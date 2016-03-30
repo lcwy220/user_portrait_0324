@@ -4,7 +4,7 @@ import os
 import json
 from flask import Blueprint, url_for, render_template, request,\
                     abort, flash, session, redirect
-from utils import search_sentiment_all, search_sentiment_all_keywords,\
+from utils import search_sentiment_all,\
                   search_sentiment_domain, search_sentiment_topic,\
                   search_sentiment_weibo_keywords, search_sentiment_all_portrait ,\
                   submit_sentiment_all_keywords, show_sentiment_all_keywords_results, \
@@ -45,7 +45,8 @@ def ajax_submit_sentiment_all_keywords():
     end_date = request.args.get('end_date', '')
     keywords_string = request.args.get('keywords', '') #keywords_string=word1,word2
     submit_user = request.args.get('submit_user', '')
-    results = submit_sentiment_all_keywords(keywords_string, start_date, end_date, submit_user)
+    segment = request.args.get('segment', 'fifteen') # fifteen/hour/day
+    results = submit_sentiment_all_keywords(keywords_string, start_date, end_date, submit_user, segment)
     if not results:
         results = {}
     return json.dumps(results)
@@ -74,7 +75,8 @@ def ajax_search_sentiment_all_keywords_task():
 @mod.route('/show_sentiment_all_keywords_results/')
 def ajax_senitment_all_keywords():
     task_id = request.args.get('task_id', '') # ts_admin_keywords
-    results = show_sentiment_all_keywords_results(task_id)
+    time_segment = request.args.get('segment', 'fifteen') #fifteen/hour/day
+    results = show_sentiment_all_keywor, ds_results(task_id, time_segment)
     if not results:
         results = {}
     return json.dumps(results)
