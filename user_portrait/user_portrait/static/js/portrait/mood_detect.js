@@ -232,7 +232,7 @@ function Draw_keyword(data){
   var keyword = [];
   var html = '';
   $('#keywords_WordList').empty();
-  if(data.length == 0){
+  if(data == ''){
       html = '<h4 style="text-align:center;min-height: 100px;background-color: #cccccc;line-height: 100px;">暂无数据</h4>';
       //$('#'+ more_div).append(html);
       $('#mood_keywords_clouds').append(html);
