@@ -17,7 +17,7 @@ Social_sense.prototype = {   //获取数据，重新画表
 	var html = '';
 	var item_time = '';
 	if (item.length == 0){
-		html += '<div style="color:grey;text-align: center;padding: 10px;">暂无数据</div>'
+		html += '<div style="color:grey;">暂无数据</div>'
 	}else{
 		html += '<table id="so_group_task_body" class="table table-bordered table-striped table-condensed datatable" >';
 		html += '<thead><tr style="text-align:center;"><th>群组名称</th><th>提交人</th><th>时间</th><th>群组人数</th><th>备注</th><th>查看详情</th><th><input name="so_user_choose_all" id="so_user_choose_all" type="checkbox" value="" onclick="so_user_choose_all()" /></th></tr></thead>';
@@ -118,19 +118,17 @@ Social_sense.prototype = {   //获取数据，重新画表
   }
 }
 
-$('input[name="so_mode_choose"]').change(function(){
-    var so_user_option = $('input[name="so_mode_choose"]:checked').val();
-    if (so_user_option == 'so_have_users'){
-        $('#so_have_users_ext').css('display','block').siblings().css({"display":"none"});
-    }
-    else if(so_user_option == 'so_search_users'){
-        $('#so_search_users_ext').css('display','block').siblings().css({"display":"none"});
-    }else{
-    	$('#so_up_users_ext').css('display','block').siblings().css({"display":"none"});
-    }
-    //seed_user_init();
-    //if (!seed_user_flag) seed_user_flag = true; // no more html init
-});
+// $('input[name="so_mode_choose"]').change(function(){
+//     var so_user_option = $('input[name="so_mode_choose"]:checked').val();
+//     if (so_user_option == 'so_have_users'){
+//         $('#so_have_users_ext').css('display','block').siblings().css({"display":"none"});
+//     }
+//     else if(so_user_option == 'so_search_users'){
+//         $('#so_search_users_ext').css('display','block').siblings().css({"display":"none"});
+//     }else{
+//     	$('#so_up_users_ext').css('display','block').siblings().css({"display":"none"});
+//     }
+// });
 var current_date0 = new Date();
 //var current_date = current_date0.format('yyyy/MM/dd hh:mm')
 current_date0.setDate(current_date0.getDate()+1);
@@ -281,7 +279,7 @@ function so_draw_search_results(data){
     var html = '';
     html += '<table id="search_result_table" class="table table-striped table-bordered bootstrap-datatable datatable responsive">';
     html += '<thead><tr><th>用户ID</th><th>昵称</th><th>注册地</th><th>活跃度</th><th>重要度</th><th>影响力</th><th>相关度</th>';
-    html += '<th>操作</th></tr></thead>';
+    html += '<th>操作</th><th><input  name="search_table_choose" id="search_table_choose" type="checkbox" value="" onclick="search_table_choose()" />全选</th></tr></thead>';
     html += '<tbody>';
     for(var i = 0; i<data.length;i++){
       var item = data[i];
@@ -303,6 +301,7 @@ function so_draw_search_results(data){
       html += '<td class="center" style="width:100px;">'+ item[5] +'</td>';
       html += '<td class="center" style="width:100px;">'+ item[6] +'</td>';
       html += '<td class="center" style="width:120px;"><a class="portrait_href" href=' + user_url + ' target="_blank">查看人物属性页</a></td>';
+      html += '<td class="center"><input name="search_table_choose_option" class="search_result_option" type="checkbox"  /></td>'
       html += '</tr>';
     }
     html += '</tbody>';
@@ -383,6 +382,11 @@ function draw_sen_more(data){
 	// }
 	// html += '</div>';
 	$('#so_sen_content').append(html);
+}
+
+
+function search_table_choose(){
+  $('input[name="search_table_choose_option"]').prop('checked', $("#search_table_choose").prop('checked'));
 }
 
 function draw_nor_more(data){
