@@ -58,14 +58,20 @@ Social_sense.prototype = {   //获取数据，重新画表
 	html += '<tbody>';
 	for (i=0;i<item.length;i++){
 	  	var create_d = new Date(item[i]['create_at']*1000).format('yyyy/MM/dd hh:mm'); 
-	  	var end_d = new Date(item[i]['stop_time']*1000).format('yyyy/MM/dd hh:mm'); 
-	  	var keys = [];
-	  	for(var j=0;j<item[i]['keywords'].length;j++){
-	  		keys.push(item[i]['keywords'][j]);
-	  	}
-	  	keys.join(',');
-	  	time_pro = (((time_now-item[i]['create_at'])/(item[i]['stop_time']-item[i]['create_at']))*100).toFixed(0);
-		if(item[i]['warning_status']==0){
+      console.log(item[i]['stop_time'],item[i]['stop_time'].length);
+	  	if(item[i]['stop_time']!= 'default'){
+      var end_d = new Date(item[i]['stop_time']*1000).format('yyyy/MM/dd hh:mm'); 
+      time_pro = (((time_now-item[i]['create_at'])/(item[i]['stop_time']-item[i]['create_at']))*100).toFixed(0);
+	  	}else{
+        var end_d = '无';
+        time_pro = '----';
+      }
+      // var keys = [];
+	  	// for(var j=0;j<item[i]['keywords'].length;j++){
+	  	// 	keys.push(item[i]['keywords'][j]);
+	  	// }
+	  	// keys.join(',');
+	  			if(item[i]['warning_status']==0){
 			warn = '无事件';
 			//$('#pro').replaceWith('<progress id="pro" progress ::webkit-progress-value{ background: #0064B4; }');
 		}else if (item[i]['warning_status']==1){
@@ -343,6 +349,14 @@ function bindOption(){
             seed_user_files = undefined;
             $('#file_status').css('display', 'none');
         });
+        $('#if_time').click(function(){
+          if($(this).is(':checked')){
+            $('input[name="so_end_time"]').attr('disabled',false);
+          }
+          else{
+            $('input[name="so_end_time"]').attr('disabled',true);
+          }
+        });
         $('#uploadbtn').click(function(){
             var fileInput = document.getElementById('seed_file_upload');
             // 检查文件是否选择:
@@ -462,10 +476,10 @@ function so_ready(){
 			Social_sense.call_sync_ajax_request(url,Social_sense.ajax_method,callback);
 	}
 	});
-	var sen_word_url='/social_sensing/get_sensitive_words';
-	Social_sense.call_sync_ajax_request(sen_word_url,Social_sense.ajax_method,draw_sen_more);
-	var nor_word_url='/social_sensing/get_sensing_words';
-	Social_sense.call_sync_ajax_request(nor_word_url,Social_sense.ajax_method,draw_nor_more);
+	// var sen_word_url='/social_sensing/get_sensitive_words';
+	// Social_sense.call_sync_ajax_request(sen_word_url,Social_sense.ajax_method,draw_sen_more);
+	// var nor_word_url='/social_sensing/get_sensing_words';
+	// Social_sense.call_sync_ajax_request(nor_word_url,Social_sense.ajax_method,draw_nor_more);
 
 	$('span[id^="so_more"]').click(function(e){
 		$('#so_more_block').modal();
@@ -591,7 +605,12 @@ function so_group_data(){
 	if(flag == true){
 	    a['task_name'] = $('#so_name').val();
 	    a['remark'] = $('#so_remarks').val();
-		a['stop_time'] = Date.parse($('input[name="so_end_time"]').val())/1000;
+    if($('#if_time').is(':checked')){
+          a['stop_time'] = Date.parse($('input[name="so_end_time"]').val())/1000;  
+      }
+		else{
+      a['stop_time']='default';
+    }
 		//a['keywords'] = '';
 		//a['keywords0'] = '';
 		a['create_at'] =  Date.parse(new Date())/1000;
