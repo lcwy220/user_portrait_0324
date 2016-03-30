@@ -67,7 +67,8 @@ def ajax_search_sentiment_all_keywords_task():
     submit_user = request.args.get('submit_user', '') # admin@qq.com
     start_date = request.args.get('start_date', '') # 2013-09-07
     end_date = request.args.get('end_date', '') # 2013-09-08
-    results = search_sentiment_all_keywords_task(submit_date, keywords_string, submit_user, start_date, end_date)
+    status = request.args.get('status', '') # '0'/'1'
+    results = search_sentiment_all_keywords_task(submit_date, keywords_string, submit_user, start_date, end_date, status)
     if not results:
         results = ''
     return json.dumps(results)
@@ -121,4 +122,15 @@ def ajax_sentiment_weibo_keywords():
     results = search_sentiment_weibo_keywords(start_ts, task_type, task_detail, time_segment, sentiment, sort_type)
     if not results:
         results = ''
+    return json.dumps(results)
+
+#use to get topic model
+@mod.route('/sentiment_weibo_topic/')
+def ajax_sentiment_weibo_topic():
+    start_ts = request.args.get('start_ts', '')
+    task_type = request.args.get('task_type', '') #task_type=all/all-keywords/in-all/in-domain/in-topic
+    task_detail = request.args.get('task_detail', '') # fifteen/hour/day
+    time_segment = request.args.get('segment', '') #fifteen/hour/day
+    sentiment = request.args.get('sentiment', '0') #0/1/7
+    results = {}
     return json.dumps(results)
