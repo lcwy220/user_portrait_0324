@@ -13,7 +13,7 @@ from global_utils import es_sentiment_task, sentiment_keywords_index_name, \
 from time_utils import ts2datetime, datetime2ts, ts2date
 from parameter import SENTIMENT_TYPE_COUNT, Fifteen, SENTIMENT_MAX_KEYWORDS,\
         SENTIMENT_ITER_USER_COUNT, SENTIMENT_ITER_TEXT_COUNT, SENTIMENT_FIRST, DAY,\
-        SENTIMENT_SECOND
+        SENTIMENT_SECOND, DAY, str2segment
 
 #use to read task information from redis queue
 def get_task_information():
@@ -70,12 +70,14 @@ def compute_sentiment_task(sentiment_task_information):
     all_keyword_dict = {}
     iter_query_list = query_must_list
     #step2.2: iter search by date
+    segment = sentiment_task_information['segment']
+    segment_ts = str2segment[segment] # segment_ts = 900/3600/3600*24
     for iter_date in iter_query_date_list:
         flow_text_index_name = flow_text_index_name_pre + iter_date
         print 'flow_text_index_name:', flow_text_index_name
         iter_start_ts = datetime2ts(iter_date)
-        for i in range(0, 96):
-            query_start_ts = iter_start_ts + i * Fifteen
+        for i in range(0, DAY/segment_ts):
+            query_start_ts = iter_start_ts + i * segment_ts
             print 'query_start_ts:', query_start_ts, ts2date(query_start_ts)
             iter_query_list.append({'range':{'timestamp':{'gte': query_start_ts, 'lt':query_start_ts + Fifteen}}})
             print 'iter_query_list:', iter_query_list
@@ -134,7 +136,7 @@ def save_task_results(results, sentiment_task_information):
         task_id = sentiment_task_information['task_id']
         #try:
         es_sentiment_task.update(index=sentiment_keywords_index_name, \
-                doc_type=sentiment_keywords_index_type, id=task_id, body={'doc': {'results':json.dumps(results)}})
+                doc_type=sentiment_keywords_index_type, id=task_id, body={'doc': {'results':json.dumps(results), 'status': '1'}})
         #except:
         #    status = False
     return status

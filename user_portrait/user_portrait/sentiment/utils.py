@@ -19,10 +19,8 @@ from user_portrait.time_utils import ts2datetime, datetime2ts, ts2date
 from user_portrait.parameter import DAY, domain_en2ch_dict, SENTIMENT_MAX_TEXT,\
         SENTIMENT_TEXT_SORT, SENTIMENT_MAX_KEYWORDS, SENTIMENT_SECOND,\
         SENTIMENT_ITER_USER_COUNT, MAX_VALUE, RUN_TYPE, SENTIMENT_MAX_USER,\
-        SENTIMENT_ITER_TEXT_COUNT, SENTIMENT_SORT_EVALUATE_MAX
+        SENTIMENT_ITER_TEXT_COUNT, SENTIMENT_SORT_EVALUATE_MAX, str2segment, sentiment_type_list
 
-sentiment_type_list = ['0', '1', '7']
-str2segment = {'fifteen': 900, 'hour': 3600, 'day':3600*24}
 
 def get_new_ts_count_dict(ts_count_result, time_segment, date_item):
     result = {}
@@ -177,7 +175,7 @@ def show_sentiment_all_keywords_results(task_id, time_segment):
             doc_type=sentiment_keywords_index_type, id=task_id)['_source']
     except:
         task_results = {}
-    if not task_result:
+    if not task_results:
         return results
     results = json.loads(task_results['results'])
     return results
