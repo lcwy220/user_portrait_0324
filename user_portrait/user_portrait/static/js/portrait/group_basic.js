@@ -421,6 +421,9 @@ function page_group_basic_weibo(start_row,end_row,data, sub_div_name){
 		var mid = data[s][0];
 		var uid = data[s][1];
 		var uname = data[s][2];
+        if(uname=='unknown'){
+            uname = '未知('+uid+')';
+        }
         var text = data[s][3];
 		var retweet_count = data[s][8];
 		var comment_count = data[s][9];
