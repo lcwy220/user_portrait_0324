@@ -529,7 +529,7 @@ def search_sentiment_detail_all_keywords(start_ts, task_type, task_detail, time_
     #step1: get weibo from flow_text
     start_ts = int(start_ts)
     start_date = ts2datetime(start_ts)
-    end_ts = start_ts + str2segment(time_segment)
+    end_ts = start_ts + str2segment[time_segment]
     if sentiment == '7':
         query_sentiment_list = SENTIMENT_SECOND
     else:
@@ -542,7 +542,7 @@ def search_sentiment_detail_all_keywords(start_ts, task_type, task_detail, time_
                 'must': must_query_list
                 }
             },
-        'size': SENTIMENT_MAX_TYPE,
+        'size': SENTIMENT_MAX_TEXT,
         'sort': sort_type
         }
     flow_text_index_name = flow_text_index_name_pre + start_date
