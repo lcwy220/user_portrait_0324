@@ -62,7 +62,7 @@ function detect_task_status(data) {
         $('#detect_task_status').append(html);
     }else{
         $('#task_table').css('display', 'none');
-        var html = '<div style="text-align: center;background-color: #cccccc;">暂无相关任务</div>'
+        var html = '<div style="text-align: center;background-color: #cccccc;width: 900px;margin-left: 30px">暂无相关任务</div>'
         $('#detect_task_status').append(html);
     }
 }
@@ -238,7 +238,6 @@ function Draw_keyword(data){
       $('#mood_keywords_clouds').append(html);
       $('#more_keywords_list').empty();
   }else{   
-
       html = '';
       html += '<table class="table table-striped table-bordered" style="width:450px;">';
       html += '<tr><th style="text-align:center">排名</th><th style="text-align:center">关键词</th><th style="text-align:center">频数</th></tr>';
@@ -253,7 +252,7 @@ function Draw_keyword(data){
      //最大是50
     var key_value = [];
     var key_name = [];
-    for(var i=0;i<data.length;i++){
+    for(var i=0;i<20;i++){
       key_value.push((data[i][1]+Math.random())*100);
       key_value.push(data[i][1]);
       key_name.push(data[i][0]);
@@ -570,7 +569,8 @@ function show_detail(data){
     $('#loading_message p').append('数据正在加载...请稍后');
     if(data.keywords.length == 0 && data.weibo.length == 0 && data.in_portrait_result == 0){
         $('#loading_message p').empty();
-        $('#loading_message p').append('暂无相关数据！')
+        $('#loading_message p').append('暂无相关数据！');
+        $('#result_detect_detail').css('display', 'none');
     }else{
         console.log(data);
             console.log(flag);
@@ -1023,7 +1023,7 @@ function search_task(){
     }
     console.log(search_url);
 
-    //call_sync_ajax_request(search_url, detect_task_status);
+    call_sync_ajax_request(search_url, detect_task_status);
 }
 
 //结果分析默认值
