@@ -122,8 +122,10 @@ def compute_sentiment_task(sentiment_task_information):
             all_sentiment_dict[query_start_ts] = iter_sentiment_dict
             print 'all sentiment_dict:', all_sentiment_dict
     sort_sentiment_dict = sorted(all_sentiment_dict.items(), key=lambda x:x[0])
-    time_list = [item[0] for item in sort_sentiment_dict]
-    results = {'time_list': time_list, 'sentiment_trend': sort_sentiment_dict}
+    trend_results = {}
+    for sentiment in SENTIMENT_FIRST:
+        trend_results[sentiment] = [[item[0], item[1][sentiment]] for item in sort_sentiment_dict]
+    results = trend_results
     print 'results:', results
     return results
 

@@ -36,14 +36,15 @@ def get_top_influence(key):
     return result
 
 # 特别适用于doc_type=2的事件
-def get_task_detail_2(task_name, keywords, ts):
+def get_task_detail_2(task_name, ts, user):
     results = dict()
     index_name = task_name
-    task_detail = es.get(index=index_manage_sensing_task, doc_type=task_doc_type, id=task_name)["_source"]
+    _id = user + "-" + task_name
+    task_detail = es.get(index=index_manage_sensing_task, doc_type=task_doc_type, id=_id)["_source"]
     task_name = task_detail['task_name']
-    keywords_list = json.loads(task_detail['keywords'])
+    #keywords_list = json.loads(task_detail['keywords'])
     social_sensors = json.loads(task_detail['social_sensors'])
-    sensitive_words = json.loads(task_detail['sensitive_words'])
+    #sensitive_words = json.loads(task_detail['sensitive_words'])
     history_status = json.loads(task_detail['history_status'])
     start_time = task_detail['create_at']
     stop_time = task_detail['stop_time']
@@ -216,8 +217,8 @@ def get_task_detail_2(task_name, keywords, ts):
     for item in time_series:
         revise_time_series.append(ts2date_min(item))
 
-    results['keywords'] = keywords_list
-    results["sensitive_words"] = sensitive_words
+    #results['keywords'] = keywords_list
+    #results["sensitive_words"] = sensitive_words
     results['important_user_detail'] = user_detail_info
     results['burst_time'] = burst_time_list # 爆发时间点，以及爆发原因
     results['time_series'] = revise_time_series

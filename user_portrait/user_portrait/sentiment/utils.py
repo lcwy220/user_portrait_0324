@@ -138,7 +138,7 @@ def delete_sentiment_all_keywords_task(task_id):
     return status
 
 #use to search all keywords sentiment task
-def search_sentiment_all_keywords_task(submit_date, keywords_string, submit_user):
+def search_sentiment_all_keywords_task(submit_date, keywords_string, submit_user, start_date, end_date):
     results = []
     query_list = []
     if submit_date:
@@ -150,6 +150,22 @@ def search_sentiment_all_keywords_task(submit_date, keywords_string, submit_user
         query_list.append({'terms':{'query_keywords': keywords_list}})
     if submit_user:
         query_list.append({'term': {'submit_user': submit_user}})
+    if start_date:
+        strat_s_ts = datetime2ts(start_date)
+        if end_date:
+            start_e_ts = datetime2ts(end_date)
+        else:
+            start_e_ts = start_s_ts + DAY * 30
+        start_date_nest_body_list = [ts2datetime(ts) for ts in range(start_s_ts, start_e_ts + DAY, DAY)]
+        start_date_nest_body_list.append({'terms':{'start_date': start_date_nest_body_list}})
+    if end_date:
+        end_e_ts = datetime2ts(end_date)
+        if start_date:
+            end_s_ts = datetime2ts(start_date)
+        else:
+            end_s_ts = end_e_ts - DAY * 30
+        end_date_nest_body_list = [ts2datetime(ts) for ts in range(end_s_ts, end_e_ts + DAY, DAY)]
+        end_date_nest_body_list.append({'terms': {'end_date': end_date_mest_body_list}})
     try:
         task_results = es_sentiment_task.search(index=sentiment_keywords_index_name, \
                 doc_type=sentiment_keywords_index_type, body={'query':{'bool':{'must':query_list}}})['hits']['hits']
@@ -179,8 +195,6 @@ def show_sentiment_all_keywords_results(task_id, time_segment):
         return results
     results = json.loads(task_results['results'])
     return results
-
-
 
 #use to get domain sentiment trend by date for user in user_portrait
 def search_sentiment_domain(domain, start_date, end_date, time_segment):
@@ -536,7 +550,7 @@ def search_sentiment_detail_all_keywords(start_ts, task_type, task_detail, time_
         query_sentiment_list = [sentiment]
     must_query_list.append({'range': {'timestamp': {'gte': start_ts, 'lt':end_ts}}})
     must_query_list.append({'terms': {'sentiment': query_sentiment_list}})
-    quer_body = {
+    query_body = {
         'query':{
             'bool':{
                 'must': must_query_list
@@ -552,6 +566,7 @@ def search_sentiment_detail_all_keywords(start_ts, task_type, task_detail, time_
                 body=query_body)['hits']['hits']
     except:
         flow_text_result = []
+    print 'flow_text_result:', len(flow_text_result)
     print 'show weibo list'
     show_weibo_list, user_set = deal_show_weibo_list(flow_text_result)
     print 'get keyword'
@@ -565,7 +580,7 @@ def search_sentiment_detail_all_keywords(start_ts, task_type, task_detail, time_
         'aggs':{
             'all_interests': {
                 'terms': {
-                    'field': 'keywords_strinf',
+                    'field': 'keywords_string',
                     'size': SENTIMENT_MAX_KEYWORDS
                     }
                 }

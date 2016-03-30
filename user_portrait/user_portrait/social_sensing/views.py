@@ -16,13 +16,11 @@ from user_portrait.parameter import DOC_TYPE_MANAGE_SOCIAL_SENSING as task_doc_t
 from user_portrait.parameter import DETAIL_SOCIAL_SENSING as index_sensing_task
 from user_portrait.parameter import finish_signal, unfinish_signal, SOCIAL_SENSOR_INFO
 from utils import get_warning_detail, get_text_detail
-from full_text_serach import aggregation_hot_keywords
 from delete_es import delete_es
 from user_portrait.parameter import RUN_TYPE
 
 mod = Blueprint('social_sensing', __name__, url_prefix='/social_sensing')
 
-#portrait_index_name = "user_portrait_1222"
 
 # 前台设置好的参数传入次函数，创建感知任务,放入es, 从es中读取所有任务信息放入redis:sensing_task 任务队列中
 # parameters: task_name, create_by, stop_time, remark, social_sensors, keywords
@@ -36,10 +34,9 @@ def ajax_create_task():
     create_by = request.args.get('create_by', 'admin') # 用户
     stop_time = request.args.get('stop_time', "default") #timestamp, 1234567890
     social_sensors = request.args.get("social_sensors", "") #uid_list, split with ","
-    keywords = request.args.get("keywords", "") # keywords_string, split with ","
-    sensitive_words = request.args.get("sensitive_words", "") # sensitive_words, split with ","
+    #keywords = request.args.get("keywords", "") # keywords_string, split with ","
+    #sensitive_words = request.args.get("sensitive_words", "") # sensitive_words, split with ","
     remark = request.args.get("remark", "")
-    create_time = request.args.get('create_time', '')
     _id = create_by + "-" + task_name
     exist_es = es.exists(index=index_manage_sensing_task, doc_type=task_doc_type, id=_id)
     if exist_es:
@@ -48,21 +45,13 @@ def ajax_create_task():
     if task_name:
         task_detail = dict()
         task_detail["task_name"] = task_name
-        task_detail["create_by"] = create_by
+        task_detail["create_by"] = create_by # 创建任务, user
         task_detail["stop_time"] = stop_time
         task_detail["remark"] = remark
         if social_sensors:
             task_detail["social_sensors"] = json.dumps(list(set(social_sensors.split(','))))
         else:
-            task_detail["social_sensors"] = json.dumps([])
-        if keywords:
-            task_detail["keywords"] = json.dumps(keywords.split(","))
-        else:
-            task_detail["keywords"] = json.dumps([])
-        if sensitive_words:
-            task_detail["sensitive_words"] = json.dumps(sensitive_words.split(","))
-        else:
-            task_detail["sensitive_words"] = json.dumps([])
+            return json.dumps(['-1'])
         now_ts = int(time.time())
         task_detail["create_at"] = now_ts # now_ts
         task_detail["warning_status"] = '0'
@@ -70,10 +59,6 @@ def ajax_create_task():
         task_detail["history_status"] = json.dumps([]) # ts, keywords, warning_status
         task_detail['burst_reason'] = ''
         task_detail['processing_status'] = "1" #任务正在进行
-        if keywords:
-            task_detail["task_type"] = "3" # 一定会有社会传感器
-        else:
-            task_detail["task_type"] = "1"
 
     # store task detail into es
     es.index(index=index_manage_sensing_task, doc_type=task_doc_type, id=_id, body=task_detail)
@@ -190,8 +175,6 @@ def ajax_show_task():
         for item in search_results:
             item = item['_source']
             history_status = json.loads(item['history_status'])
-            keywords = json.loads(item['keywords'])
-            item['keywords'] = keywords
             if history_status:
                 temp_list = []
                 temp_list.append(history_status[-1])
@@ -214,8 +197,8 @@ def ajax_get_task_detail_info():
     _id = user + "-" + task_name
     task_detail = es.get(index=index_manage_sensing_task, doc_type=task_doc_type, id=_id)['_source']
     task_detail["social_sensors"] = json.loads(task_detail["social_sensors"])
-    task_detail['keywords'] = json.loads(task_detail['keywords'])
-    task_detail["sensitive_words"]= json.loads(task_detail["sensitive_words"])
+    #task_detail['keywords'] = json.loads(task_detail['keywords'])
+    #task_detail["sensitive_words"]= json.loads(task_detail["sensitive_words"])
     history_status = json.loads(task_detail['history_status'])
     if history_status:
         temp_list = []
@@ -261,11 +244,16 @@ def ajax_get_group_list():
             "filtered":{
                 "filter":{
                     "bool":{
-                        "must":[
+                        "should":[
                             {"term": {"task_type": "analysis"}},
-                            {"term": {"status": 1}}, # attention-------------------------
-                            {"term": {"submit_user": user}}
-                        ]
+                            {"bool":{
+                                "must":[
+                                    {"term": {"task_type": "detect"}},
+                                    {"term": {"detect_process":100}}
+                                ]
+                            }}
+                        ],
+                        "must":{"term": {"submit_user": user}}
                     }
                 }
             }
@@ -348,34 +336,14 @@ def ajax_get_group_detail():
 @mod.route('/get_warning_detail/')
 def ajax_get_warning_detail():
     task_name = request.args.get('task_name','') # task_name
-    keywords = request.args.get('keywords', '') # warning keywords, seperate with ","
-    keywords_list = keywords.split(',')
     ts = request.args.get('ts', '') # timestamp: 123456789
     user = request.args.get('user', '')
     _id = user + '-' + task_name
 
-    results = get_warning_detail(task_name, keywords_list, ts, user)
+    results = get_warning_detail(task_name, ts, user)
 
     return json.dumps(results)
 
-"""
-not used for some reasn
-
-# 聚合关键词
-@mod.route('/get_keywords_list/')
-def ajax_get_keywords_list():
-    task_name = request.args.get('task_name','') # task_name
-    keywords = request.args.get('keywords', '') # warning keywords, seperate with ","
-    keywords_list = keywords.split(',')
-    ts = request.args.get('ts', '') # timestamp: 123456789
-
-    task_detail = es.get(index=index_manage_sensing_task, doc_type=task_doc_type, id=task_name)['_source']
-    start_time = task_detail['create_at']
-
-    results = aggregation_hot_keywords(start_time, ts, keywords_list)
-
-    return json.dumps(results)
-"""
 
 # 返回某个时间段特定的文本，按照热度排序
 @mod.route('/get_text_detail/')
@@ -408,71 +376,5 @@ def ajax_get_clustering_topic():
             topic_list = json.loads(topic_list)
 
     return json.dumps(topic_list)
-
-# 返回传感词
-@mod.route('/get_sensing_words/')
-def ajax_get_sensing_words():
-    tmp = json.dumps([])
-    sensing_words = r.hget('sensing_words', "sensing_words")
-    if sensing_words:
-        return sensing_words
-    else:
-        return tmp
-
-# 返回敏感词
-@mod.route('/get_sensitive_words/')
-def ajax_get_sensitive_words():
-    tmp = json.dumps([])
-    sensitive_words = r.hget("sensitive_words", "sensitive_words")
-    if sensitive_words:
-        return sensitive_words
-    else:
-        return tmp
-
-# 增加传感词
-@mod.route('/add_sensing_words/')
-def ajax_add_sensing_words():
-    add_words = request.args.get("add_words_list", "") #seperate with ","
-    add_words_list = add_words.split(',')
-    sensing_words = json.loads(r.hget('sensing_words', "sensing_words"))
-    new_words_list = list(set(sensing_words) | set(add_words_list))
-    r.hset('sensing_words', "sensing_words", json.dumps(new_words_list))
-
-    return "1"
-
-# 增加敏感词
-@mod.route('/add_sensitive_words/')
-def ajax_add_sensitive_words():
-    add_words = request.args.get("add_words_list", "") #seperate with ","
-    add_words_list = add_words.split(',')
-    sensing_words = json.loads(r.hget('sensitive_words', "sensitive_words"))
-    new_words_list = list(set(sensing_words) | set(add_words_list))
-    r.hset('sensitive_words', "sensitive_words", json.dumps(new_words_list))
-
-    return "1"
-
-
-# 删除传感词
-@mod.route('/delete_sensing_words/')
-def ajax_delete_sensing_words():
-    delete_words = request.args.get("delete_words_list", "") #seperate with ","
-    delete_words_list = delete_words.split(',')
-    sensing_words = json.loads(r.hget('sensing_words', "sensing_words"))
-    new_words_list = list(set(sensing_words) - set(delete_words_list))
-    r.hset('sensing_words', "sensing_words", json.dumps(new_words_list))
-
-    return "1"
-
-
-# 删除敏感词
-@mod.route('/delete_sensitive_words/')
-def ajax_delete_sensitive_words():
-    delete_words = request.args.get("delete_words_list", "") #seperate with ","
-    delete_words_list = delete_words.split(',')
-    sensentive_words = json.loads(r.hget('sensitive_words', "sensitive_words"))
-    new_words_list = list(set(sensitive_words) - set(delete_words_list))
-    r.hset('sensitive_words', "sensitive_words", json.dumps(new_words_list))
-
-    return "1"
 
 
