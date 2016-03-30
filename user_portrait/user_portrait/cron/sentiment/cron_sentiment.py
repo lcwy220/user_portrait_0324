@@ -10,7 +10,7 @@ from global_utils import es_user_portrait, portrait_index_name,\
                       r_sentiment_keywords_name, es_flow_text, flow_text_index_name_pre, flow_text_index_type
 from global_utils import es_sentiment_task, sentiment_keywords_index_name, \
         sentiment_keywords_index_type
-from time_utils import ts2datetime, datetime2ts
+from time_utils import ts2datetime, datetime2ts, ts2date
 from parameter import SENTIMENT_TYPE_COUNT, Fifteen, SENTIMENT_MAX_KEYWORDS,\
         SENTIMENT_ITER_USER_COUNT, SENTIMENT_ITER_TEXT_COUNT, SENTIMENT_FIRST, DAY,\
         SENTIMENT_SECOND
@@ -68,6 +68,7 @@ def compute_sentiment_task(sentiment_task_information):
     query_must_list.append({'bool': {'should': keyword_nest_body_list}})
     all_sentiment_dict = {}
     all_keyword_dict = {}
+    iter_query_list = query_must_list
     #step2.2: iter search by date
     for iter_date in iter_query_date_list:
         flow_text_index_name = flow_text_index_name_pre + iter_date
@@ -75,9 +76,9 @@ def compute_sentiment_task(sentiment_task_information):
         iter_start_ts = datetime2ts(iter_date)
         for i in range(0, 96):
             query_start_ts = iter_start_ts + i * Fifteen
-            iter_query_list = query_must_list
-            print 'query_start_ts:', query_start_ts
+            print 'query_start_ts:', query_start_ts, ts2date(query_start_ts)
             iter_query_list.append({'range':{'timestamp':{'gte': query_start_ts, 'lt':query_start_ts + Fifteen}}})
+            print 'iter_query_list:', iter_query_list
             query_body = {
                 'query':{
                     'bool':{
@@ -96,6 +97,8 @@ def compute_sentiment_task(sentiment_task_information):
             
             flow_text_result = es_flow_text.search(index=flow_text_index_name, doc_type=flow_text_index_type,\
                         body=query_body)['aggregations']['all_interests']['buckets']
+            print 'flow_text_result:', flow_text_result
+            iter_query_list = iter_query_list[:-1]
             iter_sentiment_dict = {}
             for flow_text_item in flow_text_result:
                 sentiment  = flow_text_item['key']
@@ -106,18 +109,20 @@ def compute_sentiment_task(sentiment_task_information):
                     iter_sentiment_dict[sentiment] += sentiment_count
                 except:
                     iter_sentiment_dict[sentiment] = sentiment_count
+            print 'iter_sentiment_dict:', iter_sentiment_dict
             #add 0 to iter_sentiment_dict
             for sentiment in SENTIMENT_FIRST:
                 try:
                     count = iter_sentiment_dict[sentiment]
                 except:
                     iter_sentiment_dict[sentiment] = 0
-            all_sentiment_dict[iter_start_ts] = iter_sentiment_dict
+            print 'add 0 iter sentiment dict:', iter_sentiment_dict
+            all_sentiment_dict[query_start_ts] = iter_sentiment_dict
+            print 'all sentiment_dict:', all_sentiment_dict
     sort_sentiment_dict = sorted(all_sentiment_dict.items(), key=lambda x:x[0])
     time_list = [item[0] for item in sort_sentiment_dict]
-    sentiment_trend = dict() # {sentiment: [count1, count2,...], sentiment:[],...}
-    
-    results = {'time_list': time_list, 'sentiment_trend': sentiment_trend}
+    results = {'time_list': time_list, 'sentiment_trend': sort_sentiment_dict}
+    print 'results:', results
     return results
 
 def save_task_results(results, sentiment_task_information):
@@ -127,11 +132,11 @@ def save_task_results(results, sentiment_task_information):
     #step2:add the task results to es
     if exist_mark:
         task_id = sentiment_task_information['task_id']
-        try:
-            es_sentiment_task.update(index=sentiment_keywords_index_name, \
-                doc_type=sentiment_keywords_index_type, id=task_id, body={'docs': {'results':results }})
-        except:
-            status = False
+        #try:
+        es_sentiment_task.update(index=sentiment_keywords_index_name, \
+                doc_type=sentiment_keywords_index_type, id=task_id, body={'doc': {'results':json.dumps(results)}})
+        #except:
+        #    status = False
     return status
 
 def push_task_information(sentiment_task_information):
@@ -163,7 +168,6 @@ def scan_sentiment_keywords_task():
             results = compute_sentiment_task(sentiment_task_information)
             #save results
             save_mark = save_task_results(results, sentiment_task_information)
-            save_mark = False
             #identify save status
             if not save_mark:
                 #status fail: push task information to redis queue
