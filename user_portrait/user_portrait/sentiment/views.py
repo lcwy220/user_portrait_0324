@@ -76,7 +76,7 @@ def ajax_search_sentiment_all_keywords_task():
 def ajax_senitment_all_keywords():
     task_id = request.args.get('task_id', '') # ts_admin_keywords
     time_segment = request.args.get('segment', 'fifteen') #fifteen/hour/day
-    results = show_sentiment_all_keywor, ds_results(task_id, time_segment)
+    results = show_sentiment_all_keywords_results(task_id, time_segment)
     if not results:
         results = {}
     return json.dumps(results)
