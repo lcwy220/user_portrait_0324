@@ -304,8 +304,8 @@ $(function(){
             //console.log(personalData.description.length);
             if(!personalData.description ){
                 detailPortrait.innerHTML = "无此数据";
-            }else if(personalData.description.length>40){
-                detailPortrait.innerHTML = personalData.description.substr(0,40)+'...';
+            }else if(personalData.description.length>35){
+                detailPortrait.innerHTML = personalData.description.substr(0,35)+'...';
             }
             else{
                 detailPortrait.innerHTML = personalData.description;

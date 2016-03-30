@@ -110,7 +110,10 @@ else{
   Draw_get_top_weibo(data, div_name);
 },
 Draw_pie_all0:function(data){
-  
+  //console.log(data);
+  a=$('#sum_yc_zf').text();
+  b=$('#sum_zf_zf').text();
+  total = parseInt(a)+parseInt(b);
     $('#all_re_conclusion').empty();
     var html = '';
     html += '该类用户共有<span style="color:red">'+data.total_number+'</span>人，';
@@ -130,6 +133,9 @@ Draw_pie_all0:function(data){
     
   },
   Draw_pie_all1:function(data){
+  a=$('#sum_yc_pl').text();
+  b=$('#sum_zf_pl').text();
+  total = parseInt(a)+parseInt(b);
     var div_name = ['cmt_user_domain_all','cmt_user_topic_all','cmt_user_geo_all'];
     $('#all_cmt_conclusion').empty();
     var html = '';
@@ -246,21 +252,21 @@ Draw_pie_all0:function(data){
     html += '<th style="text-align:center">爆发数<i class="glyphicon glyphicon-question-sign" data-toggle="tootlip" data-placement="right" title="所有微博在15分钟被评论的总次数"></i></th>';
     html += '</tr>';
     html += '<tr><th style="text-align:center">原创微博 ('+data['origin_weibo_number']+')</th>';
-    html += '<th style="text-align:center">'+data['origin_weibo_retweeted_total_number']+'</th>';
-    html += '<th style="text-align:center">'+data['origin_weibo_retweeted_average_number'].toFixed(0)+'</th>';
+    html += '<th style="text-align:center" id="sum_yc_zf">'+data['origin_weibo_retweeted_total_number']+'</th>';
+    html += '<th style="text-align:center" >'+data['origin_weibo_retweeted_average_number'].toFixed(0)+'</th>';
     html += '<th style="text-align:center">'+data['origin_weibo_retweeted_top_number']+'</th>';
     html += '<th style="text-align:center">'+data['origin_weibo_retweeted_brust_average'].toFixed(0)+'</th>';
-    html += '<th style="text-align:center">'+data['origin_weibo_comment_total_number']+'</th>';
+    html += '<th style="text-align:center" id="sum_yc_pl">'+data['origin_weibo_comment_total_number']+'</th>';
     html += '<th style="text-align:center">'+data['origin_weibo_comment_average_number'].toFixed(0)+'</th>';
     html += '<th style="text-align:center">'+data['origin_weibo_comment_top_number']+'</th>';
     html += '<th style="text-align:center">'+data['origin_weibo_comment_brust_average'].toFixed(0)+'</th>';
     html += '</tr>';
     html += '<tr><th style="text-align:center">转发微博 ('+data['retweeted_weibo_number']+')</th>';
-    html += '<th style="text-align:center">'+data['retweeted_weibo_retweeted_total_number']+'</th>';
+    html += '<th style="text-align:center" id="sum_zf_zf">'+data['retweeted_weibo_retweeted_total_number']+'</th>';
     html += '<th style="text-align:center">'+data['retweeted_weibo_retweeted_average_number'].toFixed(0)+'</th>';
     html += '<th style="text-align:center">'+data['retweeted_weibo_retweeted_top_number']+'</th>';
     html += '<th style="text-align:center">'+data['retweeted_weibo_retweeted_brust_average'].toFixed(0)+'</th>';
-    html += '<th style="text-align:center">'+data['retweeted_weibo_comment_total_number']+'</th>';
+    html += '<th style="text-align:center" id="sum_zf_pl">'+data['retweeted_weibo_comment_total_number']+'</th>';
     html += '<th style="text-align:center">'+data['retweeted_weibo_comment_average_number'].toFixed(0)+'</th>';
     html += '<th style="text-align:center">'+data['retweeted_weibo_comment_top_number']+'</th>';
     html += '<th style="text-align:center">'+data['retweeted_weibo_comment_brust_average'].toFixed(0)+'</th>';
@@ -398,7 +404,7 @@ Draw_pie_all0:function(data){
 
     $('#'+div_name_out).empty();
     var html2 = '';
-    html2 += '<hr><h4>未入库用户('+data[3]+')</h4><p style="text-align:left;padding: 0px 10px;width:800px;">';
+    html2 += '<hr><h4 style="margin-left:10px;">未入库用户('+data[3]+')</h4><p style="text-align:left;padding: 0px 10px;width:800px;">';
     if (data[3] == 0){
     }else{
       for (i=0;i<data[1].length;i++){
@@ -491,8 +497,8 @@ function Draw_get_top_weibo(data,div_name){
     }else if(data[0][3]==''){
         html += "<div style='margin-left:10px;width:100%;height:100px;'>用户在昨天未发布任何微博</div>";
     }else{
-      html += '<div id="weibo_list" class="weibo_list weibo_list_height scrolls tang-scrollpanel" style="margin:0;">';
-      html += '<div id="content_control_height" class="tang-scrollpanel-wrapper" style="margin:0;">';
+      //html += '<div id="weibo_list" class="weibo_list weibo_list_height scrolls tang-scrollpanel" style="margin:0;">';
+      //html += '<div id="content_control_height" class="tang-scrollpanel-wrapper" style="margin:0;">';
       html += '<div class="tang-scrollpanel-content" style="margin:0;">';
       html += '<ul>';
       for(var i=0;i<data.length;i++){
@@ -526,16 +532,16 @@ function Draw_get_top_weibo(data,div_name){
         html += '<div class="weibo_info"style="width:100%">';
         html += '<div class="weibo_pz">';
         html += '<div id="topweibo_mid" class="hidden">'+mid+'</div>';
-        html += '<a class="retweet_count" href="javascript:;" target="_blank">转发数(' + reposts_count + ')</a>&nbsp;&nbsp;|&nbsp;&nbsp;';
-        html += '<a class="comment_count" href="javascript:;" target="_blank">评论数(' + comments_count + ')</a></div>';
+        html += '<a class="retweet_count" href="javascript:;" title='+reposts_count+' target="_blank">转发数(' + reposts_count + ')</a>&nbsp;&nbsp;|&nbsp;&nbsp;';
+        html += '<a class="comment_count" href="javascript:;" title='+comments_count+' target="_blank">评论数(' + comments_count + ')</a></div>';
         html += '<div class="m">';
         html += '<u>' + date + '</u>&nbsp;-&nbsp;';
         html += '<a target="_blank" href="' + weibo_link + '">微博</a>&nbsp;-&nbsp;';
         html += '<a target="_blank" href="' + user_link + '">用户</a>;';
        // html += '<a target="_blank" href="' + repost_tree_link + '">转发树</a>';
         html += '</div>';
-        html += '</div>';
-        html += '</div>';
+        // html += '</div>';
+        // html += '</div>';
         html += '</li>';
             }
                                     
@@ -556,45 +562,51 @@ function Draw_get_top_weibo(data,div_name){
 
 function click_action(){
   //console.log(date_str);
-      $(".closeList2").live('click',function(){
-        $("#float-wrap").addClass("hidden");
-        $("#re_influence").addClass("hidden");
-        $("#cmt_influence").addClass("hidden");
-        $("#comment_distribution_content").addClass("hidden");
-        $("#retweet_distribution_content").addClass("hidden");
-        return false;
-      });
-      $(".comment_count").live("click",function(){       
-        $("#float-wrap").removeClass("hidden");
-        $("#cmt_influence").removeClass("hidden"); 
+      // $(".closeList2").live('click',function(){
+      //   $("#float-wrap").addClass("hidden");
+      //   //$("#re_influence").addClass("hidden");
+      //   $("#cmt_influence").addClass("hidden");
+      //   $("#comment_distribution_content").addClass("hidden");
+      //   $("#retweet_distribution_content").addClass("hidden");
+      //   return false;
+      // });
+      $(".comment_count").live("click",function(){    
+        var comment = $(this).attr("title"); 
+        //$("#float-wrap").removeClass("hidden");
+        //$("#cmt_influence").removeClass("hidden"); 
         var mid = $(this).prev().prev(".hidden").text();
-        var influenced_users_url_cmt = '/attribute/influenced_users/?uid='+parent.personalData.uid+'&date='+date_str+'&style=1&mid='+mid;
+        var influenced_users_url_cmt = '/attribute/influenced_users/?uid='+parent.personalData.uid+'&date='+date_str+'&style=1&mid='+mid+'&count='+comment;
         Influence.call_ajax_request(influenced_users_url_cmt, Influence.ajax_method, Influence.Single_users_influence_cmt);
+        $('#cmt_influence').modal();
         return false;
       });
       $(".retweet_count").live("click",function(){
-        $("#float-wrap").removeClass("hidden");
-        $("#re_influence").removeClass("hidden");
+        var retweeted = $(this).attr("title");
+        //$("#float-wrap").removeClass("hidden");
+       // $("#re_influence").removeClass("hidden");
         var mid = $(this).prev(".hidden").text();
-        var influenced_users_url_re = '/attribute/influenced_users/?uid='+parent.personalData.uid+'&date='+date_str+'&style=0&mid='+mid;
+        var influenced_users_url_re = '/attribute/influenced_users/?uid='+parent.personalData.uid+'&date='+date_str+'&style=0&mid='+mid+'&count='+retweeted;
         //console.log(influenced_users_url_re);
         Influence.call_ajax_request(influenced_users_url_re, Influence.ajax_method, Influence.Single_users_influence_re);
+        $('#re_influence').modal();
         return false;
       });
       $("#retweet_distribution").live("click",function(){
-        $("#float-wrap").removeClass("hidden");
-        $("#retweet_distribution_content").removeClass("hidden");
+        //$("#float-wrap").removeClass("hidden");
+        //$("#retweet_distribution_content").removeClass("hidden");
         var all_influenced_users_url_style0 = '/attribute/all_influenced_users/?uid='+parent.personalData.uid+'&date='+date_str+'&style=0';
         //console.log(all_influenced_users_url_style0);
         Influence.call_ajax_request(all_influenced_users_url_style0, Influence.ajax_method, Influence.Draw_pie_all0);
+        $('#retweet_distribution_content').modal();
         return false;
       });
       $("#comment_distribution").live("click",function(){
-        $("#float-wrap").removeClass("hidden");
-        $("#comment_distribution_content").removeClass("hidden");
+        //$("#float-wrap").removeClass("hidden");
+        //$("#comment_distribution_content").removeClass("hidden");
         var all_influenced_users_url_style1 = '/attribute/all_influenced_users/?uid='+parent.personalData.uid +'&date='+date_str+'&style=1';
         //console.log(all_influenced_users_url_style1);
         Influence.call_ajax_request(all_influenced_users_url_style1, Influence.ajax_method, Influence.Draw_pie_all1);
+        $('#comment_distribution_content').modal();
         return false;
       });
     $('input[name="choose_module"]').live('click', function(){             
@@ -616,7 +628,7 @@ function influence_load(){
     click_action();
     var influence_url = '/attribute/influence_trend/?uid='+uid + '&time_segment=7';
     Influence.call_async_ajax_request(influence_url, Influence.ajax_method, Influence.Draw_influence);
-    console.log(date_str);
+    //console.log(date_str);
     var user_influence_detail_url = '/attribute/user_influence_detail/?uid='+parent.personalData.uid+'&date='+date_str;
     Influence.call_async_ajax_request(user_influence_detail_url, Influence.ajax_method, Influence.Draw_user_influence_detail);
 
