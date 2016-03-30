@@ -138,7 +138,7 @@ def delete_sentiment_all_keywords_task(task_id):
     return status
 
 #use to search all keywords sentiment task
-def search_sentiment_all_keywords_task(submit_date, keywords_string, submit_user, start_date, end_date):
+def search_sentiment_all_keywords_task(submit_date, keywords_string, submit_user, start_date, end_date, status):
     results = []
     query_list = []
     if submit_date:
@@ -157,7 +157,7 @@ def search_sentiment_all_keywords_task(submit_date, keywords_string, submit_user
         else:
             start_e_ts = start_s_ts + DAY * 30
         start_date_nest_body_list = [ts2datetime(ts) for ts in range(start_s_ts, start_e_ts + DAY, DAY)]
-        start_date_nest_body_list.append({'terms':{'start_date': start_date_nest_body_list}})
+        query_list.append({'terms':{'start_date': start_date_nest_body_list}})
     if end_date:
         end_e_ts = datetime2ts(end_date)
         if start_date:
@@ -165,7 +165,9 @@ def search_sentiment_all_keywords_task(submit_date, keywords_string, submit_user
         else:
             end_s_ts = end_e_ts - DAY * 30
         end_date_nest_body_list = [ts2datetime(ts) for ts in range(end_s_ts, end_e_ts + DAY, DAY)]
-        end_date_nest_body_list.append({'terms': {'end_date': end_date_mest_body_list}})
+        query_list.append({'terms': {'end_date': end_date_mest_body_list}})
+    if status:
+        query_list.append({'term': {'status': status}})
     try:
         task_results = es_sentiment_task.search(index=sentiment_keywords_index_name, \
                 doc_type=sentiment_keywords_index_type, body={'query':{'bool':{'must':query_list}}})['hits']['hits']
