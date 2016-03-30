@@ -170,18 +170,19 @@ function so_draw_control_table(data){
 
 var Social_sense= new Social_sense();
 //prepare(Social_sense);
-
+var user= $('#so_useremail').text();
+var user='admin';
 function draw_result(){
-	url = '/social_sensing/get_group_list/'; 
+	url = '/social_sensing/get_group_list/?user='+user; 
 	Social_sense.call_sync_ajax_request(url, Social_sense.ajax_method, Social_sense.Draw_group_table);
 }
 draw_result();
-show_url='/social_sensing/show_task/';
+show_url='/social_sensing/show_task/?user='+user;
 Social_sense.call_sync_ajax_request(show_url, Social_sense.ajax_method, Social_sense.Draw_task_table);
 
 //window.setInterval(so_redraw,30000);
 function so_redraw(){
-	show_url='/social_sensing/show_task/';
+	show_url='/social_sensing/show_task/?user='+user;
 	Social_sense.call_sync_ajax_request(show_url, Social_sense.ajax_method, Social_sense.Draw_task_table);
 }
 
@@ -443,7 +444,7 @@ function so_ready(){
 	$('a[id^="so_users"]').click(function(){
 		var temp = $(this).parent().prev().prev().prev().prev().prev().html();
 		var remark = $(this).parent().prev().html();
-		url = "/social_sensing/get_group_detail/?task_name=" + temp;
+		url = "/social_sensing/get_group_detail/?task_name=" + temp+'&user='+user;
 		Social_sense.call_sync_ajax_request(url,Social_sense.ajax_method,so_draw_control_table);
 		$('span[id^="have_sensor_name"]').html(temp);
 		$('span[id^="have_sensor_remark"]').html(remark);
@@ -590,23 +591,23 @@ function so_group_data(){
 	    a['task_name'] = $('#so_name').val();
 	    a['remark'] = $('#so_remarks').val();
 		a['stop_time'] = Date.parse($('input[name="so_end_time"]').val())/1000;
-		a['keywords'] = '';
-		a['keywords0'] = '';
+		//a['keywords'] = '';
+		//a['keywords0'] = '';
 		a['create_at'] =  Date.parse(new Date())/1000;
 		var so_user_option = $('input[name="so_mode_choose"]:checked').val();
 		var url0 = [];
 		var url1 = '';
 		var url_create = '/social_sensing/create_task/?';
-	    a['keywords'] = $('#so_keywords').val();
-	 	a['keywords'] = a['keywords'].split(/\s+/g);
-	    a['sensitive_words'] = $('#so_keywords_nor').val();
-	 	a['sensitive_words'] = a['sensitive_words'].split(/\s+/g);
-	    $('[name="so_more_option_0"]:checked').each(function(){
-		  	    a['sensitive_words'].push($(this).val());
-		  	});
-	   	$('[name="so_more_option_1"]:checked').each(function(){
-		  	    a['keywords'].push($(this).val());
-		  	});
+	  //   a['keywords'] = $('#so_keywords').val();
+	 	// a['keywords'] = a['keywords'].split(/\s+/g);
+	  //   a['sensitive_words'] = $('#so_keywords_nor').val();
+	 	// a['sensitive_words'] = a['sensitive_words'].split(/\s+/g);
+	  //   $('[name="so_more_option_0"]:checked').each(function(){
+		 //  	    a['sensitive_words'].push($(this).val());
+		 //  	});
+	  //  	$('[name="so_more_option_1"]:checked').each(function(){
+		 //  	    a['keywords'].push($(this).val());
+		 //  	});
 	    if (so_user_option == 'so_search_users'){
 	    	a['social_sensors'] = '';
 	    }else{              //single_user or multi_user with extension

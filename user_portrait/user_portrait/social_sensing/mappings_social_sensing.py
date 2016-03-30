@@ -67,6 +67,10 @@ def mappings_sensing_task(task_name):
                     "clustering_topic":{
                         "type": "string",
                         "index": "no"
+                    },
+                    "user":{
+                        "type": "string",
+                        "index": "not_analyzed"
                     }
                 }
             }
@@ -93,7 +97,7 @@ def manage_sensing_task():
                     "create_by":{
                         "type": "string",
                         "index": "not_analyzed"
-                    },
+                    }, # 任务创建者
                     "last_time":{
                         "type": "string",
                         "index": "not_analyzed"
@@ -139,6 +143,10 @@ def manage_sensing_task():
                         "index": "not_analyzed"
                     },
                     "burst_reason":{
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "user":{
                         "type": "string",
                         "index": "not_analyzed"
                     }
