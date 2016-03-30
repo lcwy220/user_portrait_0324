@@ -180,8 +180,6 @@ def show_sentiment_all_keywords_results(task_id, time_segment):
     results = json.loads(task_results['results'])
     return results
 
-
-
 #use to get domain sentiment trend by date for user in user_portrait
 def search_sentiment_domain(domain, start_date, end_date, time_segment):
     results = {}
