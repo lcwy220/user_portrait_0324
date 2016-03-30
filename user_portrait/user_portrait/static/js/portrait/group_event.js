@@ -39,7 +39,7 @@ function event_pattern_check(){             // check validation
   var max_date_limit_stamp = Date.parse(dt)/1000;
   var group_name = $('#first_name').val();
   var remark = $('#first_remarks').val();
-  var location = $('#event_pattern #location').val();
+  var text = $('#event_pattern #text').val();
   var time_from = Date.parse($('#event_pattern #time_start').val())/1000;
   var time_to = Date.parse($('#event_pattern #time_end').val())/1000;
   var num_range_count = $('#event_pattern #num-range').val();
@@ -47,6 +47,10 @@ function event_pattern_check(){             // check validation
   var influ_to_num =parseFloat($('#event_pattern #influ_to').val());
   var impor_from_num = parseFloat($('#event_pattern #impor_from').val());
   var impor_to_num = parseFloat($('#event_pattern #impor_to').val());
+  if (text == ''){
+      alert('关键词不能为空！');
+      return false;
+  }
   if (influ_from_num > influ_to_num){
     alert('影响力左侧输入值应小于右侧，请重新输入！')
     return false;

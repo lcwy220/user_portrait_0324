@@ -16,18 +16,22 @@ Social_sense.prototype = {   //获取数据，重新画表
     var item = data;
 	var html = '';
 	var item_time = '';
-	html += '<table id="so_group_task_body" class="table table-bordered table-striped table-condensed datatable" >';
-	html += '<thead><tr style="text-align:center;"><th>群组名称</th><th>提交人</th><th>时间</th><th>群组人数</th><th>备注</th><th>查看详情</th><th><input name="so_user_choose_all" id="so_user_choose_all" type="checkbox" value="" onclick="so_user_choose_all()" /></th></tr></thead>';
-	html += '<tbody>';
-	for (i=0;i<item.length;i++){
-		item_time = new Date(item[i][2]*1000).format('yyyy/MM/dd hh:mm')
-		html += '<tr><td name="'+item[i][5]+'">'+item[i][0]+'</td><td>'+item[i][1]+'</td><td>'+item_time+'</td><td>'+item[i][3]+'</td><td>'+item[i][4]+'</td>';
-		html += '<td><a href=javascript:void(0)  id="so_users">查看详情<a/></td>';
-		html += '<td><input name="so_user_list_option" class="search_result_option" type="checkbox"  /></td>'
-		html += '</tr>';	
+	if (item.length == 0){
+		html += '<div style="color:grey;">暂无数据</div>'
+	}else{
+		html += '<table id="so_group_task_body" class="table table-bordered table-striped table-condensed datatable" >';
+		html += '<thead><tr style="text-align:center;"><th>群组名称</th><th>提交人</th><th>时间</th><th>群组人数</th><th>备注</th><th>查看详情</th><th><input name="so_user_choose_all" id="so_user_choose_all" type="checkbox" value="" onclick="so_user_choose_all()" /></th></tr></thead>';
+		html += '<tbody>';
+		for (i=0;i<item.length;i++){
+			item_time = new Date(item[i][2]*1000).format('yyyy/MM/dd hh:mm')
+			html += '<tr><td name="'+item[i][5]+'">'+item[i][0]+'</td><td>'+item[i][1]+'</td><td>'+item_time+'</td><td>'+item[i][3]+'</td><td>'+item[i][4]+'</td>';
+			html += '<td><a href=javascript:void(0)  id="so_users">查看详情<a/></td>';
+			html += '<td><input name="so_user_list_option" class="search_result_option" type="checkbox"  /></td>'
+			html += '</tr>';	
+		}
+		html += '</tbody>';
+	    html += '</table>';
 	}
-	html += '</tbody>';
-    html += '</table>';
 	$('#so_group_task').append(html);
 	// $('#so_group_task_body').dataTable({
  //       "sDom": "<'row'<'col-md-6'l ><'col-md-6'f>r>t<'row'<'col-md-12'i><'col-md-12 center-block'p>>",
@@ -114,17 +118,17 @@ Social_sense.prototype = {   //获取数据，重新画表
   }
 }
 
-$('input[name="so_mode_choose"]').change(function(){
-    var so_user_option = $('input[name="so_mode_choose"]:checked').val();
-    if (so_user_option == 'so_have_users'){
-        $('#so_have_users_ext').css('display','block');
-    }
-    else{
-        $('#so_have_users_ext').css('display','none');
-    }
-    //seed_user_init();
-    //if (!seed_user_flag) seed_user_flag = true; // no more html init
-});
+// $('input[name="so_mode_choose"]').change(function(){
+//     var so_user_option = $('input[name="so_mode_choose"]:checked').val();
+//     if (so_user_option == 'so_have_users'){
+//         $('#so_have_users_ext').css('display','block').siblings().css({"display":"none"});
+//     }
+//     else if(so_user_option == 'so_search_users'){
+//         $('#so_search_users_ext').css('display','block').siblings().css({"display":"none"});
+//     }else{
+//     	$('#so_up_users_ext').css('display','block').siblings().css({"display":"none"});
+//     }
+// });
 var current_date0 = new Date();
 //var current_date = current_date0.format('yyyy/MM/dd hh:mm')
 current_date0.setDate(current_date0.getDate()+1);
@@ -267,6 +271,98 @@ function draw_sensor(data){
     $('#so_sensor_content').append(html); 
 }
 
+function so_draw_search_results(data){
+    //console.log(data);
+    $('#search_result').empty();
+    var user_url ;
+    //console.log(user_url);
+    var html = '';
+    html += '<table id="search_result_table" class="table table-striped table-bordered bootstrap-datatable datatable responsive">';
+    html += '<thead><tr><th>用户ID</th><th>昵称</th><th>注册地</th><th>活跃度</th><th>重要度</th><th>影响力</th><th>相关度</th>';
+    html += '<th>操作</th><th><input  name="search_table_choose" id="search_table_choose" type="checkbox" value="" onclick="search_table_choose()" />全选</th></tr></thead>';
+    html += '<tbody>';
+    for(var i = 0; i<data.length;i++){
+      var item = data[i];
+      item = replace_space(item);
+      if (item[1] == '未知'){
+          item[1] = item[0];
+      } 
+      for(var j=3;j<7;j++){
+        if(item[j]!='未知')
+          item[j] = item[j].toFixed(2);
+      }
+      user_url = '/index/personal/?uid=' + item[0];
+      html += '<tr id=' + item[0] +'>';
+      html += '<td class="center" name="uids"><a href='+ user_url+ '  target="_blank">'+ item[0] +'</td>';
+      html += '<td class="center">'+ item[1] +'</td>';
+      html += '<td class="center">'+ item[2] +'</td>';
+      html += '<td class="center" style="width:100px;">'+ item[3] +'</td>';
+      html += '<td class="center" style="width:100px;">'+ item[4] +'</td>';
+      html += '<td class="center" style="width:100px;">'+ item[5] +'</td>';
+      html += '<td class="center" style="width:100px;">'+ item[6] +'</td>';
+      html += '<td class="center" style="width:120px;"><a class="portrait_href" href=' + user_url + ' target="_blank">查看人物属性页</a></td>';
+      html += '<td class="center"><input name="search_table_choose_option" class="search_result_option" type="checkbox"  /></td>'
+      html += '</tr>';
+    }
+    html += '</tbody>';
+    html += '</table>';
+    $('#search_result').append(html);
+    $('#search_result_table').dataTable({
+        "sDom": "<'row'<'col-md-6'l ><'col-md-6'f>r>t<'row'<'col-md-12'i><'col-md-12 center-block'p>>",
+        "sPaginationType": "bootstrap",
+        "aaSorting":[[5, 'desc']],
+        //"aoColumnDefs":[ {"bSortable": false, "aTargets":[7]}],
+        "oLanguage": {
+            "sLengthMenu": "每页&nbsp; _MENU_ 条"
+        }
+    });
+}
+
+//上传文件交互、按钮
+function bindOption(){
+      $('#so_user_commit').click(function(){
+          if ($('input[name="recommend_type"]:checked').val() == 'upload'){
+              if (seed_user_files == undefined){
+                  alert('请选择文件上传！');
+                  return false;
+              }
+
+              var upload_job = {};
+              var admin = $('#useremail').text();
+              upload_job['user'] = admin;
+              upload_job['type'] = $('#file_type').val();
+              upload_job['date'] = new Date().format('yyyy-MM-dd');
+              //upload_job['date'] = '2013-09-06';
+              handleFileSelect(upload_job);
+          }
+      });
+
+        $('#delete_file').click(function(){
+            seed_user_files = undefined;
+            $('#file_status').css('display', 'none');
+        });
+        $('#uploadbtn').click(function(){
+            var fileInput = document.getElementById('seed_file_upload');
+            // 检查文件是否选择:
+            if (!fileInput.value) {
+                alert('没有选择文件。');
+                return;
+            }
+            // 获取File引用:
+            var file = fileInput.value;
+            //alert(file);
+            if ((file.endsWith('.csv')) || (file.endsWith('.txt'))) {
+                seed_user_files = fileInput.files;
+                $('#add_file').html(file);
+                $('#file_status').css('display', 'block');
+                return false;
+            }else{
+                alert('只能上传csv或txt文件。');
+                return;
+            }
+        });
+}
+bindOption();
 function draw_sen_more(data){
 	var item = data;
 	//$('#so_more_content').empty();
@@ -286,6 +382,11 @@ function draw_sen_more(data){
 	// }
 	// html += '</div>';
 	$('#so_sen_content').append(html);
+}
+
+
+function search_table_choose(){
+  $('input[name="search_table_choose_option"]').prop('checked', $("#search_table_choose").prop('checked'));
 }
 
 function draw_nor_more(data){
@@ -506,7 +607,7 @@ function so_group_data(){
 	   	$('[name="so_more_option_1"]:checked').each(function(){
 		  	    a['keywords'].push($(this).val());
 		  	});
-	    if (so_user_option == 'so_all_users'){
+	    if (so_user_option == 'so_search_users'){
 	    	a['social_sensors'] = '';
 	    }else{              //single_user or multi_user with extension
 	    	a['social_sensors'] = [];
@@ -548,6 +649,7 @@ function so_callback(data){
 		alert('请将信息补充完整！');
 	}
 }
+
 
 // have_keys(['sdfa','asdfasg','1231','asdfa','dsga4','12sdfa']);
 

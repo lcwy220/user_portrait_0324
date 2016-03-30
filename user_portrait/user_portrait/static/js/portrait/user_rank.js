@@ -9,24 +9,25 @@ function call_sync_ajax_request(url, callback){
 }
 
 function user_rank_timepicker(str){
-    var date_time = str.split(' ');
-    var dates = date_time[0].split('/');
+	//var date_time = str.split(' ');
+    var dates = str.split('/');
     var yy = parseInt(dates[0]);
     var mm = parseInt(dates[1]) - 1;
     var dd = parseInt(dates[2]);
-    var times = date_time[1].split(':');
-    var hh = parseInt(times[0]);
-    var minute = parseInt(times[1]);
+    //var times = date_time[1].split(':');
+    //var hh = parseInt(times[0]);
+    //var minute = parseInt(times[1]);
     var final_date = new Date();
     final_date.setFullYear(yy,mm,dd);
-    final_date.setHours(hh,minute);
-    final_date = Math.floor(final_date.getTime()/1000);
+    final_date.setHours(0,0);
+    final_date = Math.floor(final_date.getTime()/1000); 
+    console.log(final_date);
     return final_date;
 }
 
 function task_status (data) {
 	var data = data.data;
-	//console.log(data);
+	console.log(data);
 	if (data.length == 0){
 		var html = '<div style="text-align: center;background-color: #cccccc;">暂无任务</div>'
 		$('#task_status').append(html);
@@ -53,12 +54,11 @@ function task_status (data) {
 		for(var i=0;i<data.length;i++){
 			sort_scope = scope_dict[data[i].sort_scope];
 			sort_norm = norm_dict[data[i].sort_norm];
+			var delete_this = '<span style="display:none;">'+data[i].search_id+'</span><span class="delete_this"><b><u class="delete_key_result" style="cursor:pointer;">删除</u></b></span>';
 			if(data[i].status == 0){
 				var status = '正在计算';
-				var delete_this = '<span class="delete_this"><b><u class="delete_key_result" style="cursor:pointer;">删除</u></b></span>';
 			}else{
 				var status = '<span><b><u class="show_key_result" style="cursor:pointer;">计算完成</u></b></span>';
-				var delete_this = '<span style="display:none;">'+data[i].search_id+'</span><span class="delete_this"><b><u class="delete_key_result" style="cursor:pointer;">删除</u></b></span>';
 			}
 			html += '<tr>';
 			html += '<td style="text-align:center;">'+data[i].keyword+'</td>';
@@ -79,7 +79,7 @@ function draw_all_rank_table(data){
 	var data = data;
 		if(data == 0){
 		$('#result_rank_table').empty();
-			var html = '<div style="text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;">暂无数据</div>';
+			var html = '<div style="width: 900px;margin-left: 30px;text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;">暂无数据</div>';
 			$('#result_rank_table').append(html);
 		}else{
 				var html = '';
@@ -97,8 +97,8 @@ function draw_all_rank_table(data){
 				for(var i=0;i<data.length;i++){
 					var uid = data[i].uid;
 					var uname = data[i].uname;
-					if(uname == 'unknown'){
-						uname = uid
+					if(uname == 'unknown' || uname == null){
+						uname = uid;
 					}
 					var is_warehousing = '';
 					if(data[i].is_warehousing == true){
@@ -111,7 +111,7 @@ function draw_all_rank_table(data){
 						location = '未知'
 					}
 					var fans = data[i].fans;
-					if(fans == null){
+					if(fans == null || fans == undefined){
 						fans = 0
 					}
 					if(data[i].weibo_count == undefined || data[i].weibo_count == null ){
@@ -156,7 +156,7 @@ function draw_all_rank_table(data){
 function draw_rank_table(data){
 	if(data.length == 0){
 		$('#result_rank_table').empty();
-		var html = '<div style="text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;">暂无数据</div>';
+		var html = '<div style="text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;width: 900px;margin-left: 30px;">暂无数据</div>';
 		$('#result_rank_table').append(html);
 
 	}else{
@@ -516,19 +516,19 @@ function date_init(){
 	var date = choose_time_for_mode();
 	//console.log(date)
 	date.setHours(0,0,0,0);
-	var max_date = date.format('yyyy/MM/dd hh:mm');
-	var current_date = date.format('yyyy/MM/dd hh:mm');
+	var max_date = date.format('yyyy/MM/dd');
+	var current_date = date.format('yyyy/MM/dd');
 	var from_date_time = Math.floor(date.getTime()/1000) - 60*60*24;
 	var min_date_ms = new Date()
 	min_date_ms.setTime(from_date_time*1000);
-	var from_date = min_date_ms.format('yyyy/MM/dd hh:mm');
-	if(global_test_mode==0){
-	    $('#time_choose #weibo_from').datetimepicker({value:from_date,step:60});
-	    $('#time_choose #weibo_to').datetimepicker({value:current_date,step:60});
-	}else{
-	    $('#time_choose #weibo_from').datetimepicker({value:from_date,step:60,minDate:'-1970/01/30',maxDate:'+1970/01/01'});
-	    $('#time_choose #weibo_to').datetimepicker({value:current_date,step:60,minDate:'-1970/01/30',maxDate:'+1970/01/01'});
-	}
+	var from_date = min_date_ms.format('yyyy/MM/dd');
+	    if(global_test_mode==0){
+        $('#time_choose #weibo_from').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
+        $('#time_choose #weibo_to').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
+    }else{
+        $('#time_choose #weibo_from').datetimepicker({value:from_date,step:1440,minDate:'-1970/01/30',format:'Y/m/d',timepicker:false,maxDate:'+1970/01/01'});
+        $('#time_choose #weibo_to').datetimepicker({value:from_date,step:1440,minDate:'-1970/01/30',format:'Y/m/d',timepicker:false,maxDate:'+1970/01/01'});
+    }
 }
 function submit_offline(data){
 	console.log(data)
@@ -545,18 +545,21 @@ function draw_key_rank_table(data){
 	console.log(data);
 	if(data.length == 0){
 		$('#result_rank_table').empty();
-		var html = '<div style="text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;">暂无数据</div>';
+		var html = '<div style="width: 900px;margin-left: 30px;text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;">暂无数据</div>';
 		$('#result_rank_table').append(html);
 	}else{
 		
 		//结果分析默认值
 		var sort_norm = data.sort_norm;
 		var sort_scope = data.sort_scope;
+		var key = data.keyword;
 		var time_range = data.start_time + '至' +data.end_time;
 		$('#rec_range').empty();
 		$('#rec_rank_by').empty();
 		$('#rec_time_range').empty();
 		$('#rec_range').append(scope_dict[sort_scope]);
+		$('#rec_range').append('-'+key);
+
 		$('#rec_rank_by').append(norm_dict[sort_norm]);
 		$('#rec_time_range').append(time_range);
 		
@@ -569,13 +572,14 @@ function draw_in_key_rank_table(data){
 	console.log(data);
 	if(data.length == 0){
 		$('#result_rank_table').empty();
-		var html = '<div style="text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;">暂无数据</div>';
+		var html = '<div style="text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;width: 900px;margin-left: 30px;">暂无数据</div>';
 		$('#result_rank_table').append(html);
 	}else{
 		var scope_dict ={'all_limit_keyword':'全网-按关键词','in_limit_keyword':'库内-按关键词','in_limit_hashtag':'库内-按微话题'}
-		var norm_dict ={'weibo_count': '微博数','fans': '粉丝数','bci': '影响力','bci_change':'突发影响力变动','ses':'言论敏感度','ses_change':'突发敏感度变动','imp':'身份敏感度','imp_change':'突发重要度变动','act':'活跃度','act_change':'突发活跃度变动'}
+		var norm_dict ={'weibo_num': '微博数','fans': '粉丝数','bci': '影响力','bci_change':'突发影响力变动','ses':'言论敏感度','ses_change':'突发敏感度变动','imp':'身份敏感度','imp_change':'突发重要度变动','act':'活跃度','act_change':'突发活跃度变动'}
 		var sort_norm = data.sort_norm;
 		var sort_scope = data.sort_scope;
+		var key = data.keyword;
 		console.log(sort_scope);
 		console.log('sort_norm',sort_norm);
 		var time_range = data.start_time + '至' +data.end_time;
@@ -584,6 +588,7 @@ function draw_in_key_rank_table(data){
 		$('#rec_rank_by').empty();
 		$('#rec_time_range').empty();
 		$('#rec_range').append(scope_dict[sort_scope]);
+		$('#rec_range').append('-'+key);
 		$('#rec_rank_by').append(norm_dict[sort_norm]);
 		$('#rec_time_range').append(time_range);
 		
@@ -656,18 +661,15 @@ function submit_rank(){
 			var keyword_array = [];
 			var keyword_array = keyword.split(',');
 			var keyword_string = keyword_array.join(',');
-			var time_from = user_rank_timepicker($('#time_choose #weibo_from').val());
-			//console.log(time_from)
-			var time_to = user_rank_timepicker($('#time_choose #weibo_to').val());
-			if($('#time_choose #weibo_from').val() > $('#time_choose #weibo_to').val()){
-				alert('起始时间不得大于终止时间！');
-				return false;
+			var time_from =$('#time_choose #weibo_from').val().split('/').join('-');
+			var time_to =$('#time_choose #weibo_to').val().split('/').join('-');
+			var from_stamp = new Date($('#time_choose #weibo_from').val());
+			var end_stamp = new Date($('#time_choose #weibo_to').val());
+		    if(from_stamp > end_stamp){
+			    alert('起始时间不得大于终止时间！');
+			    return false;
 			}
-			var time_from_after = new Date(time_from*1000)
-			var time_to_after = new Date(time_to*1000)
-			time_from_after = time_from_after.format('yyyy-MM-dd')
-			time_to_after = time_to_after.format('yyyy-MM-dd')
-			var url = '/user_rank/user_sort/?time=-1&username='+username+'&st='+time_from_after +'&et='+time_to_after+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope+'&arg='+keyword;
+			var url = '/user_rank/user_sort/?time=-1&username='+username+'&st='+time_from +'&et='+time_to+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope+'&arg='+keyword;
 			console.log(url);
 			if(sort_scope == 'all_limit_keyword'){
 				url +='&all=True';
@@ -705,11 +707,11 @@ if(day_select == "30"){
 }
 
 var scope_dict ={'all_limit_keyword':'全网-按关键词','in_limit_keyword':'库内-按关键词','in_limit_hashtag':'库内-按微话题'}
-var norm_dict ={'weibo_count': '微博数','fans': '粉丝数','bci': '影响力','bci_change':'突发影响力变动','ses':'言论敏感度','ses_change':'突发敏感度变动','imp':'身份敏感度','imp_change':'突发重要度变动','act':'活跃度','act_change':'突发活跃度变动'}
+var norm_dict ={'weibo_num': '微博数','fans': '粉丝数','bci': '影响力','bci_change':'突发影响力变动','ses':'言论敏感度','ses_change':'突发敏感度变动','imp':'身份敏感度','imp_change':'突发重要度变动','act':'活跃度','act_change':'突发活跃度变动'}
 //画结果表格
 var rank_url = '/user_rank/user_sort/?username='+ username +'&time='+ day_select +'&sort_norm='+ sort_norm +'&sort_scope='+ sort_scope+'&all=True';
 console.log(rank_url);
-//call_sync_ajax_request(rank_url, draw_all_rank_table);
+call_sync_ajax_request(rank_url, draw_all_rank_table);
 
 //任务状态
 var task_url = '/user_rank/search_task/?username='+username;
@@ -734,7 +736,7 @@ $('.show_key_result').click(function(){
 	}
 
 });
-$('.delete_this').click(function(){
+$('.delete_this').live("click", function(){
 	var a = confirm('确定要删除吗？');
 	if (a == true){
 		var url = '/user_rank/delete_task/?';
@@ -744,4 +746,4 @@ $('.delete_this').click(function(){
 		//window.location.href = url;
 		call_sync_ajax_request(url,del);
 	}
-})
+});

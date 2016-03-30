@@ -1,6 +1,10 @@
 function seed_user_callback(data){
     console.log(data);
-    if (typeof(data) == 'string'){
+    //console.log(typeof(data));
+    if (data == true) {
+        alert('提交成功！');
+    }
+    else if (typeof(data) == 'string'){
         if (data == 'no seed user') {
             alert('用户列表为空！');
         }
@@ -30,9 +34,6 @@ function seed_user_callback(data){
         }
         else if(data == 'invalid input for count'){
           alert('请选择合理的人数！')
-        }
-        else if (data == 'true') {
-            alert('提交成功！');
         }
     }
     else if(typeof(data) == 'object'){
@@ -107,6 +108,11 @@ function bind_button_click(){
             $('#seed_user #events_to').attr('disabled', true);
         }
     });
+    $('#seed_user #num-range').change(function(){
+        var num = $('#seed_user #num-range').val();
+        $('#seed_user #show_num').empty();
+        $('#seed_user #show_num').append(num);    
+    });
     $('#seed_user #delete_file').click(function(){
         seed_user_files = undefined;
         $('#seed_user #file_status').css('display', 'none');
@@ -157,26 +163,6 @@ seed_last_date = seed_last_date.format('yyyy/MM/dd hh:mm');
 
 var seed_user_flag = false;
 seed_user_init();
-$('#seed_user #num-range').change(function(){
-    var num = $('#seed_user #'+seed_user_option+' #num-range').val();
-    $('#seed_user #show_num').empty();
-    $('#seed_user #show_num').append(num);    
-})
-$('#seed_user [name="mode_choose"]').change(function(){
-    seed_user_option = $('#seed_user [name="mode_choose"]:checked').val();
-    if (seed_user_option == 'single_user'){
-        $('#seed_user #single_user_ext').css('display','block');
-        $('#seed_user #multi_user_ext').css('display','none');
-    }
-    else{
-        $('#seed_user #single_user_ext').css('display','none');
-        $('#seed_user #multi_user_ext').css('display','block');
-    }
-    if (!seed_user_flag){
-        seed_user_init();
-        seed_user_flag = true; // no more html init
-    }
-});
 
 function seed_user_check(){             // check validation 
     var user_choose = $('[name="user_choose"]:checked').val();
@@ -299,6 +285,7 @@ function seed_single_user_data(){
         return url;
     }
     else{
+        url += '&extend_mark=1';
         //attribute
         url += '&attribute_weight=' + $('#seed_user #attr_weight').val();
         $('#seed_user #attribute .inline-checkbox').each(function(){

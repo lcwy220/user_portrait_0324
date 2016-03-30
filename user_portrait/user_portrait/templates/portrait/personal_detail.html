@@ -33,7 +33,7 @@ var th_flag = false;
 $(function(){
     /**软件功能切换js**/
      preference_load();
-    $(" .portrait_button").click(function(){
+    $(" .p_d").click(function(){
         var x = $(this).attr("title");
         // var x=$(this).parent().index();
         // console.log(x);
@@ -205,13 +205,13 @@ $(function(){
 
            
         <div style="margin-left:250px;margin-bottom:11px;">
-            <button class="portrait_button" type='button' style="margin-right:32px;background-color:#3351B7" title="身份特征" >身份特征</button>
-             <button class="portrait_button" type='button' style="margin-right:32px;" title="活动特征" >活动特征</button>
-            <button class="portrait_button" type='button' style="margin-right:32px;" title="偏好特征" >偏好特征</button>
-            <button class="portrait_button" type='button' style="margin-right:32px;" title="影响力特征" >影响力特征</button>
-            <button class="portrait_button" type='button' style="margin-right:32px;" title="社交特征" >社交特征</button>
-            <button class="portrait_button" type='button' style="margin-right:32px;" title="性格特征" >性格特征</button>
-            <button class="portrait_button" type='button'  title="标签特征" >外部评价</button>
+            <button class="portrait_button p_d" type='button' style="margin-right:32px;background-color:#3351B7" title="身份特征" >身份特征</button>
+             <button class="portrait_button p_d" type='button' style="margin-right:32px;" title="活动特征" >活动特征</button>
+            <button class="portrait_button p_d" type='button' style="margin-right:32px;" title="偏好特征" >偏好特征</button>
+            <button class="portrait_button p_d" type='button' style="margin-right:32px;" title="影响力特征" >影响力特征</button>
+            <button class="portrait_button p_d" type='button' style="margin-right:32px;" title="社交特征" >社交特征</button>
+            <button class="portrait_button p_d" type='button' style="margin-right:32px;" title="性格特征" >性格特征</button>
+            <button class="portrait_button p_d" type='button'  title="标签特征" >外部评价</button>
         </div>
 
 <script type="text/javascript">
@@ -304,8 +304,8 @@ $(function(){
             //console.log(personalData.description.length);
             if(!personalData.description ){
                 detailPortrait.innerHTML = "无此数据";
-            }else if(personalData.description.length>40){
-                detailPortrait.innerHTML = personalData.description.substr(0,40)+'...';
+            }else if(personalData.description.length>35){
+                detailPortrait.innerHTML = personalData.description.substr(0,35)+'...';
             }
             else{
                 detailPortrait.innerHTML = personalData.description;
