@@ -160,13 +160,13 @@ def ajax_show_task():
         "sort": {"create_at": {"order": "desc"}},
         "size": 10000
     }
-    if length == 2:
-        category_list = [status[0], status[1]]
-        query_body['query']['filtered']['filter']["bool"]["must"].append({"term":{"finish": category_list}})
-    elif length == 1:
+    #if length == 2:
+    #    category_list = [status[0], status[1]]
+    #    query_body['query']['filtered']['filter']["bool"]["must"].append({"term":{"finish": category_list}})
+    if length == 1:
         query_body['query']['filtered']['filter']['bool']['must'].append({"term":{"finish": status}})
-    else:
-        print "error"
+    #else:
+    #    print "error"
 
     search_results = es.search(index=index_manage_sensing_task, doc_type=task_doc_type, body=query_body)['hits']['hits']
 
@@ -186,14 +186,14 @@ def ajax_show_task():
             else:
                 item['history_status'] = history_status
             results.append(item)
-
+    print results
     return json.dumps(results)
 
 
 @mod.route('/get_task_detail_info/')
 def ajax_get_task_detail_info():
     task_name = request.args.get('task_name','') # task_name
-    user = request.args.get('user', '')
+    user = request.args.get('user', 'admin')
     _id = user + "-" + task_name
     task_detail = es.get(index=index_manage_sensing_task, doc_type=task_doc_type, id=_id)['_source']
     task_detail["social_sensors"] = json.loads(task_detail["social_sensors"])
@@ -270,12 +270,15 @@ def ajax_get_group_list():
             temp.append(item['task_name'])
             temp.append(item['submit_user'])
             temp.append(item['submit_date'])
-            temp.append(item['count'])
+            temp.append(0)
             temp.append(item.get('state', ""))
             try:
                 temp.append(json.loads(item['uid_list']))
+                count = len(json.loads(item['uid_list']))
+                temp[3] = count
             except:
                 temp.append(item['uid_list'])
+                temp[3] = len(item['uid_list'])
             results.append(temp)
 
     return json.dumps(results)
