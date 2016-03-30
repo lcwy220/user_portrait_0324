@@ -16,6 +16,7 @@ Social_sense.prototype = {   //获取数据，重新画表
     var item = data;
 	var html = '';
 	var item_time = '';
+  console.log(item);
 	if (item.length == 0){
 		html += '<div style="color:grey;">暂无数据</div>'
 	}else{
@@ -223,23 +224,23 @@ function draw_sensor(data){
 	var item_keys = data['keywords'];
 	var item_sen_keys = data['sensitive_words'];
 	var item_sensor = data['social_sensors'];
-    html += '<div style="width:100%"><div  style="float:left;display:inline-block">敏感传感词：</div>';
-    if(item_keys.length > 0){
-    	html += '<div style="margin-right: 9px;padding:0px;width: 83%;display:inline-block">';
-	    for (var j =0;j<item_sen_keys.length;j++){
-	    	html += '<span style="margin-right:20px;">'+item_sen_keys[j]+'</span>';
-	    }
-	    html += '</div>';
-	}else{html += '<span style="margin-right:20px;">无</span>'}
-	html += '<div style="width:100%;margin-top:10px;"><div  style="float:left;display:inline-block">普通传感词：</div>';
-    if(item_keys.length > 0){
-    	html += '<div style="margin-right: 9px;padding:0px;width: 83%;display:inline-block">';
-	    for (var j =0;j<item_keys.length;j++){
-	    	html += '<span style="margin-right:20px;">'+item_keys[j]+'</span>';
-	    }
-	    html += '</div>';  
-    }else{html += '<span style="margin-right:20px;">无</span>'}
-    html += '</div>';
+ //    html += '<div style="width:100%"><div  style="float:left;display:inline-block">敏感传感词：</div>';
+ //    if(item_keys.length > 0){
+ //    	html += '<div style="margin-right: 9px;padding:0px;width: 83%;display:inline-block">';
+	//     for (var j =0;j<item_sen_keys.length;j++){
+	//     	html += '<span style="margin-right:20px;">'+item_sen_keys[j]+'</span>';
+	//     }
+	//     html += '</div>';
+	// }else{html += '<span style="margin-right:20px;">无</span>'}
+	// html += '<div style="width:100%;margin-top:10px;"><div  style="float:left;display:inline-block">普通传感词：</div>';
+ //    if(item_keys.length > 0){
+ //    	html += '<div style="margin-right: 9px;padding:0px;width: 83%;display:inline-block">';
+	//     for (var j =0;j<item_keys.length;j++){
+	//     	html += '<span style="margin-right:20px;">'+item_keys[j]+'</span>';
+	//     }
+	//     html += '</div>';  
+ //    }else{html += '<span style="margin-right:20px;">无</span>'}
+ //    html += '</div>';
     if (item_sensor.length == 0){
     	html += '<div style="margin-top:10px;">传感群：<span style="margin-left:28px;">全库用户</span></div>'
     }else{
@@ -405,7 +406,7 @@ function so_ready(){
 		$('span[id^="so_group_name0"]').html(temp);
 		$('#so_sensor_content').empty();
 		$('span[id="so_remark0"]').html('');
-		url = "/social_sensing/get_task_detail_info/?task_name=" + temp;
+		url = "/social_sensing/get_task_detail_info/?task_name=" + temp+'&user='+user;
 		Social_sense.call_sync_ajax_request(url,Social_sense.ajax_method,draw_sensor);
 		//draw_table('1',"#group_analyze_confirm");
 		remark0 = $(this).parent().prev().html();
@@ -417,7 +418,7 @@ function so_ready(){
 		$('span[id^="so_group_name0"]').html(temp);
 		$('#so_his_content').empty();
 		$('span[id="so_remark0"]').html('');
-		url = "/social_sensing/get_task_detail_info/?task_name=" + temp;
+		url = "/social_sensing/get_task_detail_info/?task_name=" + temp+'&user='+user;
 		Social_sense.call_sync_ajax_request(url,Social_sense.ajax_method,draw_history);
 		//draw_table('1',"#group_analyze_confirm");
 		remark0 = $(this).parent().prev().prev().prev().html();
@@ -428,7 +429,7 @@ function so_ready(){
 		var temp = $(this).parent().prev().prev().prev().prev().prev().prev().prev().text();
 		var a = confirm('确定要终止任务吗？');
 		if (a== true){
-			url = "/social_sensing/stop_task/?task_name=" + temp;
+			url = "/social_sensing/stop_task/?task_name=" + temp+'&user='+user;
 			Social_sense.call_sync_ajax_request(url, Social_sense.ajax_method, callback);
 		}
 	});	
@@ -518,7 +519,7 @@ function draw_history(data){
 	var html = '';
 	var warn = '';
 	var item_time = '';
-	console.log(item_his.length);
+	//console.log(item_his.length);
 	if(item_his.length == 0){
 		html += '<div>暂无历史状态</div>';
 	}else{
