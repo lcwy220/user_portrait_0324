@@ -25,15 +25,13 @@ function call_sync_ajax_request(url, callback){
 
 function detect_task_status (data) {
     console.log(data);
-    if (data.length == 0){
-        var html = '<div style="text-align: center;background-color: #cccccc;">暂无任务</div>'
-        $('#detect_task_status').append(html);
-    }else{
+    if (data.length != 0){
         var sort_scope = data.sort_scope;
         $('#detect_task_status').empty();
 
         var html = '';
-        html += '<table class="table table-striped table-bordered bootstrap-datatable datatable responsive" style="margin-left:30px;width:900px;">';
+        html += '<span style="float: left;margin-left: 877px;margin-bottom: 10px;cursor:pointer;" type="button"data-toggle="modal" data-target="#detect_search_modal" ><u>任务搜索</u></span>'
+        html += '<br><table class="table table-bordered table-striped table-condensed datatable" style="margin-left:30px;width:900px;">';
         html += '<thead>';
         html += '<th style="width:100px;text-align:center;">关键词</th>';
         html += '<th style="width:150px;text-align:center;">监控时间</th>';
@@ -45,22 +43,25 @@ function detect_task_status (data) {
         for(var i=0;i<data.length;i++){
             // sort_scope = scope_dict[data[i].sort_scope];
             // sort_norm = norm_dict[data[i].sort_norm];
-            var delete_this = '<span style="display:none;">'+data[i][0]+'</span><span class="de_delete_this"><b><u class="delete_key_result" style="cursor:pointer;">删除</u></b></span>';
+            var delete_this = '<span style="display:none;">'+data[i][0]+'</span><span class="de_delete_this"><b><u class="" style="cursor:pointer;">删除</u></b></span>';
             if(data[i][5] == 0){
                 var status = '正在计算';
             }else{
-                var status = '<span><b><u class="show_detect_key_result" style="cursor:pointer;">计算完成</u></b></span>';
+                var status = '<span class="show_detect_key_result" ><b><u style="cursor:pointer;">计算完成</u></b></span>';
             }
             html += '<tr>';
-            html += '<td style="text-align:center;">'+data[i][3]+'</td>';
+            html += '<td style="text-align:center;">'+data[i][3].split('&').join(',')+'</td>';
             html += '<td style="text-align:center;">'+data[i][1]+' 至 '+data[i][2]+'</td>';
-            html += '<td style="text-align:center;">'+'shijianjiange'+'</td>';
+            html += '<td style="text-align:center;">'+re_segment_dict[data[i][6]]+'</td>';
             html += '<td style="text-align:center;">'+data[i][4]+'</td>';
             html += '<td style="text-align:center;"><span style="display:none;">'+data[i][0]+'</span>'+status+'</td>';
             html += '<td style="text-align:center;">'+delete_this+'</td>';
             html += '</tr>';
         }
         html += '</table>';
+        $('#detect_task_status').append(html);
+    }else{
+        var html = '<div style="text-align: center;background-color: #cccccc;">暂无相关任务</div>'
         $('#detect_task_status').append(html);
     }
 }
@@ -782,7 +783,7 @@ function Draw_detect_charts(flag, data){
 
 function submit_detect_offline(data){
     console.log(data)
-    if(data.flag == true){
+    if(data == true){
         alert('提交成功！已添加至离线任务');
         var task_url = '/sentiment/search_sentiment_all_keywords_task/?submit_user='+username;
         console.log(task_url)
@@ -866,10 +867,18 @@ function date_init(){
     if(global_test_mode==0){
         $('#detect_time_choose #weibo_from').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
         $('#detect_time_choose #weibo_to').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
+        $('#search_date #weibo_modal').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
     }else{
         $('#detect_time_choose #weibo_from').datetimepicker({value:from_date,step:1440,minDate:'-1970/01/30',format:'Y/m/d',timepicker:false,maxDate:'+1970/01/01'});
         $('#detect_time_choose #weibo_to').datetimepicker({value:from_date,step:1440,minDate:'-1970/01/30',format:'Y/m/d',timepicker:false,maxDate:'+1970/01/01'});
+        $('#search_date #weibo_modal').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
+
     }
+    var real_date = new Date();
+    real_date = real_date.format('yyyy/MM/dd');
+    console.log(real_date);
+    $('#search_date #weibo_modal').datetimepicker({value:real_date,step:1440,format:'Y/m/d',timepicker:false});
+
 }
 
 //提交监控
@@ -941,12 +950,33 @@ function submit_detect(){
             var keyword_array = [];
             var keyword_array = keyword.split(',');
             var keyword_string = keyword_array.join(',');
-            var url = '/sentiment/submit_sentiment_all_keywords/?start_date='+time_from+'&end_date='+time_to+'&keywords='+keyword_string +'&submit_user=' + username;
+            var url = '/sentiment/submit_sentiment_all_keywords/?start_date='+time_from+'&end_date='+time_to+'&keywords='+keyword_string +'&submit_user=' + username +'&segment='+sort_norm;
             call_sync_ajax_request(url, submit_detect_offline)
             //detect_task_status(data);
             console.log(url);
         }
     }
+}
+
+//离线任务删除
+function de_del(data){
+    console.log(data);
+    if(data == true){
+        alert('删除成功！');
+        var task_url = '/sentiment/search_sentiment_all_keywords_task/?submit_user='+username;
+        call_sync_ajax_request(task_url, detect_task_status);
+    }else{
+        alert('删除失败，请再试一次！');
+    }
+}
+//搜索任务提交
+function search_task(){
+    var submit_date =$('#weibo_modal').val().split('/').join('-');
+    var submit_key = $('#search_key').val();
+    var search_url = '/sentiment/search_sentiment_all_keywords_task/?keywords='+submit_key + '&submit_date='+submit_date;
+    console.log(search_url);
+
+    call_sync_ajax_request(search_url, detect_task_status);
 }
 
 //结果分析默认值
@@ -966,6 +996,22 @@ var time_to =$('#detect_time_choose #weibo_to').val().split('/').join('-');
 // console.log(time_from_after);
 // console.log(time_to_after);
 
+$('.de_delete_this').live('click',function(){
+    var a = confirm('确定要删除吗？');
+    if (a == true){
+        var id= $(this).prev().text();
+        var del_url = '/sentiment/delete_sentiment_all_keywords_task/?task_id='+id;
+        console.log(del_url);
+        call_sync_ajax_request(del_url,de_del);
+    }
+});
+
+$('.show_detect_key_result').live('click', function(){
+    var id= $(this).prev().text();
+    var show_url = '/sentiment/show_sentiment_all_keywords_results/?task_id=' + id;
+    console.log(show_url);
+});
+
 $('#detect_range').append($('#detect_choose option:selected').text());
 $('#detect_rank_by').append($('#sort_select_2 option:selected').text());
 var time_from_end = time_from + ' 至 ' + time_to;
@@ -977,5 +1023,8 @@ var task_url_all = '/sentiment/search_sentiment_all_keywords_task/?submit_user='
 console.log(task_url_all)
 call_sync_ajax_request(task_url_all, detect_task_status);
 
-var url = '/sentiment/sentiment_all/?start_date=2013-09-07&end_date=2013-09-07&segment=fifteen';
+var url = '/sentiment/sentiment_all/?start_date='+time_from+'&end_date='+time_to+'&segment='+$('#sort_select_2 option:selected').val();
+console.log(url);
 call_sync_ajax_request(url, Draw_detect_all_charts);
+
+

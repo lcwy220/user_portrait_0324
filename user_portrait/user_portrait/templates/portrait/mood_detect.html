@@ -215,6 +215,35 @@
   </div>
 </div>
 
+<div class="modal fade" id="detect_search_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document" style="width:485px;">
+    <div class="modal-content" style="margin-top:20%;">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" style="font-size:18px" id="myModalLabel">任务搜索</h4>
+      </div>
+      <div class="modal-body" id='' style="height:150px;">
+      	<!-- <div ></div> -->
+      	<p>关 键 词<input type="text"  class="form-control" placeholder='多个词用英文逗号分开' style="margin-left:40px;width:175px;display: inline;height: 25px;" id="search_key"></p>
+<!--       	<p>时间间隔
+			<select id="search_segment" class="type_sub" style="margin-left:30px;">
+				<option value="fifteen">15分钟</option>
+				<option value="hour">一小时</option>
+				<option value="day">一天</option>
+			</select>
+      	</p> -->
+      	<p>提交时间
+			<span id="search_date" style="margin-left:30px;">
+				<input id="weibo_modal" type="text" class="form-control" style="width:175px; display:inline-block;height:25px;" >
+			</span>
+      	</p>
+      	<span onclick="search_task()" class="portrait_button" style="float:right;cursor:pointer;margin-right:20px;width: 45px;height: 25px;text-align: center;line-height: 25px;"  class="close" data-dismiss="modal" aria-label="Close">确定</span>
+      	<!-- //<p>关键词<input ></p> -->
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="text/javascript" src="/static/js/portrait/mood_detect.js"></script>
 
 {% endblock %}
