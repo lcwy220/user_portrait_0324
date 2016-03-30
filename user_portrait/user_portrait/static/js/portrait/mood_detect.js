@@ -11,7 +11,6 @@ function user_detect_timepicker(str){
     final_date.setFullYear(yy,mm,dd);
     final_date.setHours(0,0);
     final_date = Math.floor(final_date.getTime()/1000); 
-    console.log(final_date);
     return final_date;
 }
 function call_sync_ajax_request(url, callback){
@@ -24,21 +23,7 @@ function call_sync_ajax_request(url, callback){
     });
 }
 
-// function detect_task_status (data) {
-// 	$('#detect_task_status').empty();
-// 	var html = '';
-// 	html += '<table class="table table-striped" style="margin-left:30px;width:900px;">';
-// 	for(var i=0;i<data.length;i++){
-// 		html += '<tr>';
-// 		html += '<td style="width:200px;text-align:center;">'+data[i][0]+'</td>';
-// 		html += '<td>'+data[i][1]+'</td>';
-// 		html += '</tr>';
-// 	}
-// 	html += '</table>';
-// 	$('#detect_task_status').append(html);
-// }
 function detect_task_status (data) {
-    var data = data.data;
     console.log(data);
     if (data.length == 0){
         var html = '<div style="text-align: center;background-color: #cccccc;">暂无任务</div>'
@@ -51,27 +36,27 @@ function detect_task_status (data) {
         html += '<table class="table table-striped table-bordered bootstrap-datatable datatable responsive" style="margin-left:30px;width:900px;">';
         html += '<thead>';
         html += '<th style="width:100px;text-align:center;">关键词</th>';
-        html += '<th style="width:100px;text-align:center;">排序范围</th>';
-        html += '<th style="width:200px;text-align:center;">时间范围</th>';
-        html += '<th style="width:100px;text-align:center;">排序指标</th>';
+        html += '<th style="width:150px;text-align:center;">监控时间</th>';
+        html += '<th style="width:100px;text-align:center;">时间间隔</th>';
+        html += '<th style="width:200px;text-align:center;">提交时间</th>';
         html += '<th style="width:100px;text-align:center;">任务状态</th>';
-        html += '<th style="width:30px;text-align:center;">操作</th>';
+        html += '<th style="width:60px;text-align:center;">操作</th>';
         html += '</thead>';
         for(var i=0;i<data.length;i++){
-            sort_scope = scope_dict[data[i].sort_scope];
-            sort_norm = norm_dict[data[i].sort_norm];
-            var delete_this = '<span style="display:none;">'+data[i].search_id+'</span><span class="delete_this"><b><u class="delete_key_result" style="cursor:pointer;">删除</u></b></span>';
-            if(data[i].status == 0){
+            // sort_scope = scope_dict[data[i].sort_scope];
+            // sort_norm = norm_dict[data[i].sort_norm];
+            var delete_this = '<span style="display:none;">'+data[i][0]+'</span><span class="de_delete_this"><b><u class="delete_key_result" style="cursor:pointer;">删除</u></b></span>';
+            if(data[i][5] == 0){
                 var status = '正在计算';
             }else{
-                var status = '<span><b><u class="show_key_result" style="cursor:pointer;">计算完成</u></b></span>';
+                var status = '<span><b><u class="show_detect_key_result" style="cursor:pointer;">计算完成</u></b></span>';
             }
             html += '<tr>';
-            html += '<td style="text-align:center;">'+data[i].keyword+'</td>';
-            html += '<td style="text-align:center;">'+sort_scope+'</td>';
-            html += '<td style="text-align:center;">'+data[i].start_time+' 至 '+data[i].end_time+'</td>';
-            html += '<td style="text-align:center;">'+sort_norm+'</td>';
-            html += '<td style="text-align:center;"><span style="display:none;">'+data[i].search_id+'</span>'+'<span style="display:none;">'+data[i].sort_scope+'</span>'+status+'</td>';
+            html += '<td style="text-align:center;">'+data[i][3]+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1]+' 至 '+data[i][2]+'</td>';
+            html += '<td style="text-align:center;">'+'shijianjiange'+'</td>';
+            html += '<td style="text-align:center;">'+data[i][4]+'</td>';
+            html += '<td style="text-align:center;"><span style="display:none;">'+data[i][0]+'</span>'+status+'</td>';
             html += '<td style="text-align:center;">'+delete_this+'</td>';
             html += '</tr>';
         }
@@ -85,7 +70,8 @@ function draw_user_in_table(data){
     //var data = [];
     $('#mood_in_user').empty();
     if(data.length == 0){
-        $('#mood_in_user').append('<h4 style="text-align:center;">暂无数据</h4>');
+        $('#showmore_inuser').css('display', 'none');
+        $('#mood_in_user').append('<h4 style="text-align:center;min-height: 100px;background-color: #cccccc;line-height: 100px;">暂无数据</h4>');
     }else{
         if(data.length > 5){
             show_more_inuser(data);
@@ -104,11 +90,15 @@ function draw_user_in_table(data){
         for(var i=0;i<data.length;i++){
             html += '<tr>';
             html += '<td style="text-align:center;">'+data[i][0]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][1]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][2]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][3]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][4]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][5]+'</td>';
+            var name = data[i][1][0];
+            if(data[i][1][0] == 'unknown'){
+                name = data[i][0];
+            }
+            html += '<td style="text-align:center;">'+name+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][1].toFixed(2)+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][3].toFixed(2)+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][2].toFixed(2)+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][4].toFixed(2)+'</td>';
             html += '</tr>';
         }
         html += '</table>';
@@ -131,11 +121,15 @@ function show_more_inuser(data){
     for(var i=0;i<data.length;i++){
         html += '<tr>';
         html += '<td style="text-align:center;">'+data[i][0]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][1]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][2]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][3]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][4]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][5]+'</td>';
+        var name = data[i][1][0];
+        if(data[i][1][0] == 'unknown'){
+            name = data[i][0];
+        }
+        html += '<td style="text-align:center;">'+name+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][1].toFixed(2)+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][3].toFixed(2)+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][2].toFixed(2)+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][4].toFixed(2)+'</td>';
         html += '</tr>';
     }
     html += '</table>';
@@ -143,6 +137,7 @@ function show_more_inuser(data){
     $('#more_inuser_table').dataTable({
     "sDom": "<'row'<'col-md-6'l ><'col-md-6'f>r>t<'row'<'col-md-12'i><'col-md-12 center-block'p>>",
     "sPaginationType": "bootstrap",
+     "aaSorting": [[ 2, "desc" ]],
     //"aoColumnDefs":[ {"bSortable": false, "aTargets":[1]}],
     "oLanguage": {
         "sLengthMenu": "每页 _MENU_ 条 ",
@@ -152,11 +147,11 @@ function show_more_inuser(data){
 
 //出库用户列表
 function draw_user_out_table(data){
-    //console.log(data);
     $('#out_user_title').css('display', 'block');
     $('#mood_out_user').empty();
     if(data.length == 0){
-        $('#mood_out_user').append('<h4 style="text-align:center;">暂无数据</h4>');
+        $('#showmore_outuser').css('display', 'none');
+        $('#mood_out_user').append('<h4 style="text-align:center;min-height: 100px;background-color: #cccccc;line-height: 100px;">暂无数据</h4>');
     }else{
         if(data.length > 5){
             show_more_outuser(data);
@@ -174,10 +169,14 @@ function draw_user_out_table(data){
         for(var i=0;i<data.length;i++){
             html += '<tr>';
             html += '<td style="text-align:center;">'+data[i][0]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][1]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][2]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][3]+'</td>';
-            html += '<td style="text-align:center;">'+data[i][4]+'</td>';
+            var name = data[i][1][0];
+            if(data[i][1][0] == 'unknown'){
+                name = data[i][0];
+            }
+            html += '<td style="text-align:center;">'+name+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][1]+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][3]+'</td>';
+            html += '<td style="text-align:center;">'+data[i][1][2]+'</td>';
             html += '</tr>';
         }
         html += '</table>';
@@ -198,10 +197,10 @@ function show_more_outuser(data){
     for(var i=0;i<data.length;i++){
         html += '<tr>';
         html += '<td style="text-align:center;">'+data[i][0]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][1]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][2]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][3]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][4]+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][0]+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][1]+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][3]+'</td>';
+        html += '<td style="text-align:center;">'+data[i][1][2]+'</td>';
         html += '</tr>';
     }
     html += '</table>';
@@ -214,6 +213,94 @@ function show_more_outuser(data){
         "sLengthMenu": "每页 _MENU_ 条 ",
         }
     });
+}
+
+function createRandomItemStyle() {
+    return {
+        normal: {
+            color: 'rgb(' + [
+                Math.round(Math.random() * 160),
+                Math.round(Math.random() * 160),
+                Math.round(Math.random() * 160)
+            ].join(',') + ')'
+        }
+    };
+}
+function Draw_keyword(data){
+
+  var keyword = [];
+  var html = '';
+  $('#keywords_WordList').empty();
+  if(data.length == 0){
+      html = '<h4 style="text-align:center;min-height: 100px;background-color: #cccccc;line-height: 100px;">暂无数据</h4>';
+      //$('#'+ more_div).append(html);
+      $('#mood_keywords_clouds').append(html);
+      $('#more_keywords_list').empty();
+  }else{   
+
+      html = '';
+      html += '<table class="table table-striped table-bordered" style="width:450px;">';
+      html += '<tr><th style="text-align:center">排名</th><th style="text-align:center">关键词</th><th style="text-align:center">频数</th></tr>';
+      for (var i = 0; i < data.length; i++) {
+         var s = i.toString();
+         var m = i + 1;
+         html += '<tr style=""><th style="text-align:center">' + m + '</th><th style="text-align:center"><a href="/index/search_result/?stype=2&uid=&uname=&location=&hashtag=&adkeyword=' + data[i][0] +  '&psycho_status=&domain&topic" target="_blank">' + data[i][0] +  '</a></th><th style="text-align:center">' + data[i][1] + '</th></tr>';
+      };
+      html += '</table>'; 
+      $('#keywords_WordList').append(html);
+
+     //最大是50
+    var key_value = [];
+    var key_name = [];
+    for(var i=0;i<data.length;i++){
+      key_value.push((data[i][1]+Math.random())*100);
+      key_value.push(data[i][1]);
+      key_name.push(data[i][0]);
+    };
+
+    var word_num = Math.min(50, data.length);
+    // var key_value2 = [];
+    // var key_name2 = [];
+    // for(var i=0; i<word_num; i++){ //最多取前30个最大值
+    //   a=key_value.indexOf(Math.max.apply(Math, key_value));
+    //   key_value2.push(key_value[a]);
+    //   key_name2.push(key_name[a]);
+    //   key_value[a]=0;
+    // }      
+    //console.log(key_value);
+    for (i=0;i<word_num;i++){
+      var word = {};
+      word['name'] = key_name[i];
+      word['value'] = parseInt(key_value[i]/100);
+      word['itemStyle'] = createRandomItemStyle();
+      keyword.push(word);
+    }
+    $('#mood_keywords_clouds').empty();
+    var myChart = echarts.init(document.getElementById('mood_keywords_clouds')); 
+    var option = {
+      tooltip: {
+          show: true,
+          // formatter:  function (params){
+          //   var res  = '';
+          //   var value_after = parseInt(params.value);
+          //   res += params.name+' : '+value_after;
+          //   return res;
+          // }
+      },
+      series: [{
+          type: 'wordCloud',
+          size: ['120%', '120%'],
+          textRotation : [0, 45, 90, -45],
+          textPadding: 0,
+          autoSize: {
+              enable: true,
+              minSize: 14
+          },
+          data: keyword
+      }]
+    };
+    myChart.setOption(option);  
+  }
 }
 
 //展示微博
@@ -232,15 +319,19 @@ function Draw_get_top_weibo(data, div_name){
         s = (i+1).toString();
         var weibo = data[i]
         var mid = weibo[0];
-        var uid = weibo[9];
+        var uid = weibo[1];
         var name = weibo[10];
+        if(name == 'unknown'){
+            name = uid;
+        }
         var date = weibo[5];
-        var text = weibo[3];
-        var geo = weibo[4];
-        var reposts_count = weibo[1];
-        var comments_count = weibo[2];
-        var weibo_link = weibo[7];
-        var user_link = weibo[8];
+        var text = weibo[2];
+        var geo = weibo[3];
+        var reposts_count = weibo[6];
+        var comments_count = weibo[7];
+        var sensitive_score = weibo[8];
+        var weibo_link = weibo[9];
+        //var user_link = weibo[8];
         var profile_image_url = 'http://tp2.sinaimg.cn/1878376757/50/0/1';
         var repost_tree_link = '/show_graph/' + mid;
         if (geo==''){
@@ -254,12 +345,13 @@ function Draw_get_top_weibo(data, div_name){
         html += '<div class="weibo_pz">';
         html += '<div id="topweibo_mid" class="hidden">'+mid+'</div>';
         html += '<span class="retweet_count">转发数(' + reposts_count + ')</span>&nbsp;&nbsp;|&nbsp;&nbsp;';
-        html += '<span class="comment_count">评论数(' + comments_count + ')</span></div>';
+        html += '<span class="retweet_count">评论数(' + comments_count + ')</span>&nbsp;&nbsp;|&nbsp;&nbsp;';
+        html += '<span class="comment_count">敏感度(' + sensitive_score + ')</span></div>';
         html += '<div class="m">';
         html += '<u>' + date + '</u>&nbsp;-&nbsp;';
         html += '<a target="_blank" href="' + weibo_link + '">微博</a>&nbsp;-&nbsp;';
         html += '<a target="_blank" href="' + user_link + '">用户</a>';
-        html += '<a target="_blank" href="' + repost_tree_link + '">&nbsp;-&nbsp;转发树</a>';
+        // html += '<a target="_blank" href="' + repost_tree_link + '">&nbsp;-&nbsp;转发树</a>';
         html += '</div>';
         html += '</div>';
         html += '</div>';
@@ -281,15 +373,16 @@ function Draw_get_top_weibo(data, div_name){
 }
 
 //显示所有的相关微博
-function show_all_related_weibo(url) {
+function show_all_related_weibo(data) {
     $('#weibo_sort').empty();
     //$('#related_weibo').empty();
     var html = '';
     //html += '<div style="border-bottom: 3px solid #dddddd;height: 40px;line-height:40px;">';
     html += '<span style="color:#983333;margin-left: 20px;"><b>排序指标</b></span>';
-    html += '<input type="radio" name="sort_radio_weibo" id="sort_by_time" value = "time" checked="checked" style="margin-left: 30px;"> 时间';
-    html += '<input type="radio" name="sort_radio_weibo" value = "retweet" style="margin-left: 30px;"> 转发数';
-    html += '<input type="radio" name="sort_radio_weibo" value = "comment" style="margin-left: 30px;"> 评论数';
+    html += '<input type="radio" name="sort_radio_weibo" id="timestamp" value = "timestamp" checked="checked" style="margin-left: 30px;"> 时间';
+    html += '<input type="radio" name="sort_radio_weibo" id="retweet" value = "retweet" style="margin-left: 30px;"> 转发数';
+    html += '<input type="radio" name="sort_radio_weibo" id="comment" value = "comment" style="margin-left: 30px;"> 评论数';
+    html += '<input type="radio" name="sort_radio_weibo" id="sensitive" value = "sensitive" style="margin-left: 30px;"> 敏感度';
     //html += '<div id="related_weibo_text0" style="width:100%;max-height: 300px;">'; 
     //html += '</div>';
     $('#weibo_sort').append(html);
@@ -297,27 +390,21 @@ function show_all_related_weibo(url) {
     var sub_html = '<div id="related_weibo_text0" class="shadow_weibo" style="width:100%;"></div>'; 
     $('#sub_related_weibo').append(sub_html);
 
-    var data2 = [['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称'],
-                 ['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称'],
-                 ['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称']]
+    //var data2 = [['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称'],
+                 // ['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称'],
+                 // ['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称']]
 
     var sort_type = $('input[name="sort_radio_weibo"]:checked').val();
     //console.log(sort_type);
-    Draw_get_top_weibo(data2, "related_weibo_text0");
+    Draw_get_top_weibo(data, "related_weibo_text0");
 
     $('input[name="sort_radio_weibo"]').off('click').click(function(){
         var sort_type = $('input[name="sort_radio_weibo"]:checked').val();
         console.log(sort_type);
-        if(sort_type == "time"){
-            alert('mmm1')
-            //Draw_get_top_weibo(data2, panel_name);
-        };
-        if(sort_type == "retweet"){
-            console.log('retweet1');
-        }
-        if(sort_type == "comment"){
-            console.log('comment1');
-        }
+        var click_url = global_url;
+        click_url += '&sort_type='+sort_type;
+        console.log(click_url);
+        call_sync_ajax_request(click_url, function(data){show_detail_click(data, sort_type)})
     });
 }
 
@@ -329,7 +416,7 @@ function choose_related_weibo(url, index){
                  ['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称'],
                  ['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称']]
 
-        $('#sort_by_time').attr("checked",true);
+        $('#timestamp').attr("checked",true);
         click_id = $(this).attr('id');
         click_id = click_id.split('choose');
         var panel_name = 'related_weibo_text' + click_id[1];
@@ -420,71 +507,127 @@ function show_related_topic(data){
     //显示所有微博,请求数据
     var call_all_url;
 
-    show_all_related_weibo(call_all_url);
+    //show_all_related_weibo(call_all_url);
 
     //点击事件选择微博，传有几个子话题
     var call_url;
     choose_related_weibo(call_url, topic_count);
-
 }
 
-function Draw_cloud(){
-
-}
-
-function show_detail( data, flag, time, sentiment){
-    console.log(flag);
+function show_detail_click(data,sort_type){
+    console.log(data);
+    //console.log(flag);
     //var data = [['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56']]
     // $('#result_detect_detail').css('display','block');
     // $('#click_time').empty();
     // $('#click_sentiment').empty();
     // $('#click_time').append(time);
     // $('#click_sentiment').append(sentiment);
-    // console.log(flag);
+    console.log(flag);
+    //var flag = 'all';
     if(flag == 'all' ){
         $('#mood_in_all').css('width', '900px');
         $('#mood_out_all').css('display', 'block');
-        draw_user_in_table(data);
-        draw_user_out_table(data);
+        $('#mood_out_all').css('margin-left', '0');
+        draw_user_in_table(data.in_portrait_result);
+        draw_user_out_table(data.out_portrait_result);
 
-        //$('#mood_out_all').empty();
     }else{
         $('mood_out_all').empty('');
+        $('#mood_out_all').css('display', 'none');
         $('#mood_in_all').css('width', '440px');
-        draw_user_in_table(data);
-        //draw_user_out_table(data);
+        draw_user_in_table(data.in_portrait_result);
 
     }
-    Draw_cloud(data.keywords)
+
+    //关键词云
+    Draw_keyword(data.keywords);
+
+    //展示微博
+    show_all_related_weibo(data.weibo);
+
     //相关话题表格及微博详情
-    show_related_topic(data);
+    //show_related_topic(data.weibo);
+    //control();
+    $('#'+sort_type).attr("checked",true);
 
 }
+
+function show_detail(data){
+    if(data.keywords.length == 0 && data.weibo.length == 0 && data.in_portrait_result == 0){
+        $('#loading_message p').empty();
+        $('#loading_message p').append('暂无相关数据！')
+    }else{
+        console.log(data);
+            //console.log(flag);
+            //var data = [['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56']]
+            // $('#result_detect_detail').css('display','block');
+            // $('#click_time').empty();
+            // $('#click_sentiment').empty();
+            // $('#click_time').append(time);
+            // $('#click_sentiment').append(sentiment);
+            console.log(flag);
+            //var flag = 'all';
+            if(flag == 'all' ){
+                $('#mood_in_all').css('width', '900px');
+                $('#mood_out_all').css('display', 'block');
+                $('#mood_out_all').css('margin-left', '0');
+                draw_user_in_table(data.in_portrait_result);
+                draw_user_out_table(data.out_portrait_result);
+    
+            }else{
+                $('mood_out_all').empty('');
+                $('#mood_out_all').css('display', 'none');
+                $('#mood_in_all').css('width', '440px');
+                draw_user_in_table(data.in_portrait_result);
+    
+            }
+    
+            //关键词云
+            Draw_keyword(data.keywords);
+    
+            //展示微博
+            show_all_related_weibo(data.weibo);
+    
+            //相关话题表格及微博详情
+            //show_related_topic(data.weibo);
+            //control();
+        }
+
+}
+function control(){
+    $('#result_detect_detail').css('display','block');
+    $('#loading_message').css('display','none');
+};
+function init_control(){
+    $('#result_detect_detail').css('display', 'none');
+    $('#loading_message').css('display', 'block');
+}
 function Draw_detect_all_charts(data){
-    var flag = 'all';
+    flag = 'all';
     Draw_detect_charts(flag, data);
 }
 function Draw_in_all_detect_charts(data){
-    var flag = 'in-all';
+    flag = 'in-all';
     Draw_detect_charts(flag, data);
 }
 function Draw_in_domain_detect_charts(data){
-    var flag = 'in-domain';
+    flag = 'in-domain';
     Draw_detect_charts(flag, data);
 }
 function Draw_in_topic_detect_charts(data){
-    var flag = 'in-topic';
+    flag = 'in-topic';
     Draw_detect_charts(flag, data);
 }
 function Draw_all_keyword_detect_charts(data){
-    var flag = 'all-keywords';
+    flag = 'all-keywords';
     Draw_detect_charts(flag, data);
 }
 
 function Draw_detect_charts(flag, data){
     console.log(data);
     if(data["1"].length == 0){
-        $('#result_detect_charts').append('暂无数据');
+        $('#result_detect_charts').append('<h4 style="text-align:center;min-height: 100px;background-color: #cccccc;line-height: 100px;">暂无数据</h4>');
     }else{ 
         var data_x_ = [];
         var data_y_1 = [];
@@ -492,7 +635,7 @@ function Draw_detect_charts(flag, data){
         var data_y_7 = [];
 
         for(var i=0;i<data["1"].length;i++){
-          var time_line  = new Date(parseInt(data["1"][i][0])*1000).format("yyyy-MM-dd hh: mm");
+          var time_line  = new Date(parseInt(data["1"][i][0])*1000).format("yyyy-MM-dd hh:mm");
           data_x_.push(time_line);
           data_y_1.push(data["1"][i][1]);
 
@@ -505,13 +648,14 @@ function Draw_detect_charts(flag, data){
           data_y_0.push(data["0"][i][1]);
 
         }
-
-        if(data["1"].length <10){
+        if(data["1"].length <20){
           var zoom =false;
+          var zoom_start = 0;
         }else{
           var zoom = true;
+          var zoom_start = 100 - parseInt(20/data["1"].length*100);
         }
-
+        //var zoom_start = data["1"].length/20
         var myChart = echarts.init(document.getElementById('result_detect_charts')); 
         var option = { 
           title : {
@@ -535,11 +679,11 @@ function Draw_detect_charts(flag, data){
           },
           dataZoom: {
               show: zoom,
-              start : 80
+              start : zoom_start
           },
           legend : {
               data : ['积极','消极','中性'],
-              x:'right',
+              x: 'right',
               y: 37
           },
           grid: {
@@ -547,9 +691,9 @@ function Draw_detect_charts(flag, data){
           },
           xAxis : [
               {
-                  data :data_x_,
+                  data : data_x_,
                   type : 'category',
-                  splitNumber:10
+                  splitNumber: 10
               }
           ],
           yAxis : [
@@ -592,27 +736,40 @@ function Draw_detect_charts(flag, data){
           function(ec){
               var ecConfig = require('echarts/config');
               function eConsole(param) {
+
+                  init_control();
+
                   console.log(param);
                   var segment = $('#detect_rank_by').text();
-                  segment = segment_dict[segment]
+                  segment = segment_dict[segment];
                   var start_ts = parseInt(new Date(param.name).getTime()/1000);
-                  task_type= flag;
-                  sentiment = mood_dict[param.seriesName];
-                  $('#result_detect_detail').css('display','block');
+                  task_type = flag;
+                  sentiment = mood_dict[param.seriesName];               
+
+                  //显示总体情况
                   $('#click_time').empty();
                   $('#click_sentiment').empty();
                   $('#click_time').append(param.name);
-                  $('#click_sentiment').append(param.seriesName);
-                  var detail_url = '/sentiment/sentiment_weibo_keywords_user/?'
-                  detail_url += 'start_ts=' + start_ts + '&task_type=' + task_type + '&segment=' + segment +'&sentiment='+ sentiment +'&sort_type=timestamp';
-                  if(flag == 'in-domain' || flag == 'in-topic'){
-                      detail_url += '&task_type=' + flag.split('-')[1] ;
+
+                  if(param.dataIndex != data_x_.length-1){
+                      var end_time_click = data_x_[param.dataIndex+1];
+                      $('#click_time').append(' 至 '+end_time_click);
+                  }else{
+                      $('#click_time').append(' 至 终止日期');
+
                   }
-                  
+                  //console.log(end_time_click);
+                  $('#click_sentiment').append(param.seriesName);
+                  var detail_url = '/sentiment/sentiment_weibo_keywords_user/?';
+                  detail_url += 'start_ts=' + start_ts + '&task_type=' + task_type + '&segment=' + segment +'&sentiment='+ sentiment;
+                  if(flag == 'in-domain' || flag == 'in-topic'){
+                      detail_url += '&task_detail=' + scope_arg;
+                  }
+                  global_url = detail_url;
+                  detail_url += '&sort_type=timestamp';  //默认时间戳排序
                   console.log(detail_url);
-                  var data = [['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56'],['1234567890','这是昵称','23.33','32.43','24.674','33.56']]
-                  //call_sync_ajax_request(detail_url, show_detail(data, flag, param.name, param.seriesName));
-                  show_detail(data, flag, param.name, param.seriesName);
+                  call_sync_ajax_request(detail_url, show_detail);
+                  control();
               }
 
           myChart.on(ecConfig.EVENT.CLICK, eConsole);
@@ -621,6 +778,18 @@ function Draw_detect_charts(flag, data){
         // 为echarts对象加载数据 
         myChart.setOption(option);
     }              
+}
+
+function submit_detect_offline(data){
+    console.log(data)
+    if(data.flag == true){
+        alert('提交成功！已添加至离线任务');
+        var task_url = '/sentiment/search_sentiment_all_keywords_task/?submit_user='+username;
+        console.log(task_url)
+        call_sync_ajax_request(task_url, detect_task_status);
+    }else{
+        alert('添加失败，请重试！')
+    }
 }
 
 //排序范围选择
@@ -678,7 +847,7 @@ $('#detect_choose').change(function(){
     //全网-关键词
     if($('#detect_choose').val() == 'all_limit_keyword') {
         var html = '';
-        html += '<input id="keyword_hashtag" type="text" class="form-control" style="width:275px;height:25px;" placeholder="请输入关键词，多个词用英文逗号分开">';
+        html += '<input id="keyword_detect" type="text" class="form-control" style="width:275px;height:25px;" placeholder="请输入关键词，多个词用英文逗号分开">';
 
     };
     $('#detect_choose_detail').append(html);
@@ -709,18 +878,19 @@ function submit_detect(){
     var show_scope = $('#detect_choose option:selected').text();
     var show_arg = $('#detect_choose_detail_2 option:selected').text();
     var show_norm = $('#sort_select_2 option:selected').text();
-    var keyword = $('#keyword_hashtag').val();
+    var keyword = $('#keyword_detect').val();
     var sort_scope = $('#detect_choose option:selected').val();
     var sort_norm = $('#sort_select_2 option:selected').val();
     var arg = $('#detect_choose_detail_2 option:selected').val();
+    scope_arg = arg; 
 
     var time_from =$('#detect_time_choose #weibo_from').val().split('/').join('-');
     var time_to =$('#detect_time_choose #weibo_to').val().split('/').join('-');
     var from_stamp = new Date($('#detect_time_choose #weibo_from').val());
     var end_stamp = new Date($('#detect_time_choose #weibo_to').val());
     if(from_stamp > end_stamp){
-    alert('起始时间不得大于终止时间！');
-    return false;
+        alert('起始时间不得大于终止时间！');
+        return false;
     }
     //console.log(keyword);
     if(keyword == ''){  //检查输入词是否为空
@@ -728,9 +898,8 @@ function submit_detect(){
     }else{
         if(keyword == undefined){  //没有输入的时候，更新图表
             var url = 'start_date='+time_from+'&end_date='+time_to+'&segment='+sort_norm;
-            console.log(url);
             if(sort_scope == 'all_nolimit'){
-                flag = 1;
+                //flag = 1;
                 var all_url ='';
                 all_url += '/sentiment/sentiment_all/?' +url;
                 console.log(all_url);
@@ -752,12 +921,13 @@ function submit_detect(){
                 console.log(domain_url);
                 call_sync_ajax_request(domain_url, Draw_in_domain_detect_charts);
             }
-            var data = {"flag": true, "data": [{"sort_norm": "bci", "status": 1, "keyword": "hello2", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459093215.85"}, {"sort_norm": "bci_change", "status": 1, "keyword": "\u4e2d\u56fd\u4eba\u6c11", "sort_scope": "all_limit_keyword", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "keyword", "end_time": "2013-09-06", "search_id": "admin@qq.com1459093370.92"}, {"sort_norm": "imp", "status": 1, "keyword": "456", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459095146.65"}, {"sort_norm": "bci", "status": 1, "keyword": "hello", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-02", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-03", "search_id": "admin@qq.com1459091263.5"}]};
+            //var data = {"flag": true, "data": [{"sort_norm": "bci", "status": 1, "keyword": "hello2", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459093215.85"}, {"sort_norm": "bci_change", "status": 1, "keyword": "\u4e2d\u56fd\u4eba\u6c11", "sort_scope": "all_limit_keyword", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "keyword", "end_time": "2013-09-06", "search_id": "admin@qq.com1459093370.92"}, {"sort_norm": "imp", "status": 1, "keyword": "456", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459095146.65"}, {"sort_norm": "bci", "status": 1, "keyword": "hello", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-02", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-03", "search_id": "admin@qq.com1459091263.5"}]};
             $('#detect_range').empty();
             $('#detect_detail').empty();
             $('#detect_rank_by').empty();
             $('#detect_time_range').empty();
             $('#detect_range').append(show_scope);
+
             if(sort_scope == 'in_limit_topic' || sort_scope == 'in_limit_domain' ){  // 参数是可选的时候，加上详细条件
                 $('#detect_range').append('-');
                 $('#detect_range').append(show_arg);
@@ -766,27 +936,33 @@ function submit_detect(){
             var time_from_end = time_from + ' 至 ' + time_to;
             $('#detect_time_range').append(time_from_end);                       
             $('#result_detect_detail').css('display','none');
+
         }else{ //输入参数的时候，更新任务状态表格
-
-            var time_from =$('#detect_time_choose #weibo_from').val().split('/').join('-');
-            var time_to =$('#detect_time_choose #time_to').val().split('/').join('-');
-
-            var url = 'time='+time_from+','+time_to+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope+'&arg='+keyword;
-            var data = {"flag": true, "data": [{"sort_norm": "bci", "status": 1, "keyword": "11111hello2", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459093215.85"}, {"sort_norm": "bci_change", "status": 1, "keyword": "\u4e2d\u56fd\u4eba\u6c11", "sort_scope": "all_limit_keyword", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "keyword", "end_time": "2013-09-06", "search_id": "admin@qq.com1459093370.92"}, {"sort_norm": "imp", "status": 1, "keyword": "456", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459095146.65"}, {"sort_norm": "bci", "status": 1, "keyword": "hello", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-02", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-03", "search_id": "admin@qq.com1459091263.5"}]};
-            detect_task_status(data);
+            var keyword_array = [];
+            var keyword_array = keyword.split(',');
+            var keyword_string = keyword_array.join(',');
+            var url = '/sentiment/submit_sentiment_all_keywords/?start_date='+time_from+'&end_date='+time_to+'&keywords='+keyword_string +'&submit_user=' + username;
+            call_sync_ajax_request(url, submit_detect_offline)
+            //detect_task_status(data);
             console.log(url);
         }
     }
 }
 
 //结果分析默认值
+var username = $('#de_username').text();
+console.log(username);
 var mood_dict ={'积极':'1','消极':'7','中性':'0'}
 var segment_dict = {'15分钟':'fifteen','一小时':'hour','一天':'day'};
+var re_segment_dict = {'fifteen': '15分钟', 'hour':'一小时', 'day':'一天'};
+var flag = '';
+var global_url = '';
+var scope_arg = '';
 
 date_init();
 console.log($('#detect_time_choose #weibo_from').val())
-var time_from =$('#detect_time_choose #weibo_from').val().split('\/').join('-');
-var time_to =$('#detect_time_choose #weibo_to').val().split('\/').join('-');
+var time_from =$('#detect_time_choose #weibo_from').val().split('/').join('-');
+var time_to =$('#detect_time_choose #weibo_to').val().split('/').join('-');
 // console.log(time_from_after);
 // console.log(time_to_after);
 
@@ -797,8 +973,9 @@ $('#detect_time_range').append(time_from_end);
 var scope_dict ={'all_limit_keyword':'全网-按关键词','in_limit_keyword':'库内-按关键词','in_limit_hashtag':'库内-按微话题'}
 var norm_dict ={'weibo_num': '微博数','fans': '粉丝数','bci': '影响力','bci_change':'突发影响力变动','ses':'言论敏感度','ses_change':'突发敏感度变动','imp':'身份敏感度','imp_change':'突发重要度变动','act':'活跃度','act_change':'突发活跃度变动'}
 
-var data = {"flag": true, "data": [{"sort_norm": "bci", "status": 1, "keyword": "hello2", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459093215.85"}, {"sort_norm": "bci_change", "status": 1, "keyword": "\u4e2d\u56fd\u4eba\u6c11", "sort_scope": "all_limit_keyword", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "keyword", "end_time": "2013-09-06", "search_id": "admin@qq.com1459093370.92"}, {"sort_norm": "imp", "status": 1, "keyword": "456", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-03", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-04", "search_id": "admin@qq.com1459095146.65"}, {"sort_norm": "bci", "status": 1, "keyword": "hello", "sort_scope": "in_limit_hashtag", "start_time": "2013-09-02", "submit_user": "admin@qq.com", "search_type": "hashtag", "end_time": "2013-09-03", "search_id": "admin@qq.com1459091263.5"}]};
-detect_task_status(data);
+var task_url_all = '/sentiment/search_sentiment_all_keywords_task/?submit_user='+username;
+console.log(task_url_all)
+call_sync_ajax_request(task_url_all, detect_task_status);
+
 var url = '/sentiment/sentiment_all/?start_date=2013-09-07&end_date=2013-09-07&segment=fifteen';
-call_sync_ajax_request(url, Draw_detect_all_charts) 
-//Draw_detect_charts(1);
+call_sync_ajax_request(url, Draw_detect_all_charts);
