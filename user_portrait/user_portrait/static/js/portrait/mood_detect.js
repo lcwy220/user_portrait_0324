@@ -872,10 +872,14 @@ function date_init(){
     if(global_test_mode==0){
         $('#detect_time_choose #weibo_from').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
         $('#detect_time_choose #weibo_to').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
+        $('#detect_time_choose_modal #weibo_from_modal').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
+        $('#detect_time_choose_modal #weibo_to_modal').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
         $('#search_date #weibo_modal').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
     }else{
         $('#detect_time_choose #weibo_from').datetimepicker({value:from_date,step:1440,minDate:'-1970/01/30',format:'Y/m/d',timepicker:false,maxDate:'+1970/01/01'});
         $('#detect_time_choose #weibo_to').datetimepicker({value:from_date,step:1440,minDate:'-1970/01/30',format:'Y/m/d',timepicker:false,maxDate:'+1970/01/01'});
+        $('#detect_time_choose_modal #weibo_from_modal').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
+        $('#detect_time_choose_modal #weibo_to_modal').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
         $('#search_date #weibo_modal').datetimepicker({value:from_date,step:1440,format:'Y/m/d',timepicker:false});
 
     }
@@ -885,6 +889,25 @@ function date_init(){
     $('#search_date #weibo_modal').datetimepicker({value:real_date,step:1440,format:'Y/m/d',timepicker:false});
 
 }
+$(' #time_checkbox').click(function(){
+    if($(this).is(':checked')){
+        $('#detect_time_choose_modal #weibo_from_modal').attr('disabled',false);
+        $('#detect_time_choose_modal #weibo_to_modal').attr('disabled',false);
+    }
+    else{
+        $('#detect_time_choose_modal #weibo_from_modal').attr('disabled', true);
+        $('#detect_time_choose_modal #weibo_to_modal').attr('disabled', true);
+    }
+});
+
+$('#time_checkbox_submit').click(function(){
+    if($(this).is(':checked')){
+        $('#search_date #weibo_modal').attr('disabled',false);
+    }
+    else{
+        $('#search_date #weibo_modal').attr('disabled', true);
+    }
+});
 
 //提交监控
 function submit_detect(){
@@ -976,12 +999,31 @@ function de_del(data){
 }
 //搜索任务提交
 function search_task(){
-    var submit_date =$('#weibo_modal').val().split('/').join('-');
+    var submit_date = $('#weibo_modal').val().split('/').join('-');
+    var start_date = $('#weibo_to_modal').val().split('/').join('-');
+    var end_date = $('#weibo_to_modal').val().split('/').join('-');
     var submit_key = $('#search_key').val();
-    var search_url = '/sentiment/search_sentiment_all_keywords_task/?keywords='+submit_key + '&submit_date='+submit_date;
+    var search_url = '/sentiment/search_sentiment_all_keywords_task/?submit_user='+username;
+    if(submit_key != ''){
+        search_url += '&keywords='+submit_key;
+    }
+    //var status = $('input[name="search_status"]:checked').val();
+    var status = $('#search_status').val();
+    console.log(status);
+    if(status != "2"){
+        search_url += '&status=' +status;
+    };
+
+    var status= $('')
+    if($('#time_checkbox').is(':checked')){
+       search_url += '&start_date='+start_date+'&end_date='+end_date;
+    };
+    if($(' #time_checkbox_submit').is(':checked')){
+        search_url += '&submit_date='+submit_date;
+    }
     console.log(search_url);
 
-    call_sync_ajax_request(search_url, detect_task_status);
+    //call_sync_ajax_request(search_url, detect_task_status);
 }
 
 //结果分析默认值
