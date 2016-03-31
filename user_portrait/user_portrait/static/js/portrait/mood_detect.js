@@ -249,43 +249,45 @@ function Draw_keyword(data){
       html += '</table>'; 
       $('#keywords_WordList').append(html);
 
+    var word_num = Math.min(20, data.length);
+    console.log(data.length);
+    console.log('word_num', word_num);
      //最大是50
     var key_value = [];
     var key_name = [];
-    for(var i=0;i<20;i++){
+    for(var i=0;i<word_num;i++){
       key_value.push((data[i][1]+Math.random())*100);
-      key_value.push(data[i][1]);
+      //key_value.push(data[i][1]);
       key_name.push(data[i][0]);
     };
 
-    var word_num = Math.min(50, data.length);
-    // var key_value2 = [];
-    // var key_name2 = [];
-    // for(var i=0; i<word_num; i++){ //最多取前30个最大值
-    //   a=key_value.indexOf(Math.max.apply(Math, key_value));
-    //   key_value2.push(key_value[a]);
-    //   key_name2.push(key_name[a]);
-    //   key_value[a]=0;
-    // }      
+    var key_value2 = [];
+    var key_name2 = [];
+    for(var i=0; i<word_num; i++){ //最多取前30个最大值
+      a=key_value.indexOf(Math.max.apply(Math, key_value));
+      key_value2.push(key_value[a]);
+      key_name2.push(key_name[a]);
+      key_value[a]=0;
+    }      
     //console.log(key_value);
     for (i=0;i<word_num;i++){
       var word = {};
-      word['name'] = key_name[i];
-      word['value'] = parseInt(key_value[i]/100);
+      word['name'] = key_name2[i];
+      word['value'] = key_value2[i];
       word['itemStyle'] = createRandomItemStyle();
       keyword.push(word);
     }
-    $('#mood_keywords_clouds').empty();
+    //$('#mood_keywords_clouds').empty();
     var myChart = echarts.init(document.getElementById('mood_keywords_clouds')); 
     var option = {
       tooltip: {
           show: true,
-          // formatter:  function (params){
-          //   var res  = '';
-          //   var value_after = parseInt(params.value);
-          //   res += params.name+' : '+value_after;
-          //   return res;
-          // }
+          formatter:  function (params){
+            var res  = '';
+            var value_after = parseInt(params.value/100);
+            res += params.name+' : '+value_after;
+            return res;
+          }
       },
       series: [{
           type: 'wordCloud',
@@ -294,7 +296,7 @@ function Draw_keyword(data){
           textPadding: 0,
           autoSize: {
               enable: true,
-              minSize: 14
+              minSize: 20
           },
           data: keyword
       }]
@@ -307,7 +309,7 @@ function Draw_keyword(data){
 function Draw_get_top_weibo(data, div_name){
   var html = '';
   $('#' + div_name).empty();
-  console.log(div_name);
+  //console.log(div_name);
     if(data[0][3] == ''){
         html += "<div style='margin-left:10px;width:100%;height:100px;'>用户在昨天未发布任何微博</div>";
     }else{
@@ -337,18 +339,14 @@ function Draw_get_top_weibo(data, div_name){
         if (geo == null){
            geo = '未知';
         }else{
-            console.log(geo)
             geo = geo.toString().split('&');
-                        console.log(geo)
             if(geo.length <3){
-              var  geo_after = geo.join('-');
+              var  geo_after = geo.join(' ');
             };
             if(geo.length >2){
                 geo = geo.slice(0, 4);
-                console.log(geo);
-                var geo_after = geo.join('-');
+                var geo_after = geo.join(' ');
             }
-            console.log(geo)
         }
         var user_link = 'http://weibo.com/u/' + uid;
         html += '<li class="item">';
@@ -411,23 +409,13 @@ function show_all_related_weibo(data) {
     //console.log(sort_type);
     Draw_get_top_weibo(data, "related_weibo_text0");
 
-    $('input[name="sort_radio_weibo"]').off('click').click(function(){
-        var sort_type = $('input[name="sort_radio_weibo"]:checked').val();
-        console.log(sort_type);
-        var click_url = global_url;
-        click_url += '&sort_type='+sort_type;
-        console.log(click_url);
-        call_sync_ajax_request(click_url, function(data){show_detail_click(data, sort_type)})
-    });
+
 }
 
 
 //选择相应的微博,获取点击的按钮的id，控制对应面板显示。
 function choose_related_weibo(url, index){
     $('.portrait_button_choose').die('click').live("click", function (){
-    var data2 = [['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称'],
-                 ['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称'],
-                 ['12','10','12','根本实现不了两会代表委员们应该提案:汽车分公母[笑cry]，男的开母车，母车限速；女的开公车，公车不要油门。','中国 北京 北京','2013-09-07 00:10:90','fgeeeesf','sfagvfd','sfagvfd','1234567890','昵称昵称']]
 
         $('#timestamp').attr("checked",true);
         click_id = $(this).attr('id');
@@ -459,73 +447,73 @@ function choose_related_weibo(url, index){
 
 
 //相关主题
-function show_related_topic(data){
-    $('#topic_key').empty();
-    $('input[name="sub_topic"]').attr("checked",false);
-    $('#sub_related_weibo_button').empty();
-    $('#sub_related_weibo').empty();
+// function show_related_topic(data){
+//     $('#topic_key').empty();
+//     $('input[name="sub_topic"]').attr("checked",false);
+//     $('#sub_related_weibo_button').empty();
+//     $('#sub_related_weibo').empty();
 
-    //话题表格
-    var html = '';
-    html += '<table id="more_topic_table" class="table table-striped">';
-    html += '<tr><th style="text-align:center;width:200px;border-right:1px solid #CCCCCC">全部</th>';
-    html += '<th style="text-align:center;">';
-    for(var i=0;i<data.length;i++){
-        html += '<span style="margin-right:20px;">'+data[i][0]+'</span>';
-    };
-    html += '</th></tr>';
-    html += '</table>';
-    $('#topic_key').append(html);
+//     //话题表格
+//     var html = '';
+//     html += '<table id="more_topic_table" class="table table-striped">';
+//     html += '<tr><th style="text-align:center;width:200px;border-right:1px solid #CCCCCC">全部</th>';
+//     html += '<th style="text-align:center;">';
+//     for(var i=0;i<data.length;i++){
+//         html += '<span style="margin-right:20px;">'+data[i][0]+'</span>';
+//     };
+//     html += '</th></tr>';
+//     html += '</table>';
+//     $('#topic_key').append(html);
 
-    //进一步计算子话题
-    var call_flag = 0;
-    var topic_count = 0;
-    $("input[name='sub_topic']").off('click').click(function(){
-        if($("input[name='sub_topic']:checked")){
-            //console.log(call_flag);
-            if(call_flag == 0){
-                //call_ajax();
-                //有子话题的话请求数据，flag保证请求一次，同时在表格上加上子话题，加上按钮。写出各个按钮的url
-                var data2 = [['省道','而非','该时段'], ['算法'], ['上午','前往']];
-                topic_count = data2.length;
-                var html = '';
-                for(var j=0; j<data2.length; j++){
-                    html = '<tr><th style="text-align:center;width:200px;border-right:1px solid #CCCCCC">话题'+(j+1)+'</th>';
-                    html += '<th style="text-align:center;">' ;
-                    for(var s=0; s<data2[j].length;s++){
-                        html += '<span style="margin-right:20px;">'+data2[j][s]+'</span>';
-                    };
-                    html += '</th></tr>';
-                    $('#more_topic_table').append(html);
+//     //进一步计算子话题
+//     var call_flag = 0;
+//     var topic_count = 0;
+//     $("input[name='sub_topic']").off('click').click(function(){
+//         if($("input[name='sub_topic']:checked")){
+//             //console.log(call_flag);
+//             if(call_flag == 0){
+//                 //call_ajax();
+//                 //有子话题的话请求数据，flag保证请求一次，同时在表格上加上子话题，加上按钮。写出各个按钮的url
+//                 var data2 = [['省道','而非','该时段'], ['算法'], ['上午','前往']];
+//                 topic_count = data2.length;
+//                 var html = '';
+//                 for(var j=0; j<data2.length; j++){
+//                     html = '<tr><th style="text-align:center;width:200px;border-right:1px solid #CCCCCC">话题'+(j+1)+'</th>';
+//                     html += '<th style="text-align:center;">' ;
+//                     for(var s=0; s<data2[j].length;s++){
+//                         html += '<span style="margin-right:20px;">'+data2[j][s]+'</span>';
+//                     };
+//                     html += '</th></tr>';
+//                     $('#more_topic_table').append(html);
 
 
-                };
-            }
+//                 };
+//             }
  
-        }
-        if(call_flag == 0){
-            for(var j=0;j<topic_count;j++){
-                var button_html = '<span id="portrait_button_choose'+(j+1)+'" class="portrait_button_choose" style="height:30px;cursor:pointer;margin-right:20px;text-align: center;line-height:30px;">话题' +(j+1)+ '</span>';
-                $('#sub_related_weibo_button').append(button_html);
+//         }
+//         if(call_flag == 0){
+//             for(var j=0;j<topic_count;j++){
+//                 var button_html = '<span id="portrait_button_choose'+(j+1)+'" class="portrait_button_choose" style="height:30px;cursor:pointer;margin-right:20px;text-align: center;line-height:30px;">话题' +(j+1)+ '</span>';
+//                 $('#sub_related_weibo_button').append(button_html);
 
-                var tab_html = '<div id="related_weibo_text'+(j+1)+'" class="shadow_weibo" style="display:none;width:900px;">'+(j+1)+'</div>';
-                $('#sub_related_weibo').append(tab_html);
-            }
-            call_flag += 1;  
-        }
+//                 var tab_html = '<div id="related_weibo_text'+(j+1)+'" class="shadow_weibo" style="display:none;width:900px;">'+(j+1)+'</div>';
+//                 $('#sub_related_weibo').append(tab_html);
+//             }
+//             call_flag += 1;  
+//         }
 
-    });
+//     });
 
 
-    //显示所有微博,请求数据
-    var call_all_url;
+//     //显示所有微博,请求数据
+//     var call_all_url;
 
-    //show_all_related_weibo(call_all_url);
+//     //show_all_related_weibo(call_all_url);
 
-    //点击事件选择微博，传有几个子话题
-    var call_url;
-    choose_related_weibo(call_url, topic_count);
-}
+//     //点击事件选择微博，传有几个子话题
+//     var call_url;
+//     choose_related_weibo(call_url, topic_count);
+// }
 
 function show_detail_click(data,sort_type){
     $('#loading_message p').empty();
@@ -565,8 +553,8 @@ function show_detail_click(data,sort_type){
 }
 
 function show_detail(data){
-    $('#loading_message p').empty();
-    $('#loading_message p').append('数据正在加载...请稍后');
+    // $('#loading_message p').empty();
+    // $('#loading_message p').append('数据正在加载...请稍后');
     if(data.keywords.length == 0 && data.weibo.length == 0 && data.in_portrait_result == 0){
         $('#loading_message p').empty();
         $('#loading_message p').append('暂无相关数据！');
@@ -744,7 +732,7 @@ function Draw_detect_charts(flag, data){
           function(ec){
               var ecConfig = require('echarts/config');
               function eConsole(param) {
-                  //init_control();
+                  init_control();
                   console.log(param);
                   var segment = $('#detect_rank_by').text();
                   segment = segment_dict[segment];
@@ -1051,6 +1039,19 @@ $('.de_delete_this').live('click',function(){
         console.log(del_url);
         call_sync_ajax_request(del_url,de_del);
     }
+});
+
+$('input[name="sort_radio_weibo"]').die('click').live("click", function (){
+    // $('#loading_message p').empty();
+    // $('#loading_message p').append('数据正在加载...请稍后');
+    init_control();
+    var sort_type = $('input[name="sort_radio_weibo"]:checked').val();
+    console.log(sort_type);
+    var click_url = global_url;
+    click_url += '&sort_type='+sort_type;
+    console.log(click_url);
+    call_sync_ajax_request(click_url, function(data){show_detail_click(data, sort_type)});
+    control();
 });
 
 //离线结果
