@@ -988,7 +988,7 @@ function de_del(data){
 //搜索任务提交
 function search_task(){
     var submit_date = $('#weibo_modal').val().split('/').join('-');
-    var start_date = $('#weibo_to_modal').val().split('/').join('-');
+    var start_date = $('#weibo_from_modal').val().split('/').join('-');
     var end_date = $('#weibo_to_modal').val().split('/').join('-');
     var submit_key = $('#search_key').val();
     var search_url = '/sentiment/search_sentiment_all_keywords_task/?submit_user='+username;

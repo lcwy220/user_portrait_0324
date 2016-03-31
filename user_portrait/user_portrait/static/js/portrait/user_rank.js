@@ -618,10 +618,10 @@ function submit_rank(){
 		alert('请输入关键词！');
 	}else{
 		if(keyword == undefined){  //没有输入的时候，更新表格及文字
-			var loading_html = '正在加载...请稍后';
-			console.log(loading_html);
+			// var loading_html = '正在加载...请稍后';
+			// console.log(loading_html);
 			$('#result_rank_table').empty();
-			$('#result_rank_table').append(loading_html);
+			// $('#result_rank_table').append(loading_html);
 			var url = '/user_rank/user_sort/?username='+username+'&time='+day_select+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope;
 			$('#rec_range').empty();
 			$('#rec_detail').empty();
@@ -746,14 +746,14 @@ $('.show_key_result').live('click', function(){
 	//call_sync_ajax_request(url, draw_key_rank_table);
 	if(sort_scope == 'all_limit_keyword'){
 		//url +='&all=True';
-		var loading_html = '正在加载...请稍后';
+		var loading_html = '<div style="text-align:center;vertical-align:middle;height:40px">数据正在加载中，请稍后...</div>';
 		console.log(loading_html);
 		$('#result_rank_table').empty();
 		$('#result_rank_table').append(loading_html);
 		call_sync_ajax_request(url, draw_key_rank_table);
 	}else{
 		//alert('库内')
-		var loading_html = '正在加载...请稍后';
+		var loading_html = '<div style="text-align:center;vertical-align:middle;height:40px">数据正在加载中，请稍后...</div>';
 		console.log(loading_html);
 		$('#result_rank_table').empty();
 		$('#result_rank_table').append(loading_html);
