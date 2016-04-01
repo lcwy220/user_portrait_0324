@@ -151,7 +151,7 @@ def search_sentiment_all_keywords_task(submit_date, keywords_string, submit_user
     if submit_user:
         query_list.append({'term': {'submit_user': submit_user}})
     if start_date:
-        strat_s_ts = datetime2ts(start_date)
+        start_s_ts = datetime2ts(start_date)
         if end_date:
             start_e_ts = datetime2ts(end_date)
         else:
