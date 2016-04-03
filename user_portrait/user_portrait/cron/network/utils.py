@@ -21,30 +21,29 @@ def get_es_num(timestamp):
     num = int((timestamp - date_ts) / (3 * HOUR))
     return num
 
-def save_pr_results(sorted_uids, es_num):
+def save_dg_pr_results(sorted_uids, es_num, flag):
     bulk_action = []
     for uid, rank in sorted_uids:
         user_results = {}
         user_results['uid'] = uid
-        user_results['pr_'+str(es_num)] = rank
+        user_results[flag+'_'+str(es_num)] = rank
         if es_num == 0:
             action = {'index':{'_id':uid}}
             bulk_action.extend([action,{'doc':user_results}])
         else:
-            item_exist = es_user_portrait.get(index=index_name, doc_type=index_type, id=uid)['_source']
-            if item_exist:
+            try:
+                item_exist = es_user_portrait.get(index=index_name, doc_type=index_type, id=uid)['_source']
                 action = {'update':{'_id':uid}}
                 try:
-                    # update
-                    pr_last = item_exist['pr_'+str(es_num-1)]
+                    pr_last = item_exist[flag+'_'+str(es_num-1)]
                 except:
-                    # index
                     pr_last = 0
-            else:
+            except:
                 action = {'index':{'_id':uid}}
                 pr_last = 0
+
             
-            user_results['pr_diff_'+str(es_num)] = rank - pr_last
+            user_results[flag+'_diff_'+str(es_num)] = rank - pr_last
             bulk_action.extend([action,{'doc':user_results}])
 
     #print bulk_action
@@ -68,10 +67,11 @@ def write_tmp_file(tmp_file, uid, item_result):
             tmp_file.write('%s\t%s\t%s\n' % (uid, key, item_result[key]))
 
     tmp_file.flush()
-    #print 'write tmp line count:', count
+    # print 'write tmp line count:', count
 
 def scan_retweet(tmp_file):
     count = 0
+    ret_count = 0
     scan_cursor = 0
     now_ts = time.time()
     now_date_ts = datetime2ts(ts2datetime(now_ts))
@@ -81,13 +81,14 @@ def scan_retweet(tmp_file):
     #retweet_redis = retweet_redis_dict[str(db_number)]
     retweet_redis = comment_redis_dict[str(db_number)]
     start_ts = time.time()
-    while count < 10:
+    while count < 1000000:
         re_scan = retweet_redis.scan(scan_cursor, count=100)
         re_scan_cursor = re_scan[0]
         for item in re_scan[1]:
             count += 1
             item_list = item.split('_')
             if len(item_list)==2:
+                ret_count += 1
                 uid = item_list[1]
                 item_result = retweet_redis.hgetall(item)
                 write_tmp_file(tmp_file, uid, item_result)
@@ -99,6 +100,6 @@ def scan_retweet(tmp_file):
         scan_cursor = re_scan[0]
         if scan_cursor==0:
             break
-    print 'total %s sec scan %s count user:' %(end_ts - now_ts, count)
+    print 'total %s sec scan %s count user and %s retweet count' %(end_ts - now_ts, count, ret_count)
 
 

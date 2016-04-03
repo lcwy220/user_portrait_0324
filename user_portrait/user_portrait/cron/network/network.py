@@ -10,8 +10,8 @@ sys.path.append('../../')
 from operator import add, mul
 from pyspark import SparkContext
 from cron_user_portrait_network_mappings import network_es_mappings
-from utils import scan_retweet, save_pr_results, get_es_num
-from time_utils import ts2datetime, datetime2ts
+from utils import scan_retweet, save_dg_pr_results, get_es_num
+from time_utils import ts2datetime, datetime2ts, ts2date
 
 def pagerank_rank():
     timestamp = time.time()
@@ -21,8 +21,9 @@ def pagerank_rank():
 
     tmp_file = tempfile.NamedTemporaryFile(delete=False)
 
+    print 'step 1', ts2date(timestamp)
     scan_retweet(tmp_file)
-    print 'pagerank start'
+    tmp_file.close()
     if not tmp_file:
         return
     input_tmp_path = tmp_file.name
@@ -30,9 +31,11 @@ def pagerank_rank():
 
     ITER_COUNT = 10
     TOP_N = 50
-    sorted_uids = pagerank(ITER_COUNT, input_tmp_path, TOP_N)
-    save_pr_results(sorted_uids, es_num)    
-
+    print 'step 2', ts2date(time.time())
+    dg_sorted_uids, pr_sorted_uids = pagerank(ITER_COUNT, input_tmp_path, TOP_N)
+    print 'step 3', ts2date(time.time())
+    save_dg_pr_results(dg_sorted_uids, es_num, 'dg')    
+    save_dg_pr_results(pr_sorted_uids, es_num, 'pr')    
 
 def computeContribs(urls, rank):
     """Calculates URL contributions to the rank of other URLs."""
@@ -58,16 +61,18 @@ def pagerank(iter_count, input_file, top_n):
 
     shutil.copy(input_file, prefix_name)
     sc = SparkContext(appName=file_name,master="mesos://219.224.134.213:5050")
-    # sc = SparkContext(appName=input_file)
 
     lines = sc.textFile(tmp_file_path, 1)
 
-    initials = lines.map(lambda urls: parseNeighbors(urls)).distinct().cache() # (uid,(uid, num))
-    extra_ranks = initials.values().reduceByKey(add) #(uid, num)
-    links = initials.map(lambda (url, neighbors): (url, neighbors[0])).groupByKey().cache() #(uid, [uid,uid])
-    
+    initials = lines.map(lambda urls: parseNeighbors(urls)).distinct().cache() # (uid_a,(uid_b, num))
+    user_ranks = initials.map(lambda (url, neighbors): (url, neighbors[1])).reduceByKey(add) #(uid_a, num)
+    extra_ranks = initials.values().reduceByKey(add).cache() #(uid_b, num)
+
+    degrees = user_ranks.union(extra_ranks).reduceByKey(add).cache()    # (uid, degree)
+
+    links = initials.map(lambda (url, neighbors): (url, neighbors[0])).groupByKey().cache() #(uid_a, [uid_b,uid_c])
     init_ranks = links.map(lambda (url, neighbors): (url, 1.0))
-    ranks = extra_ranks.union(init_ranks).reduceByKey(mul).cache() #(uid, num)
+    ranks = extra_ranks.union(init_ranks).reduceByKey(mul).cache() #(uid, rank)
     
     for iteration in xrange(int(iter_count)):
         contribs = links.join(ranks).flatMap(
@@ -75,27 +80,30 @@ def pagerank(iter_count, input_file, top_n):
 
         ranks = contribs.reduceByKey(add).mapValues(lambda rank: rank * 0.85 + 0.15)
 
+    degrees_list = []
+    degrees_list = degrees.sortBy(lambda x:x[1], False).collect()
+    if len(degrees_list) > top_n:
+        degrees_list = degrees_list[:top_n]
+
     results_list = []
-
-    for (link, rank) in ranks.collect():
-        results_list.append((link, rank))
-    if not results_list:
-        return []
-    results_list = sorted(results_list, key=lambda result:result[1], reverse=True)
-
+    results_list = ranks.sortBy(lambda x:x[1], False).collect()
     if len(results_list) > top_n:
         results_list = results_list[:top_n]
 
-    f = open("out.txt", "w")
-    for uid, r in results_list:
+    f = open("degree.txt", "w")
+    for uid, r in degrees_list:
         # sorted_uids.append(uid)
         # print '%s\t%s\n' % (uid, r)
+        print >> f, '%s\t%s\n' % (uid, r)
+    f.close()
+    f = open("rank.txt", "w")
+    for uid, r in results_list:
         print >> f, '%s\t%s\n' % (uid, r)
     f.close()
     # delete file
     #os.remove(prefix_name + file_name)
     sc.stop()
-    return results_list
+    return degrees_list, results_list
 
 
 
