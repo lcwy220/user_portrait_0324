@@ -20,6 +20,7 @@ from user_portrait.ucenter.views import mod as ucenterModule
 #from user_portrait.weibo.views import mod as weiboModule
 from user_portrait.social_sensing.views import mod as sensingModule
 from user_portrait.sentiment.views import mod as sentimentModule
+from user_portrait.network.views import mod as networkModule
 from user_portrait.extensions import db, security, user_datastore, admin, User, Role, roles_users
 from flask.ext.security import SQLAlchemyUserDatastore
 from flask_admin.contrib import sqla
@@ -29,7 +30,6 @@ def create_app():
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///flask-admin.db'
 
-    register_blueprints(app)
     register_extensions(app)
     register_jinja_funcs(app)
 
@@ -37,6 +37,7 @@ def create_app():
     app.register_blueprint(indexModule)
     app.register_blueprint(manageModule)
     app.register_blueprint(attributeModule)
+    app.register_blueprint(profileModule)
     app.register_blueprint(recommentationModule)
     app.register_blueprint(overviewModule)
     app.register_blueprint(influenceModule)
@@ -48,6 +49,7 @@ def create_app():
  #   app.register_blueprint(weiboModule)
     app.register_blueprint(sensingModule)
     app.register_blueprint(sentimentModule)
+    app.register_blueprint(networkModule)
     app.register_blueprint(userrankModule)
     # the debug toolbar is only enabled in debug mode
     app.config['DEBUG'] = True
@@ -127,11 +129,6 @@ def create_app():
     return app
    
 
-def register_blueprints(app):
-    app.register_blueprint(indexModule)
-    app.register_blueprint(manageModule)
-    app.register_blueprint(attributeModule)
-    app.register_blueprint(profileModule)
 
 def register_extensions(app):
     app.config.setdefault('ES_USER_PROFILE_URL', 'http://219.224.135.97:9208/')
