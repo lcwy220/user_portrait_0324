@@ -143,6 +143,12 @@ def recommentation_in(input_ts, recomment_type, submit_user):
         results = []
     return results
 
+def recommentation_in_auto(seatch_date, submit_user):
+    results = []
+    return results
+
+
+
 # show recommentation in uid to admin
 # 从submit_recomment中获取status为0的用户
 def admin_recommentation_in(input_ts):
