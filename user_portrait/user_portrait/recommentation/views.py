@@ -7,7 +7,7 @@ import json
 from flask import Blueprint, url_for, render_template, request, abort, flash, session, redirect
 from utils import show_out_uid,decide_out_uid, search_history_delete, show_all_out
 from utils import recommentation_in, identify_in, show_in_history, show_compute, identify_compute, recommentation_more_information, new_identify_in, admin_recommentation_in
-from utils import submit_identify_in
+from utils import submit_identify_in, recommentation_in_auto
 from user_portrait.global_utils import R_RECOMMENTATION_OUT as r_out
 from user_portrait.time_utils import datetime2ts, ts2datetime
 from user_portrait.parameter import RUN_TYPE, RUN_TEST_TIME, DAY
@@ -34,6 +34,15 @@ def ajax_recommentation_in():
     else:
         results = recommentation_in(input_ts, recomment_type, submit_user)
     return json.dumps(results)
+
+# show auto recommentation
+@mod.route('/show_auto_in/')
+def ajax_show_auto_in():
+    date = request.args.get('date', '') # 2013-09-01
+    submit_user = request.args.get('submit_user', 'admin')
+    results = recommentation_in_auto(date, submit_user)
+    return json.dumps(results)
+
 
 # show more information
 @mod.route('/show_in_more/')
