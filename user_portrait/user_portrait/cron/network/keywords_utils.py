@@ -102,6 +102,7 @@ def compute_network_task(network_task_information):
         flow_text_result = es_flow_text.search(index=flow_text_index_name, doc_type=flow_text_index_type,\
                     body=query_body)['hits']['hits']
         results.extend(flow_text_result)
+        break
     return results
 
 def write_tmp_file(tmp_file, results):
