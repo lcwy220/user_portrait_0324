@@ -81,6 +81,10 @@ r_topic_sentiment_pre = 'sentiment_topic_'
 R_SENTIMENT_KEYWORDS = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=10)
 r_sentiment_keywords_name = 'sentiment_keywords_task'
 
+#use to save sentiment keywords task information to redis queue
+R_NETWORK_KEYWORDS = _default_redis(host=REDIS_HOST, port=REDIS_PORT, db=10)
+r_network_keywords_name = 'network_keywords_task'
+
 # use to write group task
 # two type data----group task;  group task members
 # type1 list: group_task  index   group_task_basic_information
@@ -124,6 +128,7 @@ es_comment = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
 es_copy_portrait = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
 es_tag = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout=600)
 es_sentiment_task = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
+es_network_task = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
 
 # elasticsearch index_name and index_type
 profile_index_name = 'weibo_user'  # user profile es
@@ -153,6 +158,9 @@ group_index_type = 'group'
 sentiment_keywords_index_name = 'sentiment_keywords_task'
 sentiment_keywords_index_type = 'sentiment'
 
+# es for network keywords task
+network_keywords_index_name = 'network_keywords_task'
+network_keywords_index_type = 'network'
 
 # es for tag
 tag_index_name = 'custom_attribute'

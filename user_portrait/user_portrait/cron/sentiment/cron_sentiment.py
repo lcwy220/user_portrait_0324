@@ -56,7 +56,6 @@ def compute_sentiment_task(sentiment_task_information):
         iter_date = ts2datetime(iter_date_ts)
         iter_query_date_list.append(iter_date)
         iter_date_ts += DAY
-    print 'iter_query_date_list:', iter_query_date_list
     #step2: get iter search flow_text_index_name
     #step2.1: get search keywords list
     query_must_list = []
@@ -74,13 +73,10 @@ def compute_sentiment_task(sentiment_task_information):
     segment_ts = str2segment[segment] # segment_ts = 900/3600/3600*24
     for iter_date in iter_query_date_list:
         flow_text_index_name = flow_text_index_name_pre + iter_date
-        print 'flow_text_index_name:', flow_text_index_name
         iter_start_ts = datetime2ts(iter_date)
         for i in range(0, DAY/segment_ts):
             query_start_ts = iter_start_ts + i * segment_ts
-            print 'query_start_ts:', query_start_ts, ts2date(query_start_ts)
             iter_query_list.append({'range':{'timestamp':{'gte': query_start_ts, 'lt':query_start_ts + Fifteen}}})
-            print 'iter_query_list:', iter_query_list
             query_body = {
                 'query':{
                     'bool':{
@@ -99,7 +95,6 @@ def compute_sentiment_task(sentiment_task_information):
             
             flow_text_result = es_flow_text.search(index=flow_text_index_name, doc_type=flow_text_index_type,\
                         body=query_body)['aggregations']['all_interests']['buckets']
-            print 'flow_text_result:', flow_text_result
             iter_query_list = iter_query_list[:-1]
             iter_sentiment_dict = {}
             for flow_text_item in flow_text_result:
@@ -111,22 +106,18 @@ def compute_sentiment_task(sentiment_task_information):
                     iter_sentiment_dict[sentiment] += sentiment_count
                 except:
                     iter_sentiment_dict[sentiment] = sentiment_count
-            print 'iter_sentiment_dict:', iter_sentiment_dict
             #add 0 to iter_sentiment_dict
             for sentiment in SENTIMENT_FIRST:
                 try:
                     count = iter_sentiment_dict[sentiment]
                 except:
                     iter_sentiment_dict[sentiment] = 0
-            print 'add 0 iter sentiment dict:', iter_sentiment_dict
             all_sentiment_dict[query_start_ts] = iter_sentiment_dict
-            print 'all sentiment_dict:', all_sentiment_dict
     sort_sentiment_dict = sorted(all_sentiment_dict.items(), key=lambda x:x[0])
     trend_results = {}
     for sentiment in SENTIMENT_FIRST:
         trend_results[sentiment] = [[item[0], item[1][sentiment]] for item in sort_sentiment_dict]
     results = trend_results
-    print 'results:', results
     return results
 
 def save_task_results(results, sentiment_task_information):
@@ -160,8 +151,7 @@ def scan_sentiment_keywords_task():
         #read task informaiton from redis queue
         sentiment_task_information = get_task_information()
         #test push
-        push_task_information(sentiment_task_information)
-        print 'sentiment_task_information:', sentiment_task_information
+        #push_task_information(sentiment_task_information)
         #when redis queue null - file break
         if not sentiment_task_information:
             break
@@ -178,8 +168,6 @@ def scan_sentiment_keywords_task():
                 push_mark = push_task_information(sentiment_task_information)
                 if not push_mark:
                     print 'error push task queue'
-            #test
-            break
         else:
             #if no exist - pass
             pass
@@ -187,4 +175,12 @@ def scan_sentiment_keywords_task():
 
 
 if __name__=='__main__':
+    log_time_ts = time.time()
+    log_time_date = ts2datetime(log_time_ts)
+    print 'cron/sentiment/cron_sentiment.py&start&' + log_time_date
+    
     scan_sentiment_keywords_task()
+
+    log_time_ts = time.time()
+    log_time_date = ts2datetime(log_time_ts)
+    print 'cron/sentiment/cron_sentiment.py&end&' + log_time_date

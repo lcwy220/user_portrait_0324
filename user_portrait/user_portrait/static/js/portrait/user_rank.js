@@ -3,7 +3,7 @@ function call_sync_ajax_request(url, callback){
       url: url,
       type: 'GET',
       dataType: 'json',
-      async: false,
+      async: true,
       success:callback
     });
 }
@@ -29,18 +29,13 @@ function task_status (data) {
 	var data = data.data;
 	console.log(data);
 	if (data.length == 0){
+		$('#task_status').empty();
 		var html = '<div style="text-align: center;background-color: #cccccc;">暂无任务</div>'
 		$('#task_status').append(html);
 	}else{
 		var sort_scope = data.sort_scope;
 		$('#task_status').empty();
-		// if(sort_scope == 'all_nolimit'){
-		// 	//url +='&all=True';
-		// 	call_sync_ajax_request(url, submit_offline);
-		// }else{
-		// 	//url += '&all=False';
-		// 	call_sync_ajax_request(url, submit_offline);
-		// }
+
 		var html = '';
 		html += '<table class="table table-striped table-bordered bootstrap-datatable datatable responsive" style="margin-left:30px;width:900px;">';
 		html += '<thead>';
@@ -78,9 +73,9 @@ function draw_all_rank_table(data){
 	//console.log(data);
 	var data = data;
 		if(data == 0){
-		$('#result_rank_table').empty();
+			$('#result_rank_table').empty();
 			var html = '<div style="width: 900px;margin-left: 30px;text-align: center;font-size: 16px;background-color: #cccccc;margin-bottom: 30px;">暂无数据</div>';
-			$('#result_rank_table').append(html);
+				$('#result_rank_table').append(html);
 		}else{
 				var html = '';
 				html += '<table id="rank_table" class="table table-striped table-bordered bootstrap-datatable datatable responsive" style="margin-left:30px;width:900px;">';
@@ -107,7 +102,7 @@ function draw_all_rank_table(data){
 						is_warehousing = '否'
 					};
 					var location = data[i].location;
-					if(location == 'unknown'){
+					if(location == null){
 						location = '未知'
 					}
 					var fans = data[i].fans;
@@ -150,7 +145,7 @@ function draw_all_rank_table(data){
 					    "sLengthMenu": "每页 _MENU_ 条 ",
 					}
 			    });
-			}
+		}
 }
 
 function draw_rank_table(data){
@@ -608,7 +603,7 @@ function del(data){
 }
 
 function submit_rank(){
-
+    
 	var s = [];
 	var show_scope = $('#range_choose option:selected').text();
 	var show_arg = $('#range_choose_detail_2 option:selected').text();
@@ -618,69 +613,146 @@ function submit_rank(){
 	var sort_norm = $('#sort_select_2 option:selected').val();
 	var arg = $('#range_choose_detail_2 option:selected').val();
 	var day_select = $("input[name='time_range']:checked").val();
-	//console.log(keyword);
-	if(keyword == ''){  //检查输入词是否为空
-		alert('请输入关键词！');
-	}else{
-		if(keyword == undefined){  //没有输入的时候，更新表格及文字
-			var loading_html = '正在加载...请稍后';
-			console.log(loading_html);
-			$('#result_rank_table').empty();
-			$('#result_rank_table').append(loading_html);
-			var url = '/user_rank/user_sort/?username='+username+'&time='+day_select+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope;
-			$('#rec_range').empty();
-			$('#rec_detail').empty();
-			$('#rec_rank_by').empty();
-			$('#rec_time_range').empty();
-			$('#rec_range').append(show_scope);
-			if(sort_scope != 'in_nolimit' && sort_scope != 'all_nolimit' ){  // 参数是可选的时候，加上详细条件
-				$('#rec_detail').append('-');
-				$('#rec_detail').append(show_arg);
-				url += '&arg='+arg;   //该参数为空时不传
+	console.log(sort_scope);
+	//全网实时
+	if(sort_scope=='in_intime'){
+		console.log(sort_scope);
+		$('#task_zh').css('display','none');
+		$('#task_status').css('display','none');
+		$('#result_analysis').css('display','none');
+		$('#result_rank_table').empty();
+		var html = '';
+		html += '<table id="rank_table" class="table table-striped table-bordered bootstrap-datatable datatable responsive" style="margin-left:30px;width:900px;">';
+		html += '<thead><th style="text-align:center;">排名</th>';
+		html += '<th style="text-align:center;">用户ID</th>';
+		html += '<th style="text-align:center;">昵称</th>';
+		html += '<th style="text-align:center;">注册地</th>';
+		html += '<th style="text-align:center;">领域</th>';//其实是话题
+		html += '<th style="text-align:center;">身份</th>';//其实是领域
+		html += '<th style="text-align:center;">身份敏感度</th>';
+		html += '<th style="text-align:center;">活跃度</th>';
+		html += '<th style="text-align:center;">影响力</th>';
+		html += '<th style="text-align:center;">言论敏感度</th></thead>';
+		
+		for(var i=0;i<4;i++){
+			/*
+			var uid = data[i].uid;
+			var uname = data[i].uname;
+			if(uname == 'unknown'){
+				uname = uid
 			}
-			$('#rec_rank_by').append(show_norm);
-			if(day_select == "1"){
-				$('#rec_time_range').append('过去一天');
+			var location = data[i].location;
+			if(location == 'unknown'){
+				location = '未知'
 			}
-			if(day_select == "7"){
-				$('#rec_time_range').append('过去七天');
+			var topic = '';
+			topic = data[i].topic.split('&');
+			var domain = data[i].domain;
+			var imp = data[i].imp;
+			if(imp == null){
+				imp = 0;
 			}
-			if(day_select == "30"){
-				$('#rec_time_range').append('过去一个月');
-			}
-			if(sort_scope == 'all_nolimit'){
-				url +='&all=True';
-				call_sync_ajax_request(url, draw_all_rank_table);
-			}else{
-				//alert('库内')
-				url += '&all=False'
-				call_sync_ajax_request(url, draw_rank_table);
-			}
-			console.log(url);			
-		}else{ //输入参数的时候，更新任务状态表格
-			var keyword_array = [];
-			var keyword_array = keyword.split(',');
-			var keyword_string = keyword_array.join(',');
-			var time_from =$('#time_choose #weibo_from').val().split('/').join('-');
-			var time_to =$('#time_choose #weibo_to').val().split('/').join('-');
-			var from_stamp = new Date($('#time_choose #weibo_from').val());
-			var end_stamp = new Date($('#time_choose #weibo_to').val());
-		    if(from_stamp > end_stamp){
-			    alert('起始时间不得大于终止时间！');
-			    return false;
-			}
-			var url = '/user_rank/user_sort/?time=-1&username='+username+'&st='+time_from +'&et='+time_to+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope+'&arg='+keyword;
-			console.log(url);
-			if(sort_scope == 'all_limit_keyword'){
-				url +='&all=True';
-				console.log(url);
-				call_sync_ajax_request(url, submit_offline);
-			}else{
-				url += '&all=False';
-				console.log(url);
-				call_sync_ajax_request(url, submit_offline);
+			var active = data[i].act;
+			if(active == null){
+				active = 0;
 			}
 
+			//var weibo_num = data[i].weibo_num;
+			var influcence = data[i].bci;
+			if(influcence == null){
+				influcence = 0;
+			}
+			var sensi = data[i].sen;
+			if(data[i].sen == null){
+				sensi = 0;
+			}
+            */
+			html += '<tr>';
+			html += '<td style="text-align:center;">'+(i+1)+'</td>';
+			html += '<td style="text-align:center;"><a href="/index/personal/?uid='+111111+'" target="_blank">'+11111+'</a></td>';
+			html += '<td style="text-align:center;">test</td>';
+			html += '<td style="text-align:center;">test</td>';
+			html += '<td style="text-align:center;">test</td>';
+			html += '<td style="text-align:center;">test</td>';
+			html += '<td style="text-align:center;">test</td>';
+			html += '<td style="text-align:center;">test</td>';
+			html += '<td style="text-align:center;">test</td>';
+			html += '<td style="text-align:center;">test</td>';
+			html += '</tr>';
+		}
+		html += '</table>';
+		$('#result_rank_table').append(html);
+	}
+	else{
+		
+	//console.log(keyword);
+		if(keyword == ''){  //检查输入词是否为空
+			alert('请输入关键词！');
+		}else{
+			if(keyword == undefined){  //没有输入的时候，更新表格及文字
+				// var loading_html = '正在加载...请稍后';
+				// console.log(loading_html);
+				$('#result_rank_table').empty();
+				// $('#result_rank_table').append(loading_html);
+				var url = '/user_rank/user_sort/?username='+username+'&time='+day_select+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope;
+				$('#rec_range').empty();
+				$('#rec_detail').empty();
+				$('#rec_rank_by').empty();
+				$('#rec_time_range').empty();
+				$('#rec_range').append(show_scope);
+				if(sort_scope != 'in_nolimit' && sort_scope != 'all_nolimit' ){  // 参数是可选的时候，加上详细条件
+					$('#rec_detail').append('-');
+					$('#rec_detail').append(show_arg);
+					url += '&arg='+arg;   //该参数为空时不传
+				}
+				$('#rec_rank_by').append(show_norm);
+				if(day_select == "1"){
+					$('#rec_time_range').append('过去一天');
+				}
+				if(day_select == "7"){
+					$('#rec_time_range').append('过去七天');
+				}
+				if(day_select == "30"){
+					$('#rec_time_range').append('过去一个月');
+				}
+				if(sort_scope == 'all_nolimit'){
+					url +='&all=True';
+					var	loading_html = '<div style="text-align:center;vertical-align:middle;height:40px">数据正在加载中，请稍后...</div>';
+					$('#result_rank_table').append(loading_html)
+					call_sync_ajax_request(url, draw_all_rank_table);
+				}else{
+					//alert('库内')
+					url += '&all=False';
+					var	loading_html = '<div style="text-align:center;vertical-align:middle;height:40px">数据正在加载中，请稍后...</div>';
+					$('#result_rank_table').append(loading_html)
+					call_sync_ajax_request(url, draw_rank_table);
+				}
+				console.log(url);			
+			}else{ //输入参数的时候，更新任务状态表格
+				var keyword_array = [];
+				var keyword_array = keyword.split(',');
+				var keyword_string = keyword_array.join(',');
+				var time_from =$('#time_choose #weibo_from').val().split('/').join('-');
+				var time_to =$('#time_choose #weibo_to').val().split('/').join('-');
+				var from_stamp = new Date($('#time_choose #weibo_from').val());
+				var end_stamp = new Date($('#time_choose #weibo_to').val());
+				if(from_stamp > end_stamp){
+					alert('起始时间不得大于终止时间！');
+					return false;
+				}
+				var url = '/user_rank/user_sort/?time=-1&username='+username+'&st='+time_from +'&et='+time_to+'&sort_norm='+sort_norm+'&sort_scope='+sort_scope+'&arg='+keyword;
+				console.log(url);
+				if(sort_scope == 'all_limit_keyword'){
+					url +='&all=True';
+					console.log(url);
+					call_sync_ajax_request(url, submit_offline);
+				}else{
+					url += '&all=False';
+					console.log(url);
+					call_sync_ajax_request(url, submit_offline);
+				}
+
+			}
 		}
 	}
 }
@@ -688,7 +760,8 @@ function submit_rank(){
 //结果分析默认值
 var username = $('#username').text();
 var sort_scope = $('#range_choose option:selected').val();
-var sort_norm = $('#sort_select_2 option:selected').val();
+var sort_norm_rank = $('#sort_select_2 option:selected').val();
+console.log(sort_norm_rank);
 var arg = $('#range_choose_detail_2 option:selected').text();
 var day_select = $("input[name='time_range']:checked").val();
 $('#rec_range').append($('#range_choose option:selected').text());
@@ -708,34 +781,62 @@ if(day_select == "30"){
 
 var scope_dict ={'all_limit_keyword':'全网-按关键词','in_limit_keyword':'库内-按关键词','in_limit_hashtag':'库内-按微话题'}
 var norm_dict ={'weibo_num': '微博数','fans': '粉丝数','bci': '影响力','bci_change':'突发影响力变动','ses':'言论敏感度','ses_change':'突发敏感度变动','imp':'身份敏感度','imp_change':'突发重要度变动','act':'活跃度','act_change':'突发活跃度变动'}
-//画结果表格
-var rank_url = '/user_rank/user_sort/?username='+ username +'&time='+ day_select +'&sort_norm='+ sort_norm +'&sort_scope='+ sort_scope+'&all=True';
-console.log(rank_url);
-call_sync_ajax_request(rank_url, draw_all_rank_table);
 
 //任务状态
 var task_url = '/user_rank/search_task/?username='+username;
 call_sync_ajax_request(task_url, task_status);
 
-$('.show_key_result').click(function(){
+//画结果表格
+var rank_url = '/user_rank/user_sort/?username='+ username +'&time='+ day_select +'&sort_norm='+ sort_norm_rank +'&sort_scope='+ sort_scope+'&all=True';
+console.log(rank_url);
+var	loading_html = '<div style="text-align:center;vertical-align:middle;height:40px">数据正在加载中，请稍后...</div>';
+$('#result_rank_table').append(loading_html)
+
+$('.show_key_result').live('click', function(){
 	console.log('asdfsvg');
 	// console.log($(this).parent().parent().prev().text());
 	// console.log($(this).parent().parent().prev().prev().text());
 	var search_id  = $(this).parent().parent().prev().prev().text();
 	var sort_scope = $(this).parent().parent().prev().text();
+	console.log(sort_scope);
+	var rank_range = $(this).parent().parent().parent().prev().prev().prev().text();
+	var rank_by_key = $(this).parent().parent().parent().prev().prev().prev().prev().text();
+	var rank_by = $(this).parent().parent().parent().prev().text();
+	var time_range = $(this).parent().parent().parent().prev().prev().text();
+	console.log()
+	var sort_scope = $(this).parent().parent().prev().text();
+	$('#rec_range').empty();
+	$('#rec_range').append(rank_range);
+	$('#rec_range').append('-');
+	$('#rec_range').append(rank_by_key);
+	$('#rec_rank_by').empty();
+	$('#rec_rank_by').append(rank_by);
+	$('#rec_time_range').empty();
+	$('#rec_time_range').append(time_range);
 	var url='/user_rank/get_result/?search_id=' + search_id;
 	console.log(url);
 	console.log(search_id);
 	//call_sync_ajax_request(url, draw_key_rank_table);
 	if(sort_scope == 'all_limit_keyword'){
 		//url +='&all=True';
+		var loading_html = '<div style="text-align:center;vertical-align:middle;height:40px">数据正在加载中，请稍后...</div>';
+		console.log(loading_html);
+		$('#result_rank_table').empty();
+		$('#result_rank_table').append(loading_html);
 		call_sync_ajax_request(url, draw_key_rank_table);
 	}else{
 		//alert('库内')
+		var loading_html = '<div style="text-align:center;vertical-align:middle;height:40px">数据正在加载中，请稍后...</div>';
+		console.log(loading_html);
+		$('#result_rank_table').empty();
+		$('#result_rank_table').append(loading_html);
 		call_sync_ajax_request(url, draw_in_key_rank_table);
 	}
 
 });
+
+
+call_sync_ajax_request(rank_url, draw_all_rank_table);
 $('.delete_this').live("click", function(){
 	var a = confirm('确定要删除吗？');
 	if (a == true){
@@ -746,4 +847,36 @@ $('.delete_this').live("click", function(){
 		//window.location.href = url;
 		call_sync_ajax_request(url,del);
 	}
+});
+
+
+
+//全网实时排名
+var myDate = new Date();
+var hh = myDate.getHours();
+var mm =myDate.getMinutes();
+var count_mm = Math.floor(mm/15);
+var show_mm = count_mm * 15;
+if(show_mm==0){
+	show_mm = '00';
+}
+var show_time = hh.toString() + ':' + show_mm.toString();
+
+
+$(function(){
+	$('#range_choose').click(function(){
+		var box = document.getElementById('range_choose').value;
+		if(box=='in_intime'){
+			$('#time_choose').empty();
+			html = '';
+			html = html + '00:00 -'+show_time;
+			$('#time_choose').append(html);
+			$('#sort_select_2').empty();
+			html = '';
+			html += '<option value="total_retweet" checked="checked">总转发数</option>';
+			html += '<option value="total_comment" >总评论数</option>';
+			$('#sort_select_2').append(html);
+		}
+		
+	});
 });

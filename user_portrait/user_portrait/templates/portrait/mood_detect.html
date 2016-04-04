@@ -70,7 +70,7 @@
 {% block main %}
 <!-- 	<h3></h3>
 	<hr> -->
-	<div id=''>
+	<div id='' style="padding-bottom:20px;">
 		<h4>监测设置</h4>
 		<span id="de_username" hidden>{{g.user}}</span>
 		<table class="shadow" style="margin:30px;width:900px; height:150px;border: 2px solid #cccccc;">
@@ -121,7 +121,7 @@
 		</b></div>
 		<div id="result_detect_charts" style="margin-top:20px;width:900px;height:300px;"></div>
 		<div id="loading_message" style="display:none;">
-			<p style="text-align:center;min-height: 100px;background-color: #cccccc;line-height: 100px;">数据正在加载...请稍后</p>
+			<p style="text-align:center;min-height: 100px;line-height: 100px;">数据正在加载，请稍后...</p>
 		</div>
 		<div id="result_detect_detail" style="display:none;margin-top:20px;width:900px;margin-bottom:40px;">
 			<div id="" style="border-top: 1px solid #6F6E6E;border-bottom: 1px solid #6F6E6E;padding: 5px;">
@@ -159,9 +159,9 @@
 						<b  style="color:#983333;font-size:16px;">相关话题</b>
 						<span style="margin-left:200px;"><input type="checkbox" name='sub_topic'>进一步计算子话题</span>
 					</h5>
-					<div id="topic_key" hidden></div>
+					<div id="topic_key" ></div>
 				</div>
-				<div id="related_weibo_div" style="float:left;">
+				<div id="related_weibo_div" style="float:left;margin-bottom:20px;">
 					<div id="related_weibo_button" hidden>
 						<span id="portrait_button_choose0" class="portrait_button_choose" style="margin-left:10px;height:30px;cursor:pointer;margin-right:20px;text-align: center;line-height:30px;">全部</span>
 						<span id="sub_related_weibo_button"></span>
@@ -210,6 +210,43 @@
         <h4 class="modal-title" style="font-size:18px" id="myModalLabel">关键词</h4>
       </div>
       <div class="modal-body" id='keywords_WordList'>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="detect_search_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document" style="width:500px;">
+    <div class="modal-content" style="margin-top:20%;">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" style="font-size:18px" id="myModalLabel">任务搜索</h4>
+      </div>
+      <div class="modal-body" id='' style="height:200px;">
+      	<!-- <div ></div> -->
+      	<p>关 键 词<input type="text"  class="form-control" placeholder='多个词用英文逗号分开' style="margin-left:20px;width:175px;display: inline;height: 25px;" id="search_key"></p>
+	   <p>是否完成
+				<select id="search_status" class="type_sub" style="margin-left:10px;">
+					<option name="search_status" value="2">不限</option>
+					<option name="search_status" value="1">计算完成</option>
+					<option name="search_status" value="0">正在计算</option>
+				</select>
+	      	</p>
+      	<p>任务时间
+		    <input type='checkbox' id="time_checkbox"class='inline-checkbox' style="margin-left:10px;">
+			<span id="detect_time_choose_modal" style="margin-left:5px;">
+				<input id="weibo_from_modal" type="text" class="form-control" style="width:175px; display:inline-block;height:25px;" disabled>&nbsp;-&nbsp;
+				<input id="weibo_to_modal" type="text" class="form-control" style="width:175px; display:inline-block;height:25px" disabled>				
+			</span>
+      	</p>
+      	<p>提交时间
+            <input type='checkbox' id="time_checkbox_submit"class='inline-checkbox' style="margin-left:10px;">
+			<span id="search_date" style="margin-left:5px;">
+				<input id="weibo_modal" type="text" class="form-control" style="width:175px; display:inline-block;height:25px;" disabled>
+			</span>
+      	</p>
+      	<span onclick="search_task()" class="portrait_button" style="float:right;cursor:pointer;margin-right:20px;width: 45px;height: 25px;text-align: center;line-height: 25px;"  class="close" data-dismiss="modal" aria-label="Close">确定</span>
+      	<!-- //<p>关键词<input ></p> -->
       </div>
     </div>
   </div>
