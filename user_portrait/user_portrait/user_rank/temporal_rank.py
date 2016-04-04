@@ -49,7 +49,7 @@ def get_temporal_rank(task_type, sort="retweeted"):
                 item = item['_source']
                 tmp.append(item['uid'])
                 tmp.append(item['nick_name'])
-                tmp.append(item['photo_url'])
+                tmp.append(item['statusnum'])
                 tmp.append(item['user_location'])
                 tmp.append(item['fansnum'])
             else:
