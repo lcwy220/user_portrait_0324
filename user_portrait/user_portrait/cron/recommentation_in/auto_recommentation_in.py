@@ -16,7 +16,8 @@ from parameter import DAY,RUN_TYPE, RUN_TEST_TIME, RECOMMEND_IN_AUTO_DATE,\
         RECOMMEND_IN_AUTO_SIZE, RECOMMEND_IN_AUTO_GROUP,\
         RECOMMEND_IN_AUTO_RANDOM_SIZE, RUN_TYPE, RUN_TEST_TIME,\
         RECOMMEND_IN_OUT_SIZE, RECOMMEND_IN_ITER_COUNT,\
-        RECOMMEND_IN_MEDIA_PATH, RECOMMEND_MAX_KEYWORDS, RECOMMEND_IN_WEIBO_MAX
+        RECOMMEND_IN_MEDIA_PATH, RECOMMEND_MAX_KEYWORDS, RECOMMEND_IN_WEIBO_MAX,\
+        SENTIMENT_SORT_EVALUATE_MAX
 from global_config import R_BEGIN_TIME
 from time_utils import datetime2ts, ts2datetime
 
@@ -60,20 +61,15 @@ def get_hotspot_recommentation():
         date = ts2datetime(datetime2ts(RUN_TEST_TIME) - DAY)
         sort_type = 'timestamp'
     flow_text_index_name = flow_text_index_name_pre + date
-    print 'flow_text_index_name:', flow_text_index_name
     user_keywords_result = es_flow_text.search(index=flow_text_index_name, doc_type=flow_text_index_type,\
                 body=query_body)['aggregations']['all_interests']['buckets']
     keywords_list = [item['key'] for item in user_keywords_result]
-    #test
-    for item in keywords_list:
-        print 'item:', item
     #step3: get same weibo list sort by retweet_count
     #step4: filter out user
     out_user_count = 0
     all_out_user = []
-    sort_evaluate_max = 999999999999999
+    sort_evaluate_max = SENTIMENT_SORT_EVALUATE_MAX
     while out_user_count < RECOMMEND_IN_OUT_SIZE:
-        print 'sort_evaluate_max:', sort_evaluate_max
         query_body = {
             'query':{
                 'filtered':{
@@ -96,14 +92,11 @@ def get_hotspot_recommentation():
         #filter out
         if weibo_user_list:
             weibo_user_list = list(set(weibo_user_list))
-        print 'weibo_user_list:', weibo_user_list
         out_weibo_user_list = filter_out(weibo_user_list)
-        print 'out_weibo_user:', len(out_weibo_user_list)
         all_out_user.extend(out_weibo_user_list)
         all_out_user = list(set(all_out_user))
         out_user_count = len(all_out_user)
         sort_evaluate_max = weibo_user[-1]['_source'][sort_type]
-        print 'sort_evaluate_max:', sort_evaluate_max
     results = all_out_user
     return results
 
@@ -141,7 +134,7 @@ def get_tag_history(admin_user, now_date):
                 'filter':{
                     'bool':{
                         'must':[
-                            {'terms': {'date': query_date_list}},
+                            #{'terms': {'date': query_date_list}},
                             {'term': {'user': admin_user}}
                             ]
                         }
@@ -192,7 +185,7 @@ def get_group_history(admin_user, now_date):
         'query':{
             'bool':{
                 'must':[
-                    {'range': {'submit_date':{'gte': start_ts, 'lt': end_ts}}},
+                    #{'range': {'submit_date':{'gte': start_ts, 'lt': end_ts}}},
                     {'term': {'submit_user': admin_user}},
                     {'term': {'task_type': 'analysis'}}
                     ]
@@ -207,7 +200,10 @@ def get_group_history(admin_user, now_date):
         group_results = []
     all_user_list = []
     for group_item in group_results:
-        uid_list = group_item['fields']['uid_list'][0]
+        try:
+            uid_list = group_item['fields']['uid_list']
+        except:
+            uid_list = []
         all_user_list.extend(uid_list)
     results = set(all_user_list)
     return results
@@ -223,7 +219,7 @@ def get_sensing_history(admin_user, now_date):
         'query':{
             'bool':{
                 'must':[
-                    {'range': {'create_at': {'gte': start_ts, 'lt': end_ts}}},
+                    #{'range': {'create_at': {'gte': start_ts, 'lt': end_ts}}},
                     {'term': {'create_by': admin_user}}
                     ]
                 }
@@ -294,8 +290,6 @@ def get_extend(all_set):
     #step0: random get user
     user_count = len(all_set)
     all_user_list = list(all_set)
-    print 'all_user_list:', all_user_list
-    print 'all_user_count:', len(all_user_list)
     if RECOMMEND_IN_AUTO_RANDOM_SIZE > len(all_user_list):
         silce = all_user_list
     else:
@@ -303,18 +297,19 @@ def get_extend(all_set):
     db_number = get_db_num()
     #step1: get retweet
     retweet_index_name = retweet_index_name_pre + str(db_number)
-    print 'retweet_index_name:', retweet_index_name
-    #try:
-    retweet_result = es_retweet.mget(index=retweet_index_name, doc_type=retweet_index_type,\
+    try:
+        retweet_result = es_retweet.mget(index=retweet_index_name, doc_type=retweet_index_type,\
                 body={'ids': silce})['docs']
-    #except:
-    #    retweet_result = []
-    print 'retweet_result:', retweet_result
+    except:
+        retweet_result = []
     #step1.2: get uid retweet
     for retweet_item in retweet_result:
-        if retweet_item['found']==True:
-            uid_retweet_dict = retweet_item['_source']['uid_retweet']
-            retweet_comment_dict_list.append(json.loads(uid_retweet_dict))
+        try:
+            if retweet_item['found']==True:
+                uid_retweet_dict = retweet_item['_source']['uid_retweet']
+                retweet_comment_dict_list.append(json.loads(uid_retweet_dict))
+        except:
+            pass
     #step2: get comment
     comment_index_name = comment_index_name_pre + str(db_number)
     try:
@@ -322,48 +317,46 @@ def get_extend(all_set):
                 body={'ids': silce})['docs']
     except:
         comment_result = []
-    print 'comment_result:', comment_result
     #step2.2: get uid commnt
     for comment_item in comment_result:
-        if comment_item['found'] == True:
-            retweet_comment_dict_list.append(json.loads(comment_item['_source']['uid_comment']))
-    print 'retweet_comment_dict_list:', len(retweet_comment_dict_list)
+        try:
+            if comment_item['found'] == True:
+                retweet_comment_dict_list.append(json.loads(comment_item['_source']['uid_comment']))
+        except:
+            pass
     #step3: union dict list
     union_retweet_comment_list = union_dict(retweet_comment_dict_list)
-    print 'union_retweet_comment_list:', len(union_retweet_comment_list)
     #step4: filter in user portrait
     extend_result = filter_out(union_retweet_comment_list.keys())
-    print 'filter_out:', len(extend_result)
     return extend_result
 
 # get recommentation from admin user operation
 def get_operation_recommentation():
     results = {}
     now_ts = time.time()
-    now_date = ts2datetime(now_ts)
+    #run_type
+    if RUN_TYPE == 1:
+        now_date = ts2datetime(now_ts)
+    else:
+        now_date = RUN_TEST_TIME
     admin_user_list = get_admin_user()
     for admin_user in admin_user_list:
         #step1: recommentation record
         recommentation_history_result = get_recomment_history(admin_user, now_date)
-        print 'recommentation record:', len(recommentation_history_result)
         #step2: add tag record
         tag_history_result = get_tag_history(admin_user, now_date)
         all_set = recommentation_history_result | tag_history_result
-        print 'tag_history_result:', len(tag_history_result)
         #step3: group analysis record
         group_history_result = get_group_history(admin_user, now_date)
         all_set = all_set | group_history_result
-        print 'group_history_result:', len(group_history_result)
         #step4: social sensing record
         sensing_result = get_sensing_history(admin_user, now_date)
         all_set = all_set | sensing_result
-        print 'sensing_result:', len(sensing_result)
         #step5: extend by all set
         if len(all_set) != 0:
             extend_result = get_extend(all_set)
         else:
             extend_result = []
-        print 'extend_result:', len(extend_result)
         results[admin_user] = json.dumps(extend_result)
 
     return results
@@ -371,8 +364,12 @@ def get_operation_recommentation():
 # save results
 def save_results(save_type, recomment_results):
     save_mark = False
-    now_date = ts2datetime(time.time())
-    reocmment_hash_name = 'recomment_' + now_date + '_auto'
+    #run_type
+    if RUN_TYPE == 1:
+        now_date = ts2datetime(time.time())
+    else:
+        now_date = ts2datetime(datetime2ts(RUN_TEST_TIME) - DAY)
+    recomment_hash_name = 'recomment_' + now_date + '_auto'
     if save_type == 'hotspot':
         print 'save hotspot results'
         R_RECOMMENTATION.hset(recomment_hash_name, 'auto', json.dumps(recomment_results))
@@ -402,7 +399,7 @@ if __name__=='__main__':
     log_time_start_date = ts2datetime(log_time_start_ts)
     print 'cron/recommend_in/recommend_in_auto.py&start&' + log_time_start_date
 
-    #compute_auto_recommentation()
+    compute_auto_recommentation()
 
     log_time_end_ts = time.time()
     log_time_end_date = ts2datetime(log_time_end_ts)
@@ -414,5 +411,5 @@ if __name__=='__main__':
     #print 'results:', results
     #media_user = get_media_user()
     #print 'media_user:', media_user
-    results = get_hotspot_recommentation()
-    print 'results:', results
+    #results = get_hotspot_recommentation()
+    #print 'results:', results
