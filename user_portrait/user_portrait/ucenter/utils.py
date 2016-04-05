@@ -74,8 +74,47 @@ def get_group_detect(submit_user):
         results.append([task_name, submit_date, state, task_type, task_process])
     return results
 
+#use to get group analysis task
 def get_group_analysis(submit_user):
     results = []
+    #step1: get query body
+    query_body = {
+        'query':{
+            'filtered':{
+                'filter':{
+                    'bool':{
+                        'must':[
+                            {'term': {'submit_user': submit_user}},
+                            {'term': {'task_type': 'analysis'}}
+                            ]
+                        }
+                    }
+                }
+            },
+        'sort': [{'submit_date': {'order': 'desc'}}],
+        'size': MAX_VALUE
+        }
+    #step2: search
+    try:
+        group_task_result = es_group_result.search(index=group_index_name, doc_type=group_index_type,\
+                body=query_body)['hits']['hits']
+    except:
+        group_task_result = []
+    #step3: task results
+    for group_item in group_task_result:
+        source = group_item['_source']
+        task_name = source['task_name']
+        if not task_name:
+            continue
+        task_status = source['status']
+        submit_ts = source['submit_date']
+        submit_date = ts2date(submit_ts)
+        try:
+            state = source['state']
+        except:
+            state = ''
+        results.append([task_name, submit_date, state, task_status])
+
     return results
 
 def get_sentiment_task(submit_user):
