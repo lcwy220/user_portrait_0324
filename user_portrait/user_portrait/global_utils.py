@@ -130,7 +130,7 @@ es_copy_portrait = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
 es_tag = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout=600)
 es_sentiment_task = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
 es_network_task = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
-
+es_rank_task = Elasticsearch(USER_PORTRAIT_ES_HOST, timeout = 600)
 
 # elasticsearch index_name and index_type
 profile_index_name = 'weibo_user'  # user profile es
@@ -163,6 +163,10 @@ sentiment_keywords_index_type = 'sentiment'
 # es for network keywords task
 network_keywords_index_name = 'network_keywords_task'
 network_keywords_index_type = 'network'
+
+# es for rank keywords task
+rank_keywords_index_name = 'user_rank_keyword_task'
+rank_keywords_index_type = 'user_rank_task'
 
 # es for tag
 tag_index_name = 'custom_attribute'
