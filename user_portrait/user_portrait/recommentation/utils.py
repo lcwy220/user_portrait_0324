@@ -143,8 +143,39 @@ def recommentation_in(input_ts, recomment_type, submit_user):
         results = []
     return results
 
+# get auto recommentation result
 def recommentation_in_auto(seatch_date, submit_user):
     results = []
+    #run type
+    if RUN_TYPE == 1:
+        now_date = ts2datetime(time.time() - DAY)
+    else:
+        now_date = ts2datetime(datetime2ts(RUN_TEST_TIME) - DAY)
+    recomment_hash_name = 'recomment_' + now_date + '_auto'
+    recomment_influence_hash_name = 'recomment_' + now_date + '_influence'
+    recomment_sensitive_hash_name = 'recomment_' + now_date + '_sensitive'
+    recomment_compute_hash_name = 'compute'
+    #step1: get auto
+    auto_result = r.hget(recomment_hash_name, 'auto')
+    if auto_result:
+        auto_user_list = json.loads(auto_result)
+    else:
+        auto_user_list = []
+    #step2: get admin user result
+    admin_result = r.hget(recomment_hash_name, submit_user)
+    if admin_result:
+        admin_user_list = json.loads(admin_result)
+    else:
+        admin_user_list = []
+    #step3: get union user and filter compute/influence/sensitive
+    union_user_auto_set = set(auto_user_list) | set(admin_user_list)
+    influence_user = set(r.hkeys(recomment_influence_hash_name))
+    sensitive_user = set(r.hkeys(recomment_sensitive_hash_name))
+    compute_user = set(r.hkeys(recomment_compute_hash_name))
+    filter_union_user = union_user_auto_set - (influence_user | sensitive_user | compute_user)
+    auto_user_list = list(filter_union_user)
+    #step4: get user detail
+    results = get_user_detail(now_date, auto_user_list, 'show_in', 'auto')
     return results
 
 

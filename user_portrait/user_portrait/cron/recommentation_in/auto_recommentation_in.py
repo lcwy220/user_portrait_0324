@@ -366,7 +366,7 @@ def save_results(save_type, recomment_results):
     save_mark = False
     #run_type
     if RUN_TYPE == 1:
-        now_date = ts2datetime(time.time())
+        now_date = ts2datetime(time.time() - DAY)
     else:
         now_date = ts2datetime(datetime2ts(RUN_TEST_TIME) - DAY)
     recomment_hash_name = 'recomment_' + now_date + '_auto'
