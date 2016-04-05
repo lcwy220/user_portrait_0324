@@ -62,7 +62,7 @@ def get_db_num(timestamp):
 def write_tmp_file(tmp_file, uid, item_result):
     count = 0
     for key in item_result:
-        if key != 'None':
+        if (key != 'None') and (key != uid):
             count += 1
             tmp_file.write('%s\t%s\t%s\n' % (uid, key, item_result[key]))
 
