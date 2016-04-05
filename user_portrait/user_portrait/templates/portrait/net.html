@@ -1,0 +1,98 @@
+{%extends "tbase.html" %}
+{% block title %}网络分析{% endblock title %}
+
+{% block css %}
+{{ super() }}
+<link  type="text/css" href="/static/personal/css/style.css" rel="stylesheet"/>
+<link rel="stylesheet" type="text/css" href="/static/css/jquery.datetimepicker.css"/>
+{% endblock css %}
+{% block head_js %}
+{{ super() }}
+<script type="text/javascript" src="/static/js/jquery.datetimepicker.js"></script>
+{% endblock %}
+
+{% block head_title %}网络分析{% endblock head_title %}
+{% block main %}
+<div id="p_useremail" hidden>{{g.user.email}}</div>
+<div style="margin-left:250px;margin-bottom:11px;">
+    <button class="portrait_button p_d" id="by_time" onclick="hidden_keywords()" type='button' style="margin-right:32px;background-color:#3351B7" title="实时排名" >实时排名</button>
+    <button class="portrait_button p_d" id="by_keywords" onclick="hidden_time()" type='button' style="margin-right:32px;" title="关键词任务" >关键词任务</button>
+</div>
+
+
+<div id="framecontent" style="width:850px;">
+    <div class ="framepost" style="height:450px;">
+        <h3 class="title">节点趋势图</h3>
+        <div  class="entry" style="width:55%;float:left;">
+            <div id="Activezh" style="height:349px;width:900px;margin-top:0px;" class="fleft"></div>
+        </div>
+    </div>
+</div>
+
+
+<div id="show_keywords" style="width:850px;" class="hidden">
+    <div class ="framepost" style="height:450px;">
+        <h3 class="title">关键词分析</h3>
+        <div  class="entry" style="width:55%;float:left;">
+            <table class="shadow" style="margin:30px;width:900px; height:150px;border: 2px solid #cccccc;">
+			<tr style="border-bottom: 1px solid #cccccc;">
+				<th style="width:150px;height:50px;background-color: #E4E4E4;text-align: center;">关键词</td>
+				<td>
+					<input id="keyword_detect" type="text" class="form-control" style="width:275px;height:25px;" placeholder="请输入关键词，多个词用英文逗号分开">
+				</td>
+			</tr>
+			<tr>
+				<th  style="width:150px;height:50px;background-color: #E4E4E4;text-align: center;">时间范围</th>
+				<td>
+					<span id="detect_time_choose">
+						<input id="weibo_from" type="text" class="form-control" style="width:145px; display:inline-block;height:25px;">&nbsp;-&nbsp;
+						<input id="weibo_to" type="text" class="form-control" style="width:145px; display:inline-block;height:25px">				
+					</span>
+					<span id="detect_submit" onclick="submit_detect()" class="portrait_button" style='float:right;cursor:pointer;margin-right:20px;width: 45px;height: 25px;text-align: center;line-height: 25px;'>监测</span>		
+				</td>
+			</tr>		
+		</table>
+		<h4>任务状态</h4>
+		<div id="detect_task_status"></div>
+        </div>
+    </div>
+</div>
+
+<h4>结果分析</h4>
+<div id="result_rank_table" style="margin-top:20px;"></div>
+
+
+<div id="float-wrap" class="hidden"></div>
+
+
+<!-- 模态框 -->
+<div class="modal fade" id="more_hashtag" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="width: 500px;">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" style="font-size:18px" id="myModalLabel">微话题排名</h4>
+      </div>
+      <div class="modal-body" id='hashtag_WordList'>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="/static/js/highstock.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/js/portrait/net.js"></script> 
+<script type="text/javascript">
+
+</script>
+
+
+
+
+{% endblock main %}
+
+{% block Own_js %}
+{{ super() }}
+
+{% endblock Own_js%}
+
