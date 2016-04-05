@@ -6,13 +6,14 @@ import json
 import math
 from user_portrait.global_utils import R_RECOMMENTATION as r
 from user_portrait.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME, MAX_VALUE
-from user_portrait.time_utils import ts2datetime, datetime2ts, ts2date
+from user_portrait.time_utils import ts2datetime, datetime2ts, ts2date, date2ts
 from user_portrait.global_utils import es_user_profile, portrait_index_name, portrait_index_type
 from user_portrait.global_utils import ES_CLUSTER_FLOW1 as es_cluster
 from user_portrait.global_utils import es_group_result, group_index_name, group_index_type,\
         es_social_sensing, sensing_index_name, sensing_doc_type,\
         es_sentiment_task, sentiment_keywords_index_name, sentiment_keywords_index_type,\
-        es_network_task, network_keywords_index_name, network_keywords_index_type
+        es_network_task, network_keywords_index_name, network_keywords_index_type, \
+        es_rank_task, rank_keywords_index_name, rank_keywords_index_type
 
 def get_user_operation(submit_user):
     result = {}
@@ -30,11 +31,86 @@ def get_user_operation(submit_user):
     result_sentiment_task = get_sentiment_task(submit_user)
     result['sentiment_task'] = result_sentiment_task # result_sentiment_task = []
     #step5: get user user rank task
+    result_rank_task = get_rank_task(submit_user)
+    result['rank_task'] = result_rank_task # result_rank_task = []
     #step6: get user network task
+    result_network_task = get_network_task(submit_user)
+    result['network_task'] = result_network_task # result_network_task = []
     #step7: get user social sensing task
     result_sensing_task = get_sensing_task(submit_user)
     result['sensing_task'] = result_sensing_task # result_sensing_task = []
     return result
+
+# use to get user rank keywords task
+def get_rank_task(submit_user):
+    results = []
+    #run type
+    if RUN_TYPE == 0:
+        submit_user = 'admin@qq.com'
+    #step1: query body
+    query_body = {
+        'query':{
+            'filtered':{
+                'filter':{
+                    'term':{'submit_user': submit_user}
+                    }
+                }
+            },
+        'size': MAX_VALUE
+        }
+    #step2: search
+    try:
+        rank_task_result = es_rank_task.search(index=rank_keywords_index_name,\
+                doc_type=rank_keywords_index_type, body=query_body)['hits']['hits']
+    except:
+        rank_task_result = []
+    #step3: get results
+    for task_item in rank_task_result:
+        source = task_item['_source']
+        submit_date = source['submit_time']
+        keyword = source['keyword']
+        sort_index = source['sort_norm']
+        status = source['status']
+        submit_ts = date2ts(submit_date)
+        results.append([keyword, sort_index, submit_date, status, submit_ts])
+    #step4: sort results
+    sort_results = sorted(results, key=lambda x:x[4], reverse=True)
+    return results
+
+
+# use to get network task
+def get_network_task(submit_user):
+    results = []
+    #step1: query body
+    query_body = {
+        'query':{
+            'filtered':{
+                'filter':{
+                    'term':{'submit_user': submit_user}
+                    }
+                }
+            },
+        'sort': [{'submit_ts': {'order': 'desc'}}],
+        'size': MAX_VALUE
+        }
+    #step2: search
+    try:
+        network_task_result = es_network_task.search(index=network_keywords_index_name, \
+                doc_type=network_keywords_index_type, body=query_body)['hits']['hits']
+    except:
+        network_task_result = []
+    #step3: get results
+    for task_item in network_task_result:
+        source = task_item['_source']
+        task_id = source['task_id']
+        submit_ts = source['submit_ts']
+        submit_date = ts2date(submit_ts)
+        keywords = source['query_keywords']
+        start_date = source['start_date']
+        end_date = source['end_date']
+        status = source['status']
+        results.append([task_id, keywords, submit_date, start_date, end_date, status])
+    return results
 
 
 # use to get group detect task from es--group_manage_v2
@@ -117,10 +193,12 @@ def get_group_analysis(submit_user):
 
     return results
 
+# use to get sentiment task
 def get_sentiment_task(submit_user):
     results = []
-    #test
-    submit_user = 'admin@qq.com'
+    #run type
+    if RUN_TYPE == 0:
+        submit_user = 'admin@qq.com'
     #step1:query_body
     query_body = {
         'query':{
@@ -156,6 +234,35 @@ def get_sentiment_task(submit_user):
 
 def get_sensing_task(submit_user):
     results = []
+    #step1: query_body
+    query_body = {
+        'query':{
+            'filtered':{
+                'filter':{
+                    'term': {'create_by': submit_user}
+                    }
+                }
+            },
+        'size': MAX_VALUE,
+        'sort': [{'create_at': {'order': 'desc'}}]
+        }
+    #step2: search
+    try:
+        sensing_task_result = es_social_sensing.search(index=sensing_index_name, doc_type=sensing_doc_type,\
+                body=query_body)['hits']['hits']
+    except:
+        sensing_task_result = []
+    #step3: task results
+    for task_item in sensing_task_result:
+        source = task_item['_source']
+        task_name = source['task_name']
+        status = source['processing_status']
+        remark = source['remark']
+        submit_ts = source['create_at']
+        if submit_ts:
+            submit_date = ts2date(int(submit_ts))
+            results.append([task_name, submit_date, remark, status])
+
     return results
 
 
