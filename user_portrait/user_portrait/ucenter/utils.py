@@ -119,7 +119,40 @@ def get_group_analysis(submit_user):
 
 def get_sentiment_task(submit_user):
     results = []
-    return results
+    #test
+    submit_user = 'admin@qq.com'
+    #step1:query_body
+    query_body = {
+        'query':{
+            'filtered':{
+                'filter':{
+                     'term': {'submit_user': submit_user}
+                    }
+                }
+            },
+        'size': MAX_VALUE
+        }
+    #step2:search
+    try:
+        sentiment_task_result = es_sentiment_task.search(index=sentiment_keywords_index_name,\
+                doc_type=sentiment_keywords_index_type, body=query_body)['hits']['hits']
+    except:
+        sentiment_task_result = []
+    #step3:query results
+    for task_item in sentiment_task_result:
+        source = task_item['_source']
+        task_id = source['task_id']
+        query_keywords = source['query_keywords']
+        submit_ts = source['submit_ts']
+        submit_date = ts2date(submit_ts)
+        start_date = source['start_date']
+        end_date = source['end_date']
+        status = source['status']
+        results.append([task_id, query_keywords, start_date, end_date, \
+                submit_date, status, submit_ts])
+    #step4:sort by query_ts
+    sort_results = sorted(results, key=lambda x:x[6],reverse=True)
+    return sort_results
 
 def get_sensing_task(submit_user):
     results = []
