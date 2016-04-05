@@ -5,22 +5,125 @@ import time
 import json
 import math
 from user_portrait.global_utils import R_RECOMMENTATION as r
-from user_portrait.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME
-from user_portrait.time_utils import ts2datetime, datetime2ts
+from user_portrait.parameter import DAY, WEEK, RUN_TYPE, RUN_TEST_TIME, MAX_VALUE
+from user_portrait.time_utils import ts2datetime, datetime2ts, ts2date
 from user_portrait.global_utils import es_user_profile, portrait_index_name, portrait_index_type
 from user_portrait.global_utils import ES_CLUSTER_FLOW1 as es_cluster
+from user_portrait.global_utils import es_group_result, group_index_name, group_index_type,\
+        es_social_sensing, sensing_index_name, sensing_doc_type,\
+        es_sentiment_task, sentiment_keywords_index_name, sentiment_keywords_index_type,\
+        es_network_task, network_keywords_index_name, network_keywords_index_type
 
 def get_user_operation(submit_user):
-    result = []
+    result = {}
     #step1: get user recommentation in operation
     result_recommentation = get_recommentation(submit_user)
-    result.append(result_recommentation)
-    #step2: get user group detect task 
+    #result.append(result_recommentation)
+    result['recomment'] = result_recommentation # result_recommentation = []
+    #step2: get user group detect task
+    result_group_detect = get_group_detect(submit_user)
+    result['group_detect'] = result_group_detect # result_group_detect = []
     #step3: get user group analysis task
+    result_group_analysis = get_group_analysis(submit_user)
+    result['group_analysis'] = result_group_analysis # result_group_analysis = []
     #step4: get user sentiment trend task
+    result_sentiment_task = get_sentiment_task(submit_user)
+    result['sentiment_task'] = result_sentiment_task # result_sentiment_task = []
     #step5: get user user rank task
+    #step6: get user network task
+    #step7: get user social sensing task
+    result_sensing_task = get_sensing_task(submit_user)
+    result['sensing_task'] = result_sensing_task # result_sensing_task = []
     return result
 
+
+# use to get group detect task from es--group_manage_v2
+def get_group_detect(submit_user):
+    results = []
+    query_body = {
+        'query':{
+            'filtered':{
+                'filter':{
+                    'bool':{
+                        'must':[
+                            {'term': {'submit_user': submit_user}},
+                            {'term': {'task_type': 'detect'}}
+                            ]
+                        }
+                    }
+                }
+            },
+        'sort':[{'submit_date': {'order': 'desc'}}],
+        'size': MAX_VALUE
+        }
+    #search group task
+    try:
+        group_task_result = es_group_result.search(index=group_index_name, doc_type=group_index_type,\
+                body=query_body)['hits']['hits']
+    except:
+        group_task_result = []
+    #group task results
+    for group_item in group_task_result:
+        source = group_item['_source']
+        task_name = source['task_name']
+        task_process = source['detect_process']
+        submit_ts = source['submit_date']
+        submit_date = ts2date(submit_ts)
+        state = source['state']
+        task_type = source['detect_type']
+        results.append([task_name, submit_date, state, task_type, task_process])
+    return results
+
+#use to get group analysis task
+def get_group_analysis(submit_user):
+    results = []
+    #step1: get query body
+    query_body = {
+        'query':{
+            'filtered':{
+                'filter':{
+                    'bool':{
+                        'must':[
+                            {'term': {'submit_user': submit_user}},
+                            {'term': {'task_type': 'analysis'}}
+                            ]
+                        }
+                    }
+                }
+            },
+        'sort': [{'submit_date': {'order': 'desc'}}],
+        'size': MAX_VALUE
+        }
+    #step2: search
+    try:
+        group_task_result = es_group_result.search(index=group_index_name, doc_type=group_index_type,\
+                body=query_body)['hits']['hits']
+    except:
+        group_task_result = []
+    #step3: task results
+    for group_item in group_task_result:
+        source = group_item['_source']
+        task_name = source['task_name']
+        if not task_name:
+            continue
+        task_status = source['status']
+        submit_ts = source['submit_date']
+        submit_date = ts2date(submit_ts)
+        try:
+            state = source['state']
+        except:
+            state = ''
+        results.append([task_name, submit_date, state, task_status])
+
+    return results
+
+def get_sentiment_task(submit_user):
+    results = []
+    return results
+
+def get_sensing_task(submit_user):
+    results = []
+    return results
 
 
 def get_recommentation(submit_user):
