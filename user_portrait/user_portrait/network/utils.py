@@ -5,11 +5,14 @@ import time
 from user_portrait.global_utils import es_network_task, network_keywords_index_name, \
                                 network_keywords_index_type
 from user_portrait.global_utils import es_user_profile, es_user_portrait
+from user_portrait.global_utils import retweet_redis_dict, comment_redis_dict
 from user_portrait.global_utils import profile_index_name, profile_index_type, portrait_index_name, portrait_index_type
 from user_portrait.global_utils import R_NETWORK_KEYWORDS, r_network_keywords_name
 from user_portrait.time_utils import datetime2ts, ts2datetime, ts2date
-from user_portrait.parameter import DAY
+from user_portrait.parameter import DAY, HOUR, RUN_TYPE
+from user_portrait.global_config import R_BEGIN_TIME
 
+begin_ts = datetime2ts(R_BEGIN_TIME)
 
 def show_daily_trend():
     date = ts2datetime(time.time())
@@ -74,6 +77,14 @@ def show_daily_rank(period, sort_type, count):
             count += 1
 
     return results
+
+#use to delete network keywords task
+def delete_network_keywords(task_id):
+    status = False
+    es_delete_task.delete(index=network_keywords_index_name, \
+                doc_type=network_keywords_index_type, id=task_id)
+    status = True
+    return status
 
 def submit_network_keywords(keywords_string, start_date, end_date, submit_user):
     task_information = {}
@@ -152,3 +163,25 @@ def search_all_keywords(submit_date, keywords_string, submit_user, start_date, e
         results.append([task_id, start_date, end_date, keywords, submit_ts, status])
 
     return results
+
+#use to get db_number which is needed to es
+def get_db_num(timestamp):
+    date = ts2datetime(timestamp)
+    date_ts = datetime2ts(date)
+    db_number = 2 - (((date_ts - begin_ts) / (DAY * 7))) % 2
+    #run_type
+    if RUN_TYPE == 0:
+        db_number = 1
+    return db_number
+
+def search_retweet_network(uid):
+    now_ts = time.time()
+    now_date_ts = datetime2ts(ts2datetime(now_ts))
+    #get redis db number
+    db_number = get_db_num(now_date_ts)
+    #get redis db
+    #retweet_redis = retweet_redis_dict[str(db_number)]
+    retweet_redis = comment_redis_dict[str(db_number)]
+    item_result = {}
+    item_result = retweet_redis.hgetall(item)
+    return item_result 

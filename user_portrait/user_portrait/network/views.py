@@ -5,7 +5,7 @@ import json
 from flask import Blueprint, url_for, render_template, request,\
                     abort, flash, session, redirect
 from utils import submit_network_keywords, search_all_keywords, show_daily_rank,\
-        show_daily_trend
+        show_daily_trend, search_retweet_network, delete_network_keywords
 
 mod = Blueprint('network', __name__, url_prefix='/network')
 
@@ -29,6 +29,12 @@ def ajax_show_daily_rank():
         results = ''
     return json.dumps(results)
 
+#use to delete keywords network task compute status
+@mod.route('/delete_network_keywords/')
+def ajax_delete_network_keywords():
+    task_id = request.args.get('task_id', '')
+    status = delete_network_keywords(task_id)
+    return json.dumps(status)
 
 #use to submit keywords network compute task to redis and es
 @mod.route('/submit_network_keywords/')
@@ -52,6 +58,15 @@ def ajax_search_all_keywords():
     end_date = request.args.get('end_date', '') # 2013-09-08
     status = request.args.get('status', '') # '0'/'1'
     results = search_all_keywords(submit_date, keywords_string, submit_user, start_date, end_date, status)
+    if not results:
+        results = ''
+    return json.dumps(results)
+
+#use to search retweet network for temporal
+@mod.route('/search_retweet_network/')
+def ajax_search_retweet_network():
+    uid = request.args.get('uid', '')
+    results = search_retweet_network(uid)
     if not results:
         results = ''
     return json.dumps(results)
