@@ -5,7 +5,8 @@ import json
 from flask import Blueprint, url_for, render_template, request,\
                     abort, flash, session, redirect
 from utils import submit_network_keywords, search_all_keywords, show_daily_rank,\
-        show_daily_trend, search_retweet_network, delete_network_keywords
+        show_daily_trend, search_retweet_network, delete_network_keywords,\
+        show_keywords_rank
 
 mod = Blueprint('network', __name__, url_prefix='/network')
 
@@ -29,6 +30,17 @@ def ajax_show_daily_rank():
         results = ''
     return json.dumps(results)
 
+#use to show keywords rank 
+@mod.route('/show_keywords_rank/')
+def ajax_show_keywords_rank():
+    task_id = request.args.get('task_id', '')
+    sort_type = request.args.get('order', 'pr')
+    count = request.args.get('count', 100)
+
+    results = show_keywords_rank(keywords, sort_type, count)
+    if not results:
+        results = ''
+    return json.dumps(results)
 #use to delete keywords network task compute status
 @mod.route('/delete_network_keywords/')
 def ajax_delete_network_keywords():
