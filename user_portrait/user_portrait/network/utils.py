@@ -231,10 +231,62 @@ def search_retweet_network(uid):
     #get redis db
     #retweet_redis = retweet_redis_dict[str(db_number)]
     retweet_redis = comment_redis_dict[str(db_number)]
-    item_result = {}
+    network_results = {}
+    # retweet
     # item_result = retweet_redis.hgetall('retweet_'+uid)
     item_result = retweet_redis.hgetall('comment_'+uid)
-    return item_result 
+    uid_list = []
+    sort_list = []
+    for key in item_result:
+        uid_list.append(key)
+        sort_list.append(item_result[key])
+
+    # 查看背景信息
+    if uid_list:
+        profile_result = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={"ids":uid_list})["docs"]
+        for item in profile_result:
+            _id = item['_id']
+            index = profile_result.index(item)
+            tmp = []
+            if item['found']:
+                item = item['_source']
+                tmp.append(item['uid'])
+                tmp.append(item['nick_name'])
+            else:
+                tmp.extend([_id,''])
+            value = int(sort_list[index])
+            tmp.append(value)
+            results.append(tmp)
+
+            network_results['retweet'] = results
+    # be_retweet
+    # item_result = retweet_redis.hgetall('retweet_'+uid)
+    item_result = retweet_redis.hgetall('be_comment_'+uid)
+    uid_list = []
+    sort_list = []
+    for key in item_result:
+        uid_list.append(key)
+        sort_list.append(item_result[key])
+
+    # 查看背景信息
+    if uid_list:
+        profile_result = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={"ids":uid_list})["docs"]
+        for item in profile_result:
+            _id = item['_id']
+            index = profile_result.index(item)
+            tmp = []
+            if item['found']:
+                item = item['_source']
+                tmp.append(item['uid'])
+                tmp.append(item['nick_name'])
+            else:
+                tmp.extend([_id,''])
+            value = int(sort_list[index])
+            tmp.append(value)
+            results.append(tmp)
+
+            network_results['be_retweet'] = results
+    return network_results 
 
 def search_retweet_network_keywords(task_id, uid):
     results = {}
