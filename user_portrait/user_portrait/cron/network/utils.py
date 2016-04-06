@@ -38,6 +38,8 @@ def save_dg_pr_results(sorted_uids, es_num, flag):
     index_type = "network"
     bulk_action = []
     for uid, rank in sorted_uids:
+        if (uid == 'global'):
+            continue
         user_results = {}
         user_results['uid'] = uid
         user_results[flag+'_'+str(es_num)] = rank
