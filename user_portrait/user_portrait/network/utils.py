@@ -4,7 +4,8 @@ import json
 import time
 from user_portrait.global_utils import es_network_task, network_keywords_index_name, \
                                 network_keywords_index_type
-from user_portrait.global_utils import es_user_profile, es_user_portrait
+from user_portrait.global_utils import es_user_profile, es_user_portrait,\
+        es_flow_text, flow_text_index_name_pre, flow_text_index_type
 from user_portrait.global_utils import retweet_redis_dict, comment_redis_dict
 from user_portrait.global_utils import profile_index_name, profile_index_type, portrait_index_name, portrait_index_type
 from user_portrait.global_utils import R_NETWORK_KEYWORDS, r_network_keywords_name
@@ -19,7 +20,7 @@ def show_daily_trend():
     index_name = 'user_portrait_network_count'
     index_type = 'network'
     try:
-        results = es_network_task.get(index=index_name, doc_type=index_type, id=date)['source']
+        results = es_network_task.get(index=index_name, doc_type=index_type, id=date)['_source']
     except:
         results = {}
     return results
@@ -185,3 +186,46 @@ def search_retweet_network(uid):
     item_result = {}
     item_result = retweet_redis.hgetall(item)
     return item_result 
+
+def search_retweet_network_keywords(task_id, uid):
+    results = {}
+    task_results = es_network_task.get(index=network_keywords_index_name, \
+                doc_type=network_keywords_index_type, id=task_id)['_source']
+
+    start_date = task_results['start_date']
+    start_ts = datetime2ts(start_date)
+    end_date = task_resuts['end_date']
+    end_ts = datetime2ts(end_date)
+    iter_date_ts = start_ts
+    to_date_ts = end_ts
+    iter_query_date_list = [] # ['2013-09-01', '2013-09-02']
+    while iter_date_ts <= to_date_ts:
+        iter_date = ts2datetime(iter_date_ts)
+        iter_query_date_list.append(iter_date)
+        iter_date_ts += DAY
+    #step2: get iter search flow_text_index_name
+    #step2.1: get search keywords list
+    query_must_list = []
+    keyword_nest_body_list = []
+    keywords_string = task_results['query_keywords']
+    keywords_list = keywords_string.split('&')
+    for keywords_item in keywords_list:
+        keyword_nest_body_list.append({'wildcard': {'text': '*' + keywords_item + '*'}})
+    query_must_list.append({'bool': {'should': keyword_nest_body_list}})
+    query_must_list.append({'term': {'uid': uid}})
+    #step2.2: iter search by date
+    search_results = []
+    for iter_date in iter_query_date_list:
+        flow_text_index_name = flow_text_index_name_pre + iter_date
+        query_body = {
+            'query':{
+                'bool':{
+                    'must':query_must_list
+                }
+            },
+            'size': 100
+        }
+        flow_text_result = es_flow_text.search(index=flow_text_index_name, doc_type=flow_text_index_type,\
+                    body=query_body)['hits']['hits']
+        search_results.extend(flow_text_result)
+    return search_results 
