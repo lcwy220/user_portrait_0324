@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import scan
+from global_utils import ES_CLUSTER_FLOW1 as es
 from global_utils import es_network_task, network_keywords_index_name
 
 index_info = {
@@ -53,5 +54,9 @@ index_info = {
         }
     }
 
+exist_bool = es.indices.exists(index=network_keywords_index_name)
+print exist_bool
+if exist_bool:
+    es.indices.delete(index=network_keywords_index_name)
 es_network_task.indices.create(index=network_keywords_index_name, body=index_info, ignore=400)
 
