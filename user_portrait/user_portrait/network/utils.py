@@ -30,22 +30,21 @@ def show_daily_rank(period, sort_type, count):
     index_type = 'network'
     sort = sort_type + '_' + str(period)   #pr_0
     query_body = {
-        'query':{},
         'sort':[{sort:{'order': 'desc'}}],
         'size': count
         }
     try:
-        seach_results = es_network_task.search(index=index_name, doc_type=index_type, body=query_body)['hits']['hits']
+        search_results = es_network_task.search(index=index_name, doc_type=index_type, body=query_body)['hits']['hits']
     except:
         search_results = []
-    
     results = []
     uid_list = []
     sort_list = []
     for item in search_results:
-        source = item['_source']
-        uid_list.append(source['uid'])
-        sort_list.append(source[sort])
+        source = item['_source']['doc']
+        if sort in source:
+            uid_list.append(source['uid'])
+            sort_list.append(source[sort])
     
     # 查看背景信息
     if uid_list:
