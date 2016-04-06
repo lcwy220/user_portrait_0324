@@ -183,7 +183,8 @@ def search_retweet_network(uid):
     #retweet_redis = retweet_redis_dict[str(db_number)]
     retweet_redis = comment_redis_dict[str(db_number)]
     item_result = {}
-    item_result = retweet_redis.hgetall(item)
+    # item_result = retweet_redis.hgetall('retweet_'+uid)
+    item_result = retweet_redis.hgetall('comment_'+uid)
     return item_result 
 
 def search_retweet_network_keywords(task_id, uid):
