@@ -147,9 +147,10 @@ def search_all_keywords(submit_date, keywords_string, submit_user, start_date, e
         query_list.append({'terms': {'end_date': end_date_mest_body_list}})
     if status:
         query_list.append({'term': {'status': status}})
+    print query_list
     try:
         task_results = es_network_task.search(index=network_keywords_index_name, \
-                doc_type=network_keywords_index_type, body={'query':{'bool':{'must':query_list}}})['hits']['hits']
+                doc_type=network_keywords_index_type, body={'query':{'bool':{'must':query_list}}, 'size':100})['hits']['hits']
     except:
         task_results = []
     for task_item in task_results:
