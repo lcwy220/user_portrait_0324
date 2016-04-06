@@ -97,7 +97,7 @@ def scan_retweet(tmp_file):
     #retweet_redis = retweet_redis_dict[str(db_number)]
     retweet_redis = comment_redis_dict[str(db_number)]
     start_ts = time.time()
-    while count < 100000:
+    while count < 1000000:
         re_scan = retweet_redis.scan(scan_cursor, count=100)
         re_scan_cursor = re_scan[0]
         for item in re_scan[1]:
