@@ -6,7 +6,7 @@ from flask import Blueprint, url_for, render_template, request, abort, flash, se
 from user_portrait.time_utils import ts2datetime
 from User_sort_interface import user_sort_interface
 from Offline_task import search_user_task , getResult , delOfflineTask
-
+from temporal_rank import get_temporal_rank
 
 mod = Blueprint('user_rank', __name__, url_prefix='/user_rank')
 
@@ -50,3 +50,14 @@ def delete_task():
     result = {}
     result['flag'] = delOfflineTask(search_id)
     return json.dumps(result)
+
+
+@mod.route('/temporal_rank/')
+def temporal_rank():
+    task_type = request.args.get("task_type", "0")
+    sort = request.args.get("sort", "retweeted") # comment
+    results = []
+    task_type = int(task_type)
+    results = get_temporal_rank(task_type, sort)
+
+    return json.dumps(results)
