@@ -41,7 +41,7 @@ def show_daily_rank(period, sort_type, count):
     uid_list = []
     sort_list = []
     for item in search_results:
-        source = item['_source']['doc']
+        source = item['_source']
         if sort in source:
             uid_list.append(source['uid'])
             sort_list.append(source[sort])
@@ -86,15 +86,14 @@ def show_keywords_rank(task_id, sort_type, count):
         task_found = {}
         return task_found
     
-    search_results = task_found['results'][sort_type]
+    search_results = json.loads(task_found['results'])
+    sort_results = search_results[sort_type]
     results = []
     uid_list = []
     sort_list = []
-    for item in search_results:
-        source = item['_source']['doc']
-        if sort in source:
-            uid_list.append(source['uid'])
-            sort_list.append(source[sort])
+    for source_uid, sort_value in sort_results:
+        uid_list.append(source_uid)
+        sort_list.append(sort_value)
     
     # 查看背景信息
     if uid_list:
@@ -147,7 +146,7 @@ def submit_network_keywords(keywords_string, start_date, end_date, submit_user):
     task_information['submit_ts'] = submit_ts
     task_information['start_date'] = start_date
     task_information['end_date'] = end_date
-    task_id = str(submit_ts) + '_' + submit_user + '_' + add_keywords_string
+    task_id = str(submit_ts) + '_' + submit_user
     task_information['task_id'] = task_id
     task_information['status'] = '0'
     task_information['results'] = ''
@@ -233,41 +232,27 @@ def search_retweet_network(uid):
     retweet_redis = comment_redis_dict[str(db_number)]
     network_results = {}
     # retweet
-    # item_result = retweet_redis.hgetall('retweet_'+uid)
-    item_result = retweet_redis.hgetall('comment_'+uid)
-    uid_list = []
-    sort_list = []
-    for key in item_result:
-        uid_list.append(key)
-        sort_list.append(item_result[key])
-
-    # 查看背景信息
-    if uid_list:
-        profile_result = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={"ids":uid_list})["docs"]
-        for item in profile_result:
-            _id = item['_id']
-            index = profile_result.index(item)
-            tmp = []
-            if item['found']:
-                item = item['_source']
-                tmp.append(item['uid'])
-                tmp.append(item['nick_name'])
-            else:
-                tmp.extend([_id,''])
-            value = int(sort_list[index])
-            tmp.append(value)
-            results.append(tmp)
-
-            network_results['retweet'] = results
+    # item_results = retweet_redis.hgetall('retweet_'+uid)
+    item_results = retweet_redis.hgetall('comment_'+uid)
+    results = retweet_dict2results(uid, item_results)
+    network_results['retweet'] = results
     # be_retweet
-    # item_result = retweet_redis.hgetall('retweet_'+uid)
-    item_result = retweet_redis.hgetall('be_comment_'+uid)
+    item_results = retweet_redis.hgetall('be_comment_'+uid)
+    results = retweet_dict2results(uid, item_results)
+    network_results['be_retweet'] = results
+
+    return network_results 
+
+def retweet_dict2results(uid, item_results):
+    results = []
     uid_list = []
     sort_list = []
-    for key in item_result:
+    for key in item_results:
+        if (key == uid):
+            continue
         uid_list.append(key)
-        sort_list.append(item_result[key])
-
+        sort_list.append(item_results[key])
+    
     # 查看背景信息
     if uid_list:
         profile_result = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={"ids":uid_list})["docs"]
@@ -284,9 +269,7 @@ def search_retweet_network(uid):
             value = int(sort_list[index])
             tmp.append(value)
             results.append(tmp)
-
-            network_results['be_retweet'] = results
-    return network_results 
+    return results
 
 def search_retweet_network_keywords(task_id, uid):
     results = {}
@@ -313,20 +296,55 @@ def search_retweet_network_keywords(task_id, uid):
     for keywords_item in keywords_list:
         keyword_nest_body_list.append({'wildcard': {'text': '*' + keywords_item + '*'}})
     query_must_list.append({'bool': {'should': keyword_nest_body_list}})
-    query_must_list.append({'term': {'uid': uid}})
-    #step2.2: iter search by date
-    search_results = []
+    network_results = {}
+    retweet_query = query_must_list
+    be_retweet_query = query_must_list
+    #retweet
+    retweet_query.append({'term': {'uid': uid}})
+    item_results = {}
     for iter_date in iter_query_date_list:
         flow_text_index_name = flow_text_index_name_pre + iter_date
         query_body = {
             'query':{
                 'bool':{
-                    'must':query_must_list
+                    'must':retweet_query
                 }
             },
             'size': 100
         }
         flow_text_result = es_flow_text.search(index=flow_text_index_name, doc_type=flow_text_index_type,\
                     body=query_body)['hits']['hits']
-        search_results.extend(flow_text_result)
-    return search_results 
+        for item in flow_text_result:
+            source = item['_source']
+            source_uid = source['directed_uid']
+            try:
+                item_results[source_uid] += 1
+            except:
+                item_results[source_uid] = 1
+    results = retweet_dict2results(uid, item_results)
+    network_results['retweet'] = results
+    #be_retweet
+    retweet_query.append({'term': {'directed_uid': uid}})
+    item_results = {}
+    for iter_date in iter_query_date_list:
+        flow_text_index_name = flow_text_index_name_pre + iter_date
+        query_body = {
+            'query':{
+                'bool':{
+                    'must':retweet_query
+                }
+            },
+            'size': 100
+        }
+        flow_text_result = es_flow_text.search(index=flow_text_index_name, doc_type=flow_text_index_type,\
+                    body=query_body)['hits']['hits']
+        for item in flow_text_result:
+            source = item['_source']
+            source_uid = source['directed_uid']
+            try:
+                item_results[source_uid] += 1
+            except:
+                item_results[source_uid] = 1
+    results = retweet_dict2results(uid, item_results)
+    network_results['be_retweet'] = results
+    return network_results 
