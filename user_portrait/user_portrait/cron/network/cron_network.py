@@ -43,7 +43,7 @@ def scan_network_keywords_task():
                 ITER_COUNT = 10
                 TOP_N = 50
                 print 'step 2: pagerank', ts2date(time.time())
-                dg_sorted_uids, pr_sorted_uids = pagerank(ITER_COUNT, input_tmp_path, TOP_N, 'keywords')
+                all_uids_count, dg_sorted_uids, pr_sorted_uids = pagerank(ITER_COUNT, input_tmp_path, TOP_N, 'keywords')
                 #save results
                 print 'step 3: save', ts2date(time.time())
                 save_mark = save_task_results(dg_sorted_uids, pr_sorted_uids, network_task_information)

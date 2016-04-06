@@ -12,8 +12,6 @@ from global_utils import es_user_portrait, retweet_redis_dict, comment_redis_dic
 from time_utils import ts2datetime, datetime2ts
 
 begin_ts = datetime2ts(R_BEGIN_TIME)
-index_name = "user_portrait_network"
-index_type = "network"
 
 def get_es_num(timestamp):
     date = ts2datetime(timestamp)
@@ -21,7 +19,23 @@ def get_es_num(timestamp):
     num = int((timestamp - date_ts) / (3 * HOUR))
     return num
 
+def save_count_results(all_uids_count, es_num):
+    index_name = "user_portrait_network_count"
+    index_type = "network"
+    item = {}
+    date = ts2datetime(time.time())
+    item['period_'+str(es_num)] = all_uids_count
+    try:
+        item_exist = es_user_portrait.get(index=index_name, doc_type=index_type, id=date)['_source']
+        es_user_portrait.update(index=index_name, doc_type=index_type,id=date,body=item)
+    except:
+        item['start_ts'] = date
+        es_user_portrait.index(index=index_name, doc_type=index_type,id=date,body=item)
+
+
 def save_dg_pr_results(sorted_uids, es_num, flag):
+    index_name = "user_portrait_network"
+    index_type = "network"
     bulk_action = []
     for uid, rank in sorted_uids:
         user_results = {}
@@ -81,7 +95,7 @@ def scan_retweet(tmp_file):
     #retweet_redis = retweet_redis_dict[str(db_number)]
     retweet_redis = comment_redis_dict[str(db_number)]
     start_ts = time.time()
-    while count < 1000000:
+    while count < 100000:
         re_scan = retweet_redis.scan(scan_cursor, count=100)
         re_scan_cursor = re_scan[0]
         for item in re_scan[1]:
