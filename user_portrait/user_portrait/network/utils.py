@@ -78,10 +78,59 @@ def show_daily_rank(period, sort_type, count):
 
     return results
 
+def show_keywords_rank(task_id, sort_type, count):
+    try:
+        task_found = es_network_task.get(index=network_keywords_index_name, \
+                doc_type=network_keywords_index_type, id=task_id)['_source']
+    except:
+        task_found = {}
+        return task_found
+    
+    search_results = task_found['results'][sort_type]
+    results = []
+    uid_list = []
+    sort_list = []
+    for item in search_results:
+        source = item['_source']['doc']
+        if sort in source:
+            uid_list.append(source['uid'])
+            sort_list.append(source[sort])
+    
+    # 查看背景信息
+    if uid_list:
+        profile_result = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={"ids":uid_list})["docs"]
+        for item in profile_result:
+            _id = item['_id']
+            index = profile_result.index(item)
+            tmp = []
+            if item['found']:
+                item = item['_source']
+                tmp.append(item['uid'])
+                tmp.append(item['nick_name'])
+                tmp.append(item['statusnum'])
+                tmp.append(item['user_location'])
+                tmp.append(item['fansnum'])
+            else:
+                tmp.extend([_id,'','','',''])
+            value = int(sort_list[index])
+            tmp.append(value)
+            results.append(tmp)
+    
+    if uid_list:
+        count = 0
+        portrait_result = es_user_portrait.mget(index=portrait_index_name, doc_type=portrait_index_type, body={"ids":uid_list})["docs"]
+        for item in portrait_result:
+            if item['found']:
+                results[count].append("1")
+            else:
+                results[count].append("0")
+            count += 1
+
+    return results
 #use to delete network keywords task
 def delete_network_keywords(task_id):
     status = False
-    es_delete_task.delete(index=network_keywords_index_name, \
+    es_network_task.delete(index=network_keywords_index_name, \
                 doc_type=network_keywords_index_type, id=task_id)
     status = True
     return status
@@ -147,7 +196,6 @@ def search_all_keywords(submit_date, keywords_string, submit_user, start_date, e
         query_list.append({'terms': {'end_date': end_date_mest_body_list}})
     if status:
         query_list.append({'term': {'status': status}})
-    print query_list
     try:
         task_results = es_network_task.search(index=network_keywords_index_name, \
                 doc_type=network_keywords_index_type, body={'query':{'bool':{'must':query_list}}, 'size':100})['hits']['hits']
@@ -183,10 +231,62 @@ def search_retweet_network(uid):
     #get redis db
     #retweet_redis = retweet_redis_dict[str(db_number)]
     retweet_redis = comment_redis_dict[str(db_number)]
-    item_result = {}
+    network_results = {}
+    # retweet
     # item_result = retweet_redis.hgetall('retweet_'+uid)
     item_result = retweet_redis.hgetall('comment_'+uid)
-    return item_result 
+    uid_list = []
+    sort_list = []
+    for key in item_result:
+        uid_list.append(key)
+        sort_list.append(item_result[key])
+
+    # 查看背景信息
+    if uid_list:
+        profile_result = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={"ids":uid_list})["docs"]
+        for item in profile_result:
+            _id = item['_id']
+            index = profile_result.index(item)
+            tmp = []
+            if item['found']:
+                item = item['_source']
+                tmp.append(item['uid'])
+                tmp.append(item['nick_name'])
+            else:
+                tmp.extend([_id,''])
+            value = int(sort_list[index])
+            tmp.append(value)
+            results.append(tmp)
+
+            network_results['retweet'] = results
+    # be_retweet
+    # item_result = retweet_redis.hgetall('retweet_'+uid)
+    item_result = retweet_redis.hgetall('be_comment_'+uid)
+    uid_list = []
+    sort_list = []
+    for key in item_result:
+        uid_list.append(key)
+        sort_list.append(item_result[key])
+
+    # 查看背景信息
+    if uid_list:
+        profile_result = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={"ids":uid_list})["docs"]
+        for item in profile_result:
+            _id = item['_id']
+            index = profile_result.index(item)
+            tmp = []
+            if item['found']:
+                item = item['_source']
+                tmp.append(item['uid'])
+                tmp.append(item['nick_name'])
+            else:
+                tmp.extend([_id,''])
+            value = int(sort_list[index])
+            tmp.append(value)
+            results.append(tmp)
+
+            network_results['be_retweet'] = results
+    return network_results 
 
 def search_retweet_network_keywords(task_id, uid):
     results = {}
