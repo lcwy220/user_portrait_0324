@@ -45,7 +45,7 @@ def save_dg_pr_results(sorted_uids, es_num, flag):
         user_results[flag+'_'+str(es_num)] = rank
         if es_num == 0:
             action = {'index':{'_id':uid}}
-            bulk_action.extend([action,{'doc':user_results}])
+            bulk_action.extend([action,user_results])
         else:
             try:
                 item_exist = es_user_portrait.get(index=index_name, doc_type=index_type, id=uid)['_source']
@@ -54,13 +54,13 @@ def save_dg_pr_results(sorted_uids, es_num, flag):
                     pr_last = item_exist[flag+'_'+str(es_num-1)]
                 except:
                     pr_last = 0
+                user_results[flag+'_diff_'+str(es_num)] = rank - pr_last
+                bulk_action.extend([action,{'doc':user_results}])
             except:
                 action = {'index':{'_id':uid}}
                 pr_last = 0
-
-            
-            user_results[flag+'_diff_'+str(es_num)] = rank - pr_last
-            bulk_action.extend([action,{'doc':user_results}])
+                user_results[flag+'_diff_'+str(es_num)] = rank - pr_last
+                bulk_action.extend([action,user_results])
 
     #print bulk_action
     es_user_portrait.bulk(bulk_action, index=index_name, doc_type=index_type)
@@ -97,7 +97,7 @@ def scan_retweet(tmp_file):
     #retweet_redis = retweet_redis_dict[str(db_number)]
     retweet_redis = comment_redis_dict[str(db_number)]
     start_ts = time.time()
-    while count < 100000:
+    while count < 1000000:
         re_scan = retweet_redis.scan(scan_cursor, count=100)
         re_scan_cursor = re_scan[0]
         for item in re_scan[1]:
