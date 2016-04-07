@@ -69,10 +69,11 @@ def get_rank_task(submit_user):
         source = task_item['_source']
         submit_date = source['submit_time']
         keyword = source['keyword']
+        sort_scope = source['sort_scope']
         sort_index = source['sort_norm']
         status = source['status']
         submit_ts = date2ts(submit_date)
-        results.append([keyword, sort_index, submit_date, status, submit_ts])
+        results.append([keyword, sort_index, submit_date, status, sort_scope,submit_ts])
     #step4: sort results
     sort_results = sorted(results, key=lambda x:x[4], reverse=True)
     return results
