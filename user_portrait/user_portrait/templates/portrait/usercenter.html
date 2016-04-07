@@ -184,20 +184,103 @@
 
 </div><!--/.fluid-container-->
 
-    <div class="modal fade" id="detail_in_portrait" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="recomment_detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
-        <div class="modal-content" style="position: absolute;margin-top: 100px;float :none;width: 900px;margin-left: -135px;">
+        <div class="modal-content" style="position: absolute;margin-top: 40px;float :none;width: 900px;margin-left: -135px;">
           <div class="modal-header" style="float:inherit;margin:initial;">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="myModalLabel">推荐入库</h4>
+            <h4 class="modal-title" id="myModalLabel_u">入库推荐</h4>
           </div>
-          <div class="modal-body" style="float:none;">
-            <div id="show_user_detail"></div>
+          <div class="modal-body" style="float:none;max-height: 400px;overflow-y: auto;">
+            <div id="recomment_detail_modal"></div>
           </div>
         </div>
       </div>
     </div>
 
+    <div class="modal fade" id="rank_task_detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content" style="position: absolute;margin-top: 40px;float :none;width: 900px;margin-left: -135px;">
+          <div class="modal-header" style="float:inherit;margin:initial;">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">用户排行</h4>
+          </div>
+          <div class="modal-body" style="float:none;max-height: 400px;overflow-y: auto;">
+            <div id="rank_task_detail_modal"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="sentiment_task_detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content" style="position: absolute;margin-top: 40px;float :none;width: 900px;margin-left: -135px;">
+          <div class="modal-header" style="float:inherit;margin:initial;">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">情绪监测</h4>
+          </div>
+          <div class="modal-body" style="float:none;max-height: 400px;overflow-y: auto;">
+            <div id="sentiment_task_detail_modal"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="network_task_detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content" style="position: absolute;margin-top: 40px;float :none;width: 900px;margin-left: -135px;">
+          <div class="modal-header" style="float:inherit;margin:initial;">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">网络分析</h4>
+          </div>
+          <div class="modal-body" style="float:none;max-height: 400px;overflow-y: auto;">
+            <div id="network_task_detail_modal"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="group_detect_detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content" style="position: absolute;margin-top: 40px;float :none;width: 900px;margin-left: -135px;">
+          <div class="modal-header" style="float:inherit;margin:initial;">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">群体发现</h4>
+          </div>
+          <div class="modal-body" style="float:none;max-height: 400px;overflow-y: auto;">
+            <div id="group_detect_detail_modal"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="group_analysis_detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content" style="position: absolute;margin-top: 40px;float :none;width: 900px;margin-left: -135px;">
+          <div class="modal-header" style="float:inherit;margin:initial;">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">群体分析</h4>
+          </div>
+          <div class="modal-body" style="float:none;max-height: 400px;overflow-y: auto;">
+            <div id="group_analysis_detail_modal"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="sensing_task_detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content" style="position: absolute;margin-top: 40px;float :none;width: 900px;margin-left: -135px;">
+          <div class="modal-header" style="float:inherit;margin:initial;">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">社会感知</h4>
+          </div>
+          <div class="modal-body" style="float:none;max-height: 400px;overflow-y: auto;">
+            <div id="sensing_task_detail_modal"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     {% endblock main %}
 
 {% block Own_js %}

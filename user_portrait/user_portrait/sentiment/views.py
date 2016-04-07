@@ -77,7 +77,12 @@ def ajax_search_sentiment_all_keywords_task():
 #use to get all keywords sentiment trend
 @mod.route('/show_sentiment_all_keywords_results/')
 def ajax_senitment_all_keywords():
-    task_id = request.args.get('task_id', '') # ts_admin_keywords
+    task_keyword = request.args.get('task_keyword', '') # word1,word2
+    submit_ts = request.args.get('submit_ts', '') # ts
+    submit_user = request.args.get('submit_user', '') # submit_user
+    task_keyword_string = '&'.join(task_keyword.split(','))
+    task_id = submit_ts + '_' + submit_user + '_' + task_keyword_string
+    # task_id = ts_admin_keywords
     time_segment = request.args.get('segment', 'fifteen') #fifteen/hour/day
     results = show_sentiment_all_keywords_results(task_id, time_segment)
     if not results:

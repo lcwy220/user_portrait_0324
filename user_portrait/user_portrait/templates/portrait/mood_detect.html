@@ -183,7 +183,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" style="font-size:18px" id="myModalLabel">库内用户</h4>
       </div>
-      <div class="modal-body" id='inuser_WordList'>
+      <div class="modal-body" id='inuser_WordList'  style="max-height: 600px;overflow-y: auto;">
       </div>
     </div>
   </div>
@@ -196,7 +196,10 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" style="font-size:18px" id="myModalLabel">库外用户</h4>
       </div>
-      <div class="modal-body" id='outuser_WordList'>
+      <div class="modal-body" id='outuser_WordList'  style="max-height: 600px;overflow-y: auto;">
+      </div>
+      <div class="modal-footer">
+    	<p><span onclick="recom_in_modal()" class="portrait_button" style="float:right;cursor:pointer;margin-right:20px;width: 60px;height: 25px;text-align: center;line-height: 25px;">推荐入库</span></p>
       </div>
     </div>
   </div>
@@ -209,7 +212,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" style="font-size:18px" id="myModalLabel">关键词</h4>
       </div>
-      <div class="modal-body" id='keywords_WordList'>
+      <div class="modal-body" id='keywords_WordList' style="max-height: 600px;overflow-y: auto;">
       </div>
     </div>
   </div>

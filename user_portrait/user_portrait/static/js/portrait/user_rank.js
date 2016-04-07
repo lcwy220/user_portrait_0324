@@ -1,3 +1,14 @@
+
+var myDate = new Date();
+var hh = myDate.getHours();
+var mm =myDate.getMinutes();
+var count_mm = Math.floor(mm/15);
+var show_mm = count_mm * 15;
+if(show_mm==0){
+	show_mm = '00';
+}
+var show_time = hh.toString() + ':' + show_mm.toString();
+
 function call_sync_ajax_request(url, callback){
     $.ajax({
       url: url,
@@ -27,7 +38,7 @@ function user_rank_timepicker(str){
 
 function task_status (data) {
 	var data = data.data;
-	console.log(data);
+	//console.log(data);
 	if (data.length == 0){
 		$('#task_status').empty();
 		var html = '<div style="text-align: center;background-color: #cccccc;">暂无任务</div>'
@@ -602,6 +613,71 @@ function del(data){
 	}
 }
 
+
+function temporal_rank_table(data){
+	$('#result_rank_table').empty();
+	var html = '';
+	html += '<table id="rank_table" class="table table-striped table-bordered bootstrap-datatable datatable responsive" style="margin-left:30px;width:900px;">';
+	html += '<thead><th style="text-align:center;">排名</th>';
+	html += '<th style="text-align:center;">用户ID</th>';
+	html += '<th style="text-align:center;">昵称</th>';
+	html += '<th style="text-align:center;">是否入库</th>';
+	html += '<th style="text-align:center;">注册地</th>';
+	html += '<th style="text-align:center;">粉丝数</th>';
+	html += '<th style="text-align:center;">微博数</th>';
+	html += '<th style="text-align:center;">评论量</th>';
+	html += '<th style="text-align:center;">转发量</th></thead>';
+	for(var i=0;i<data.length;i++){
+		var uid = data[i][0];
+		var uname = data[i][1];
+		if(uname == ''){
+			uname = '未知';
+		}
+		var sign_loca = data[i][3];
+		if(sign_loca == ''){
+			sign_loca = '未知'
+		}
+		if(data[i][7]==1){ //是否入库
+			var ifin = '是';
+		}else{
+			var ifin = '否';
+		}
+		if(data[i][4]==''){//fans
+			data[i][4]= '未知';
+		}
+		if(data[i][5]==''){//retweeted
+			data[i][5]= '未知';
+		}
+		if(data[i][6]==''){//comment
+			data[i][6]= '未知';
+		}
+		if(data[i][2]==''){//weibo
+			data[i][2]= '未知';
+		}
+		
+		html += '<tr>';
+		html += '<td style="text-align:center;">'+(i+1)+'</td>';
+		html += '<td style="text-align:center;"><a href="/index/personal/?uid='+uid+'" target="_blank">'+uid+'</a></td>';
+		html += '<td style="text-align:center;">'+uname+'</td>';
+		html += '<td style="text-align:center;">'+ifin+'</td>';
+		html += '<td style="text-align:center;">'+sign_loca+'</td>';
+		html += '<td style="text-align:center;">'+data[i][4]+'</td>';
+		html += '<td style="text-align:center;">'+data[i][2]+'</td>';
+		html += '<td style="text-align:center;">'+data[i][5]+'</td>';
+		html += '<td style="text-align:center;">'+data[i][6]+'</td>';
+		html += '</tr>';
+	}
+	html += '</table>';
+	$('#result_rank_table').append(html);
+	$('#rank_table').dataTable({
+			"sDom": "<'row'<'col-md-6'l ><'col-md-6'f>r>t<'row'<'col-md-12'i><'col-md-12 center-block'p>>",
+			"sPaginationType": "bootstrap",
+			//"aoColumnDefs":[ {"bSortable": false, "aTargets":[1]}],
+			"oLanguage": {
+			    "sLengthMenu": "每页 _MENU_ 条 ",
+			}
+	    });
+}
 function submit_rank(){
     
 	var s = [];
@@ -613,75 +689,19 @@ function submit_rank(){
 	var sort_norm = $('#sort_select_2 option:selected').val();
 	var arg = $('#range_choose_detail_2 option:selected').val();
 	var day_select = $("input[name='time_range']:checked").val();
-	console.log(sort_scope);
 	//全网实时
 	if(sort_scope=='in_intime'){
-		console.log(sort_scope);
 		$('#task_zh').css('display','none');
 		$('#task_status').css('display','none');
 		$('#result_analysis').css('display','none');
-		$('#result_rank_table').empty();
-		var html = '';
-		html += '<table id="rank_table" class="table table-striped table-bordered bootstrap-datatable datatable responsive" style="margin-left:30px;width:900px;">';
-		html += '<thead><th style="text-align:center;">排名</th>';
-		html += '<th style="text-align:center;">用户ID</th>';
-		html += '<th style="text-align:center;">昵称</th>';
-		html += '<th style="text-align:center;">注册地</th>';
-		html += '<th style="text-align:center;">领域</th>';//其实是话题
-		html += '<th style="text-align:center;">身份</th>';//其实是领域
-		html += '<th style="text-align:center;">身份敏感度</th>';
-		html += '<th style="text-align:center;">活跃度</th>';
-		html += '<th style="text-align:center;">影响力</th>';
-		html += '<th style="text-align:center;">言论敏感度</th></thead>';
-		
-		for(var i=0;i<4;i++){
-			/*
-			var uid = data[i].uid;
-			var uname = data[i].uname;
-			if(uname == 'unknown'){
-				uname = uid
-			}
-			var location = data[i].location;
-			if(location == 'unknown'){
-				location = '未知'
-			}
-			var topic = '';
-			topic = data[i].topic.split('&');
-			var domain = data[i].domain;
-			var imp = data[i].imp;
-			if(imp == null){
-				imp = 0;
-			}
-			var active = data[i].act;
-			if(active == null){
-				active = 0;
-			}
-
-			//var weibo_num = data[i].weibo_num;
-			var influcence = data[i].bci;
-			if(influcence == null){
-				influcence = 0;
-			}
-			var sensi = data[i].sen;
-			if(data[i].sen == null){
-				sensi = 0;
-			}
-            */
-			html += '<tr>';
-			html += '<td style="text-align:center;">'+(i+1)+'</td>';
-			html += '<td style="text-align:center;"><a href="/index/personal/?uid='+111111+'" target="_blank">'+11111+'</a></td>';
-			html += '<td style="text-align:center;">test</td>';
-			html += '<td style="text-align:center;">test</td>';
-			html += '<td style="text-align:center;">test</td>';
-			html += '<td style="text-align:center;">test</td>';
-			html += '<td style="text-align:center;">test</td>';
-			html += '<td style="text-align:center;">test</td>';
-			html += '<td style="text-align:center;">test</td>';
-			html += '<td style="text-align:center;">test</td>';
-			html += '</tr>';
+		if(day_select*6 > hh){
+			alert('当前选择的时间超出范围，请重新选择');
+			$('#result_rank_table').empty();
 		}
-		html += '</table>';
-		$('#result_rank_table').append(html);
+		else{
+			var url = '/user_rank/temporal_rank/?task_type='+day_select+'&sort='+sort_norm;
+			call_sync_ajax_request(url, temporal_rank_table);
+		}
 	}
 	else{
 		
@@ -761,7 +781,7 @@ function submit_rank(){
 var username = $('#username').text();
 var sort_scope = $('#range_choose option:selected').val();
 var sort_norm_rank = $('#sort_select_2 option:selected').val();
-console.log(sort_norm_rank);
+//console.log(sort_norm_rank);
 var arg = $('#range_choose_detail_2 option:selected').text();
 var day_select = $("input[name='time_range']:checked").val();
 $('#rec_range').append($('#range_choose option:selected').text());
@@ -788,7 +808,7 @@ call_sync_ajax_request(task_url, task_status);
 
 //画结果表格
 var rank_url = '/user_rank/user_sort/?username='+ username +'&time='+ day_select +'&sort_norm='+ sort_norm_rank +'&sort_scope='+ sort_scope+'&all=True';
-console.log(rank_url);
+//console.log(rank_url);
 var	loading_html = '<div style="text-align:center;vertical-align:middle;height:40px">数据正在加载中，请稍后...</div>';
 $('#result_rank_table').append(loading_html)
 
@@ -852,15 +872,7 @@ $('.delete_this').live("click", function(){
 
 
 //全网实时排名
-var myDate = new Date();
-var hh = myDate.getHours();
-var mm =myDate.getMinutes();
-var count_mm = Math.floor(mm/15);
-var show_mm = count_mm * 15;
-if(show_mm==0){
-	show_mm = '00';
-}
-var show_time = hh.toString() + ':' + show_mm.toString();
+
 
 
 $(function(){
@@ -869,12 +881,16 @@ $(function(){
 		if(box=='in_intime'){
 			$('#time_choose').empty();
 			html = '';
-			html = html + '00:00 -'+show_time;
+			html = html + '<input name="time_range" type="radio" value="0" checked=“checked”>00:00 -'+show_time;
+			html = html + '<input name="time_range" type="radio" value="1"  style="margin-left:20px;">00:00 -6:00';
+			html = html + '<input name="time_range" type="radio" value="2"  style="margin-left:20px;">6:00 -12:00';
+			html = html + '<input name="time_range" type="radio" value="3"  style="margin-left:20px;">12:00 -18:00';
+			html = html + '<input name="time_range" type="radio" value="4"  style="margin-left:20px;">18:00 -24:00';
 			$('#time_choose').append(html);
 			$('#sort_select_2').empty();
 			html = '';
-			html += '<option value="total_retweet" checked="checked">总转发数</option>';
-			html += '<option value="total_comment" >总评论数</option>';
+			html += '<option value="retweeted" checked="checked">总转发数</option>';
+			html += '<option value="comment" >总评论数</option>';
 			$('#sort_select_2').append(html);
 		}
 		

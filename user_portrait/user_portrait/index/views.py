@@ -193,3 +193,7 @@ def role_manage():
 def logmanage():
     return redirect("http://114.255.183.77:5601/")
 
+
+@mod.route('/network/')
+def net():
+    return render_template('portrait/net.html')

@@ -12,8 +12,6 @@ from global_utils import es_user_portrait, retweet_redis_dict, comment_redis_dic
 from time_utils import ts2datetime, datetime2ts
 
 begin_ts = datetime2ts(R_BEGIN_TIME)
-index_name = "user_portrait_network"
-index_type = "network"
 
 def get_es_num(timestamp):
     date = ts2datetime(timestamp)
@@ -21,15 +19,33 @@ def get_es_num(timestamp):
     num = int((timestamp - date_ts) / (3 * HOUR))
     return num
 
+def save_count_results(all_uids_count, es_num):
+    index_name = "user_portrait_network_count"
+    index_type = "network"
+    item = {}
+    date = ts2datetime(time.time())
+    item['period_'+str(es_num)] = all_uids_count
+    try:
+        item_exist = es_user_portrait.get(index=index_name, doc_type=index_type, id=date)['_source']
+        es_user_portrait.update(index=index_name, doc_type=index_type,id=date,body=item)
+    except:
+        item['start_ts'] = date
+        es_user_portrait.index(index=index_name, doc_type=index_type,id=date,body=item)
+
+
 def save_dg_pr_results(sorted_uids, es_num, flag):
+    index_name = "user_portrait_network"
+    index_type = "network"
     bulk_action = []
     for uid, rank in sorted_uids:
+        if (uid == 'global'):
+            continue
         user_results = {}
         user_results['uid'] = uid
         user_results[flag+'_'+str(es_num)] = rank
         if es_num == 0:
             action = {'index':{'_id':uid}}
-            bulk_action.extend([action,{'doc':user_results}])
+            bulk_action.extend([action,user_results])
         else:
             try:
                 item_exist = es_user_portrait.get(index=index_name, doc_type=index_type, id=uid)['_source']
@@ -38,13 +54,13 @@ def save_dg_pr_results(sorted_uids, es_num, flag):
                     pr_last = item_exist[flag+'_'+str(es_num-1)]
                 except:
                     pr_last = 0
+                user_results[flag+'_diff_'+str(es_num)] = rank - pr_last
+                bulk_action.extend([action,{'doc':user_results}])
             except:
                 action = {'index':{'_id':uid}}
                 pr_last = 0
-
-            
-            user_results[flag+'_diff_'+str(es_num)] = rank - pr_last
-            bulk_action.extend([action,{'doc':user_results}])
+                user_results[flag+'_diff_'+str(es_num)] = rank - pr_last
+                bulk_action.extend([action,user_results])
 
     #print bulk_action
     es_user_portrait.bulk(bulk_action, index=index_name, doc_type=index_type)
@@ -62,7 +78,7 @@ def get_db_num(timestamp):
 def write_tmp_file(tmp_file, uid, item_result):
     count = 0
     for key in item_result:
-        if key != 'None':
+        if (key != 'None') and (key != uid):
             count += 1
             tmp_file.write('%s\t%s\t%s\n' % (uid, key, item_result[key]))
 

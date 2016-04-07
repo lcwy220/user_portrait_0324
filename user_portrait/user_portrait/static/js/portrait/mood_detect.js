@@ -167,7 +167,8 @@ function draw_user_out_table(data){
         html += '<th style="text-align:center;">昵称</th>';
         html += '<th style="text-align:center;">微博数</th>';
         html += '<th style="text-align:center;">粉丝数</th>';
-        html += '<th style="text-align:center;">关注数</th></thead>';
+        html += '<th style="text-align:center;">关注数</th>';
+        html += '<th><input name="mood_out_all_check" id="mood_out_all_check" type="checkbox" value="" onclick="choose_out_all()" /></th></thead>';
         for(var i=0;i<data.length;i++){
             html += '<tr>';
             html += '<td style="text-align:center;">'+data[i][0]+'</td>';
@@ -179,9 +180,11 @@ function draw_user_out_table(data){
             html += '<td style="text-align:center;">'+data[i][1][1]+'</td>';
             html += '<td style="text-align:center;">'+data[i][1][3]+'</td>';
             html += '<td style="text-align:center;">'+data[i][1][2]+'</td>';
+            html += '<td style="text-align:center"><input name="mood_out_list_option" class="search_result_option" type="checkbox" value="' + data[i][0] + '" /></td>';
             html += '</tr>';
         }
         html += '</table>';
+        html += '<p><span onclick="recom_in()" class="portrait_button" style="float:right;cursor:pointer;margin-right:20px;width: 60px;height: 25px;text-align: center;line-height: 25px;">推荐入库</span></p>'
         $('#mood_out_user').append(html);
     }
 }
@@ -195,27 +198,46 @@ function show_more_outuser(data){
     html += '<th style="text-align:center;">昵称</th>';
     html += '<th style="text-align:center;">微博数</th>';
     html += '<th style="text-align:center;">粉丝数</th>';
-    html += '<th style="text-align:center;">关注数</th></thead>';
+    html += '<th style="text-align:center;">关注数</th>';
+    html += '<th><input name="mood_out_all_modal" id="mood_out_all_modal" type="checkbox" value="" onclick="choose_out_all_modal()" /></th></thead>';
     for(var i=0;i<data.length;i++){
         html += '<tr>';
         html += '<td style="text-align:center;">'+data[i][0]+'</td>';
-        html += '<td style="text-align:center;">'+data[i][1][0]+'</td>';
+        var name = data[i][1][0];
+        if(data[i][1][0] == 'unknown'){
+                name = data[i][0];
+        }
+        html += '<td style="text-align:center;">'+name+'</td>';
         html += '<td style="text-align:center;">'+data[i][1][1]+'</td>';
         html += '<td style="text-align:center;">'+data[i][1][3]+'</td>';
         html += '<td style="text-align:center;">'+data[i][1][2]+'</td>';
+        html += '<td style="text-align:center"><input name="out_list_option_modal" class="search_result_option" type="checkbox" value="' + data[i][0] + '" /></td>';
+
         html += '</tr>';
     }
     html += '</table>';
+    // html += '<p><span onclick="recom_in_modal()" class="portrait_button" style="float:right;cursor:pointer;margin-right:20px;width: 60px;height: 25px;text-align: center;line-height: 25px;">推荐入库</span></p>'
     $('#outuser_WordList').append(html);
-    $('#more_outuser_table').dataTable({
-    "sDom": "<'row'<'col-md-6'l ><'col-md-6'f>r>t<'row'<'col-md-12'i><'col-md-12 center-block'p>>",
-    "sPaginationType": "bootstrap",
-    //"aoColumnDefs":[ {"bSortable": false, "aTargets":[1]}],
-    "oLanguage": {
-        "sLengthMenu": "每页 _MENU_ 条 ",
-        }
-    });
+    // $('#more_outuser_table').dataTable({
+    // "sDom": "<'row'<'col-md-6'l ><'col-md-6'f>r>t<'row'<'col-md-12'i><'col-md-12 center-block'p>>",
+    // "sPaginationType": "bootstrap",
+    // //"aoColumnDefs":[ {"bSortable": false, "aTargets":[1]}],
+    // "oLanguage": {
+    //     "sLengthMenu": "每页 _MENU_ 条 ",
+    //     }
+    // });
 }
+function choose_out_all () {
+    console.log('fg')
+  $('input[name="mood_out_list_option"]').prop('checked', $("#mood_out_all_check").prop('checked'));
+  console.log('gsdf')
+}
+
+function choose_out_all_modal () {
+  $('input[name="out_list_option_modal"]').prop('checked', $("#mood_out_all_modal").prop('checked'));
+}
+
+
 
 function createRandomItemStyle() {
     return {
@@ -444,6 +466,75 @@ function choose_related_weibo(url, index){
 
     })
 }
+
+//入库推荐modal
+function recom_in_modal(){
+  var cur_uids = []
+  var noneflag = true;
+  $('input[name="out_list_option_modal"]:checked').each(function(){
+      cur_uids.push($(this).attr('value'));
+      if($(this).parent().prev().prev().prev().prev().prev().text() == $(this).parent().prev().prev().prev().prev().text()){
+        noneflag = false;
+      }
+  });
+  //var compute_type = $('input[name="compute-type"]:checked').val();
+ // var recommend_date = new Date().format('yyyy-MM-dd');
+  var recommend_date0 = choose_time_for_mode();    // choose_time_for_mode().format('yyyy-MM-dd');
+  recommend_date0.setDate(recommend_date0.getDate()-1);
+  var recommend_date = recommend_date0.format('yyyy-MM-dd');
+  if(noneflag==false){
+    alert('ID未知用户不能推荐入库！');
+  }else{
+  if (cur_uids.length == 0){
+    alert("请选择至少一个用户！");
+  }
+  else{
+    var compute_url = '/recommentation/identify_in/?submit_user='+username+'&date='+recommend_date+'&uid_list='+cur_uids;
+    console.log(compute_url);
+    call_sync_ajax_request(compute_url, confirm_ok);
+  }
+}
+}
+
+//入库推荐
+function recom_in(){
+  var cur_uids = []
+  var noneflag = true;
+  $('input[name="mood_out_list_option"]:checked').each(function(){
+      cur_uids.push($(this).attr('value'));
+      if($(this).parent().prev().prev().prev().prev().prev().text() == $(this).parent().prev().prev().prev().prev().text()){
+        noneflag = false;
+      }
+  });
+  //var compute_type = $('input[name="compute-type"]:checked').val();
+ // var recommend_date = new Date().format('yyyy-MM-dd');
+  var recommend_date0 = choose_time_for_mode();    // choose_time_for_mode().format('yyyy-MM-dd');
+  recommend_date0.setDate(recommend_date0.getDate()-1);
+  var recommend_date = recommend_date0.format('yyyy-MM-dd');
+  if(noneflag==false){
+    alert('ID未知用户不能推荐入库！');
+  }else{
+  if (cur_uids.length == 0){
+    alert("请选择至少一个用户！");
+  }
+  else{
+    var compute_url = '/recommentation/identify_in/?submit_user='+username+'&date='+recommend_date+'&uid_list='+cur_uids;
+    console.log(compute_url);
+    call_sync_ajax_request(compute_url, confirm_ok);
+  }
+}
+}
+
+
+function confirm_ok(data){
+  if(data){
+    alert('操作成功！');
+    window.location.reload();
+  }else{
+    alert('入库失败，请重试')
+}
+}
+
 
 
 //相关主题

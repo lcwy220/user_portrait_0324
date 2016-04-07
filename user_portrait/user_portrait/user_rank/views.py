@@ -55,8 +55,9 @@ def delete_task():
 @mod.route('/temporal_rank/')
 def temporal_rank():
     task_type = request.args.get("task_type", "0")
+    sort = request.args.get("sort", "retweeted") # comment
     results = []
     task_type = int(task_type)
-    results = get_temporal_rank(task_type)
+    results = get_temporal_rank(task_type, sort)
 
     return json.dumps(results)
