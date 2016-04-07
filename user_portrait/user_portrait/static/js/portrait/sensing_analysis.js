@@ -874,7 +874,7 @@ function draw_num_line_charts(data, div_name, legend_data){
 	//var line1 = data[1];
 	var line1 = data[1];
 	var line2 = data[2];
-    console.log(data[0],line1,line2);
+    //console.log(data[0],line1,line2);
 	// var line4 = data[4];
 	// var markpoint  = data[5];
 	//var col_markpoint = data[6];
@@ -1020,7 +1020,7 @@ function draw_num_line_charts(data, div_name, legend_data){
 			    num_click_time = timestamp2;
 			    num_index = param.seriesIndex
 			    var index_type;
-                console.log(param.seriesIndex);
+                //console.log(param.seriesIndex);
 			    // if (param.seriesIndex == 4){
 			    // 	index_type = 0
 			    // };
@@ -1037,7 +1037,7 @@ function draw_num_line_charts(data, div_name, legend_data){
                 //     index_type = 2
                 // };
                 var num_line_url = '/social_sensing/get_text_detail/?task_name=' + task_name + '&ts=' + num_click_time + '&text_type=' + index_type+'&user='+user;
-                console.log(num_line_url);
+                //console.log(num_line_url);
                 var num_line_event_url = '/social_sensing/get_clustering_topic/?task_name='+ task_name +'&ts=' + num_click_time+'&user='+user;
                 call_sync_ajax_request(num_line_event_url, Draw_num_related_event);
                 call_sync_ajax_request(num_line_url, Draw_num_weibo);
