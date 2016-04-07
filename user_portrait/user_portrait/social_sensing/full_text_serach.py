@@ -21,227 +21,129 @@ from user_portrait.parameter import DOC_TYPE_MANAGE_SOCIAL_SENSING as task_doc_t
 from user_portrait.parameter import FORWARD_N as forward_n
 from user_portrait.parameter import INITIAL_EXIST_COUNT as initial_count
 from user_portrait.parameter import IMPORTANT_USER_NUMBER, IMPORTANT_USER_THRESHOULD, signal_brust, signal_track, signal_count_varition, signal_sentiment_varition,signal_nothing, signal_nothing_variation, \
-                      unfinish_signal, finish_signal, AGGRAGATION_KEYWORDS_NUMBER, PRE_AGGREGATION_NUMBER
-from user_portrait.time_utils import ts2date
+                      unfinish_signal, finish_signal, AGGRAGATION_KEYWORDS_NUMBER, PRE_AGGREGATION_NUMBER, DAY
+from user_portrait.time_utils import ts2date, datetime2ts, ts2datetime
 day_time = 24*3600
 
-
-# 获得敏感微博内容，按照时间排序
-def get_sensitive_weibo_detail(ts, social_sensors, sensitive_words_list, message_type, size=100):
-    results = []
-    query_body = {
-        "query":{
-            "filtered":{
-                "filter":{
-                    "bool":{
-                        "must":[
-                            {"range":{
-                                "timestamp":{
-                                    "gte": ts - time_interval,
-                                    "lt": ts
-                                }
-                            }},
-                            {"term": {"message_type": message_type}},
-                            {"terms":{"keywords_string": sensitive_words_list}}
-                        ]
-                    }
-                }
-            }
-        },
-        "size": size,
-        "sort": {"timestamp": {"order": "desc"}}
-    }
-
-    if social_sensors:
-        query_body['query']['filtered']['filter']['bool']['must'].append({"terms": {"uid": social_sensors}})
-
-    datetime = ts2datetime(ts)
-    datetime_1 = ts2datetime(ts-time_interval)
-    index_name = flow_text_index_name_pre + datetime
-    exist_es = es_text.indices.exists(index_name)
-    index_name_1 = flow_text_index_name_pre + datetime_1
-    exist_es_1 = es_text.indices.exists(index_name_1)
-
-    if datetime == datetime_1 and exist_es:
-        search_results = es_text.search(index=index_name, doc_type=flow_text_index_type, body=query_body)["hits"]["hits"]
-    elif datetime != datetime_1 and exist_es_1:
-        search_results = es_text.search(index=index_name_1, doc_type=flow_text_index_type, body=query_body)["hits"]["hits"]
-    else:
-        search_results = []
-
-    uid_list = []
-    if search_results:
-        for item in search_results:
-            uid_list.append(item["_source"]['uid'])
-        if uid_list:
-            portrait_result = es_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={"ids":uid_list}, fields=['nick_name', 'photo_url'])["docs"]
-
-        for i in range(len(uid_list)):
-            item = search_results[i]['_source']
-            temp = []
-            # uid, nick_name, photo_url, text, sentiment, timestamp, geo, common_keywords, message_type
-            temp.append(item['uid'])
-            if portrait_result[i]['found']:
-                temp.append(portrait_result[i]["fields"]["nick_name"][0])
-                temp.append(portrait_result[i]["fields"]["photo_url"][0])
-            else:
-                temp.append("unknown")
-                temp.append("")
-            temp.append(item["text"])
-            #print item['text']
-            temp.append(item["sentiment"])
-            temp.append(ts2date(item['timestamp']))
-            temp.append(item['geo'])
-            keywords_set = set(item['keywords_string'].split('&'))
-            common_keywords = set(sensitive_words_list) & keywords_set
-            temp.append(list(common_keywords))
-            temp.append(item['message_type'])
-            results.append(temp)
-
-    return results
-
 # 获得原创微博内容，按时间排序
-def get_origin_weibo_detail(ts, social_sensors, keywords_list, size=100, message_type=1):
+def get_origin_weibo_detail(ts, user, task_name, size, order, message_type=1):
+    _id = user + '-' + task_name
+    task_detail = es_user_portrait.get(index=index_sensing_task, doc_type=_id, id=ts)['_source']
+    if message_type == 1:
+        weibo_detail = json.loads(task_detail['origin_weibo_detail'])
+    elif message_type == 2:
+        weibo_detail = json.loads(task_detail['retweeted_weibo_detail'])
+    weibo_detail_list = []
+    if weibo_detail:
+        for iter_mid, item in weibo_detail.iteritems():
+            tmp = []
+            tmp.append(iter_mid)
+            tmp.append(item[iter_mid])
+            tmp.append(item['retweeted'])
+            tmp.append(item['comment'])
+            weibo_detail_list.append(tmp)
+    mid_list = weibo_detail.keys()
+
     results = []
     query_body = {
         "query":{
             "filtered":{
                 "filter":{
-                    "bool":{
-                        "must":[
-                            {"range":{
-                                "timestamp":{
-                                    "gte": ts - time_interval,
-                                    "lt": ts
-                                }
-                            }},
-                            {"terms":{"keywords_string": keywords_list}},
-                            {"term": {"message_type": message_type}}
-                        ]
-                    }
+                    "terms":{"mid": mid_list}
                 }
             }
         },
-        "size": size,
+        "size": 1000,
         "sort": {"timestamp": {"order": "desc"}}
     }
 
-    if social_sensors:
-        query_body["query"]["filtered"]["filter"]["bool"]["must"].append({"terms":{"uid": social_sensors}})
 
+    index_list = []
     datetime = ts2datetime(ts)
-    datetime_1 = ts2datetime(ts-time_interval)
-    index_name = flow_text_index_name_pre + datetime
-    exist_es = es_text.indices.exists(index_name)
-    index_name_1 = flow_text_index_name_pre + datetime_1
-    exist_es_1 = es_text.indices.exists(index_name_1)
-
-    if datetime == datetime_1 and exist_es:
-        search_results = es_text.search(index=index_name, doc_type=flow_text_index_type, body=query_body)["hits"]["hits"]
-    elif datetime != datetime_1 and exist_es_1:
-        search_results = es_text.search(index=index_name_1, doc_type=flow_text_index_type, body=query_body)["hits"]["hits"]
-    else:
-        search_results = []
-
-    uid_list = []
-    if search_results:
-        for item in search_results:
-            uid_list.append(item["_source"]['uid'])
-        if uid_list:
-            portrait_result = es_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={"ids":uid_list}, fields=['nick_name', 'photo_url'])["docs"]
-
-        for i in range(len(uid_list)):
-            item = search_results[i]['_source']
-            temp = []
-            # uid, nick_name, photo_url, text, sentiment, timestamp, geo, common_keywords, message_type
-            temp.append(item['uid'])
-            if portrait_result[i]['found']:
-                temp.append(portrait_result[i]["fields"]["nick_name"][0])
-                temp.append(portrait_result[i]["fields"]["photo_url"][0])
-            else:
-                temp.append("unknown")
-                temp.append("")
-            temp.append(item["text"])
-            #print item['text']
-            temp.append(item["sentiment"])
-            temp.append(ts2date(item['timestamp']))
-            temp.append(item['geo'])
-            keywords_set = set(item['keywords_string'].split('&'))
-            common_keywords = set(keywords_list) & keywords_set
-            temp.append(list(common_keywords))
-            temp.append(item['message_type'])
-            results.append(temp)
-    #print results
-    return results
-
-
-
-# 1. 给定关键词的前提下，查询前12个小时的原创微博
-# 2. 根据之前和现在原创微博的mid，查询这些微博的转发微博和评论微博
-
-def query_mid_list(ts, keywords_list, time_segment, social_sensors=[]):
-    query_body = {
-        "query": {
-            "filtered": {
-                "filter": {
-                    "bool": {
-                        "must": [
-                            {"range": {
-                                "timestamp": {
-                                    "gte": ts - time_segment,
-                                    "lt": ts
-                                 }
-                            }},
-                            {"terms": {"keywords_string": keywords_list}}
-                        ]
-                    }
-                }
-            }
-        },
-        "size": 10000
-    }
-
-    if social_sensors:
-        query_body['query']['filtered']['filter']['bool']['must'].append({"terms": {"uid": social_sensors}})
-
-    datetime = ts2datetime(ts)
+    datetime_1 = ts2datetime(ts-DAY)
     index_name = flow_text_index_name_pre + datetime
     exist_es = es_text.indices.exists(index_name)
     if exist_es:
-        search_results = es_text.search(index=index_name, doc_type=flow_text_index_type, body=query_body, fields=["root_mid"])["hits"]["hits"]
+        index_list.append(index_name)
+    index_name_1 = flow_text_index_name_pre + datetime_1
+    exist_es_1 = es_text.indices.exists(index_name_1)
+    if exist_es_1:
+        index_list.append(index_name_1)
+
+    if index_list and mid_list:
+        search_results = es_text.search(index=index_list, doc_type=flow_text_index_type, body=query_body)["hits"]["hits"]
     else:
         search_results = []
-    origin_mid_list = [] # all related weibo mid list
+
+    uid_list = []
+    text_dict = dict() # 文本信息
+    portrait_dict = dict() # 背景信息
     if search_results:
         for item in search_results:
-            if item.get("fields", ""):
-                origin_mid_list.append(item["fields"]["root_mid"][0])
-            else:
-                origin_mid_list.append(item["_id"])
-
-    datetime_1 = ts2datetime(ts-time_segment)
-    index_name_1 = flow_text_index_name_pre + datetime_1
-    exist_bool = es_text.indices.exists(index_name_1)
-    if datetime != datetime_1 and exist_bool:
-        search_results_1 = es_text.search(index=index_name_1, doc_type=flow_text_index_type, body=query_body, fields=['root_mid'])["hits"]["hits"]
-        if search_results_1:
-            for item in search_results_1:
-                if item.get("fields", ""):
-                    origin_mid_list.append(item["fields"]["root_mid"][0])
+            uid_list.append(item["_source"]['uid'])
+            text_dict[item['_id']] = item['_source'] # _id是mid
+        if uid_list:
+            portrait_result = es_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={"ids":uid_list}, fields=['nick_name', 'photo_url'])["docs"]
+            for item in portrait_result:
+                if item['found']:
+                    portrait_dict[item['_id']] = {"nick_name": item["fields"]["nick_name"][0], "photo_url": item["fields"]["photo_url"][0]}
                 else:
-                    origin_mid_list.append(item["_id"])
+                    portrait_dict[item['_id']] = {"nick_name": item['_id'], "photo_url":""}
 
-    return origin_mid_list
+        if order == "total":
+            sorted_list = sorted(weibo_detail_list, key=lambda x:x[1], reverse=True)
+        elif order == "retweeted":
+            sorted_list = sorted(weibo_detail_list, key=lambda x:x[2], reverse=True)
+        elif order == "comment":
+            sorted_list = sorted(weibo_detail_list, key=lambda x:x[3], reverse=True)
+        else:
+            print "order is lost"
+
+        count_n = 0
+        for item in sorted_list:
+            mid = item[0]
+            iter_text = text_dict.get(mid, {})
+            temp = []
+            # uid, nick_name, photo_url, text, sentiment, timestamp, geo, common_keywords, message_type
+            if iter_text:
+                uid = iter_text['uid']
+                temp.append(uid)
+                iter_portrait = portrait_dict.get(uid, {})
+                if iter_portrait:
+                    temp.append(iter_portrait['nick_name'])
+                    temp.append(iter_portrait['photo_url'])
+                else:
+                    temp.extend([uid,''])
+                temp.append(iter_text["text"])
+                temp.append(iter_text["sentiment"])
+                temp.append(ts2date(iter_text['timestamp']))
+                temp.append(iter_text['geo'])
+                temp.append(iter_text['message_type'])
+                temp.append(item[2])
+                temp.append(item[3])
+                count_n += 1
+                results.append(temp)
+                if count_n == size:
+                    break
+
+    return results
+
+
+
 
 
 # 获得转发或者评论微博所对应的文本
+# 是一般性的转发或者评论文本，非root_mid
 
-def get_retweet_weibo_detail(ts, social_sensors, keywords_list, size, text_type):
-    former_mid_list = query_mid_list(ts-time_interval, keywords_list, time_segment, social_sensors) # 前一段时间内的微博mid list
-    current_mid_list = query_mid_list(ts, keywords_list, time_interval,  social_sensors)
+def get_retweet_weibo_detail(ts, user, task_name, size, text_type, type_value):
+    _id = user + '-' + task_name
+    task_detail = es_user_portrait.get(index=index_sensing_task, doc_type=_id, id=ts)['_source']
+    origin_weibo_detail = json.loads(task_detail['origin_weibo_detail'])
+    retweeted_weibo_detail = json.loads(task_detail['retweeted_weibo_detail'])
+
     mid_list = []
-    mid_list.extend(former_mid_list)
-    mid_list.extend(current_mid_list)
+    mid_list.extend(origin_weibo_detail.keys())
+    mid_list.extend(retweeted_weibo_detail.keys())
 
     query_body = {
         "query":{
@@ -255,12 +157,7 @@ def get_retweet_weibo_detail(ts, social_sensors, keywords_list, size, text_type)
                                     "lt": ts
                                 }
                             }},
-                            {"term": {"message_type": text_type}}
-                        ],
-                        "should":[
-                            {"terms": {"root_mid": mid_list}},
-                            {"terms": {"mid": mid_list}},
-                            {"terms":{"keywords_string": keywords_list}}
+                            {"terms": {"root_mid": mid_list}}
                         ]
                     }
                 }
@@ -270,6 +167,13 @@ def get_retweet_weibo_detail(ts, social_sensors, keywords_list, size, text_type)
         "size": 100
     }
 
+    if text_type == "message_type":
+        query_body['query']['filtered']['filter']['bool']['must'].append({"term":{text_type: type_value}})
+    if text_type == "sentiment":
+        if len(text_value) == 1:
+            query_body['query']['filtered']['filter']['bool']['must'].append({"term":{text_type: type_value}})
+        else:
+            query_body['query']['filtered']['filter']['bool']['must'].append({"terms":{text_type: type_value}})
 
     datetime = ts2datetime(ts)
     datetime_1 = ts2datetime(ts-time_interval)
@@ -304,16 +208,13 @@ def get_retweet_weibo_detail(ts, social_sensors, keywords_list, size, text_type)
                 temp.append(portrait_result[i]["fields"]["nick_name"][0])
                 temp.append(portrait_result[i]["fields"]["photo_url"][0])
             else:
-                temp.append("unknown")
+                temp.append(item['uid'])
                 temp.append("")
             temp.append(item["text"])
             #print item['text']
             temp.append(item["sentiment"])
             temp.append(ts2date(item['timestamp']))
             temp.append(item['geo'])
-            keywords_set = set(item['keywords_string'].split('&'))
-            common_keywords = set(keywords_list) & keywords_set
-            temp.append(list(common_keywords))
             temp.append(item["message_type"])
             results.append(temp)
 
@@ -471,7 +372,7 @@ def query_hot_mid(ts, keywords_list, text_type,size=100):
     return hot_mid_list
 
 
-def count_hot_uid(uid, start_time, stop_time, keywords_list):
+def count_hot_uid(uid, start_time, stop_time):
     query_body = {
         "query":{
             "filtered":{
@@ -498,10 +399,6 @@ def count_hot_uid(uid, start_time, stop_time, keywords_list):
         }
     }
 
-    if keywords_list:
-        query_body['query']['filtered']['filter']['bool']['must'].append({"terms": {"keywords_string": keywords_list}})
-        #for word in keywords_list:
-            #query_body['query']['filtered']['query']['bool']['should'].append({'wildcard':{"text": "*"+word+"*"}})
 
     count = 0
     datetime = ts2datetime(float(stop_time))

@@ -49,6 +49,18 @@ def mappings_sensing_task(task_name):
                         "type": "string",
                         "index": "no"
                     },
+                    "origin_weibo_detail":{
+                        "type": "string",
+                        "index": "no"
+                    },
+                    "retweeted_weibo_detail":{
+                        "type": "string",
+                        "index": "no"
+                    },
+                    "unfilter_users":{
+                        "type": "string",
+                        "index": "no"
+                    },
                     "important_users":{
                         "type": "string",
                         "index": "no"
@@ -68,7 +80,7 @@ def mappings_sensing_task(task_name):
                         "type": "string",
                         "index": "no"
                     },
-                    "sunmit_user":{
+                    "create_by":{
                         "type": "string",
                         "index": "not_analyzed"
                     }
@@ -115,14 +127,6 @@ def manage_sensing_task():
                         "index": "not_analyzed"
                     },
                     "social_sensors":{
-                        "type": "string",
-                        "index": "not_analyzed"
-                    },
-                    "keywords":{
-                        "type": "string",
-                        "index": "not_analyzed"
-                    },
-                    "sensitive_words":{
                         "type": "string",
                         "index": "not_analyzed"
                     },

@@ -7,8 +7,7 @@ import sys
 import time
 import json
 import os
-from aggregation_weibo import specific_keywords_burst_dection
-from social_sensing import social_sensing_task
+from sensing_v3 import social_sensing
 reload(sys)
 sys.path.append("./../")
 from global_utils import es_user_profile as es_profile
@@ -55,13 +54,10 @@ def create_task_list(ts):
             task = []
             task.append(item['task_name']) # task_name
             task.append(json.loads(item['social_sensors'])) # social sensors
-            task.append(json.loads(item['keywords'])) # filter keywords
-            task.append(json.loads(item['sensitive_words'])) #load sensitive_words
             task.append(item['stop_time']) # stop time
             task.append(item['warning_status']) # last step status
-            task.append(item['task_type']) # task type
-            task.append(ts)
             task.append(item['create_by'])
+            task.append(ts)
             r.lpush('task_name', json.dumps(task))
             count += 1
 
@@ -73,22 +69,9 @@ def create_task_list(ts):
 
 if __name__ == "__main__":
 
-    ts2 = datetime2ts("2016-03-04")
-    ts1 = datetime2ts("2016-03-03")
-    #ts1 = 1377984600
-    ts = ts1 + time_interval
-    while 1:
-        if ts <= ts2:
-            print ts
-            create_task_list(ts)
-            social_sensing_task(ts)
-            ts += time_interval
-        else:
-            break
-
-    """
-
-    ts = time.time()
+    ts = datetime2ts("2013-09-01")
+    count = 23
+    ts = ts + count*time_interval
     create_task_list(ts)
-    social_sensing_task(ts)
-    """
+
+
