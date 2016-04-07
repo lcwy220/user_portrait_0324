@@ -808,7 +808,7 @@ call_sync_ajax_request(task_url, task_status);
 
 //画结果表格
 var rank_url = '/user_rank/user_sort/?username='+ username +'&time='+ day_select +'&sort_norm='+ sort_norm_rank +'&sort_scope='+ sort_scope+'&all=True';
-//console.log(rank_url);
+console.log(rank_url);
 var	loading_html = '<div style="text-align:center;vertical-align:middle;height:40px">数据正在加载中，请稍后...</div>';
 $('#result_rank_table').append(loading_html)
 
