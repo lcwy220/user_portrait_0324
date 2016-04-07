@@ -201,7 +201,7 @@ del:function(data){
 }
 var admin = $('#tag_user').text();
 function deleteGroup(that){
-	$('a[id^="delTag"]').click(function(e){
+	$('a[id^="delTag"]').live('click',function(e){
 		var url = that.url;
 		var temp = $(this).parent().prev().prev().prev().prev().html();
 		var submit_user = admin;
