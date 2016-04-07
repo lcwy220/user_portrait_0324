@@ -2,6 +2,7 @@
 
 import sys
 import json
+import numpy as np
 import time
 from config import load_scws, load_dict, cut_filter, re_cut
 reload(sys)
@@ -9,10 +10,11 @@ sys.path.append('../../')
 from global_utils import es_user_portrait, es_user_profile, es_flow_text
 from global_utils import profile_index_name, profile_index_type, portrait_index_name, portrait_index_type, \
                          flow_text_index_name_pre, flow_text_index_type
-from time_utils import ts2datetime, datetime2ts
+from time_utils import ts2datetime, datetime2ts, ts2date
 from parameter import DAY
+from parameter import SOCIAL_SENSOR_TIME_INTERVAL as interval
 
-sw = load_scws()
+#sw = load_scws()
 #cx_dict = set(['Ag','a','an','Ng','n','nr','ns','nt','nz','Vg','v','vd','vn','@','j'])
 cx_dict = set(['Ng','n','nr','ns','nt','nz']) # 关键词词性词典, 保留名词
 
@@ -57,17 +59,71 @@ def get_group_keywords(uid_list):
     return word_dict
 
 
-def query_keyword(keyword):
+# 搜索之前30天内某个关键词的走势图
+def get_keyword_trend(keyword, ts, interval):
     query_body = {
         "query":{
             "filtered":{
                 "filter":{
-                    "term":{
-                        "keywords_string":
+                    "bool":{
+                        "must":[
+                            {"range":{
+                                "timestamp":{
+                                   "gte": ts - interval,
+                                   "lt": ts
+                                }
+                            }},
+                            {"term":{"keywords_string":keyword}}
+                        ]
+                    }
+                }
+            }
+        }
+    }
+
+    datetime = ts2datetime(ts - interval)
+    index_name = "flow_text_" + datetime
+    exist_es = es_flow_text.indices.exists(index=index_name)
+    if exist_es:
+        label = 1
+        count = es_flow_text.count(index=index_name, doc_type="text", body=query_body)['count']
+        print count
+    else:
+        label = 0
+        count = 0
+    return count, label
+
+# 返回同一时间上的微博走势图
+def count_trend(ts, keyword):
+    history_list = []
+    count = 0
+    while 1:
+        allcount, label = get_keyword_trend(keyword, ts, interval)
+        if label:
+            history_list.append(allcount)
+            count += 1
+            ts = ts - 2*3600
+        else:
+            break
+    return history_list
+
+
+# 同一时间点上的微博数走势图，检测当前与历史的区别
+def detect_burst(history_list):
+    current_count = history_list.pop(0)
+    lenth = len(history_list)
+    print lenth
+    mean = np.mean(history_list)
+    var = np.std(history_list)
+    if current_count >= mean + 1.96*var:
+        return 1
+    else:
+        return 0
+
+
+
 
 if __name__ == "__main__":
-    key_list = get_group_keywords(["3575186384", "1316683401", "1641542052"])
-    for k,v in key_list.iteritems():
-        if len(k) > 3 and v>1:
-            print k,v
-
+    ts = datetime2ts("2013-09-08")
+    trend_list = count_trend(ts, "车祸")
+    print detect_burst(trend_list)

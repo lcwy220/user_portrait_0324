@@ -237,13 +237,13 @@ INFLUENCE_BRUST_CONCLUSION = ['传播速度快', '评论速度快', '传播速�
 
 
 # social sensoring time interval
-SOCIAL_SENSOR_TIME_INTERVAL = 1800
-SOCIAL_SENSOR_FORWARD_RANGE = 21600
+SOCIAL_SENSOR_TIME_INTERVAL = 3600
+SOCIAL_SENSOR_FORWARD_RANGE = 12*3600
 INDEX_MANAGE_SOCIAL_SENSING = "manage_sensing_task"
 DOC_TYPE_MANAGE_SOCIAL_SENSING = "task"
 DETAIL_SOCIAL_SENSING = "social_sensing_task"
-FORWARD_N = 12
-INITIAL_EXIST_COUNT = 6 #从任务开始到经历多少个时间片段开始计数
+FORWARD_N = 24
+INITIAL_EXIST_COUNT = 12 #从任务开始到经历多少个时间片段开始计数
 IMPORTANT_USER_NUMBER = 100 # 每个时间间隔内es查询时设置重要的人的个数
 IMPORTANT_USER_THRESHOULD = 70 # 重要的人其重要度的阈值，不低于
 signal_nothing = "0" # 无事件

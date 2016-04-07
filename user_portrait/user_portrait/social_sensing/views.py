@@ -37,7 +37,7 @@ def ajax_create_task():
     #keywords = request.args.get("keywords", "") # keywords_string, split with ","
     #sensitive_words = request.args.get("sensitive_words", "") # sensitive_words, split with ","
     remark = request.args.get("remark", "")
-    _id = create_by + "-" + task_name
+    _id = create_by + "-" + str(task_name)
     exist_es = es.exists(index=index_manage_sensing_task, doc_type=task_doc_type, id=_id)
     if exist_es:
         return json.dumps(["0"]) # 任务名不能重合
@@ -168,8 +168,10 @@ def ajax_show_task():
     #else:
     #    print "error"
 
-    search_results = es.search(index=index_manage_sensing_task, doc_type=task_doc_type, body=query_body)['hits']['hits']
-
+    try:
+        search_results = es.search(index=index_manage_sensing_task, doc_type=task_doc_type, body=query_body)['hits']['hits']
+    except:
+        search_results = []
     results = []
     if search_results:
         for item in search_results:
@@ -353,10 +355,11 @@ def ajax_get_warning_detail():
 def ajax_get_text_detail():
     task_name = request.args.get('task_name','') # task_name
     user = request.args.get('user', '')
+    order = request.args.get('order', 'total') # total, retweeted, comment
     ts = int(request.args.get('ts', '')) # timestamp: 123456789
     text_type = request.args.get('text_type', '') # which line
 
-    results = get_text_detail(task_name, ts, text_type, user)
+    results = get_text_detail(task_name, ts, text_type, user, order)
 
     return json.dumps(results)
 
