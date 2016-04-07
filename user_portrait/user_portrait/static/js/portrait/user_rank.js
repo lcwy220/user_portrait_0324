@@ -695,7 +695,7 @@ function submit_rank(){
 		$('#task_status').css('display','none');
 		$('#result_analysis').css('display','none');
 		if(day_select*6 > hh){
-			alert('当前选择的时间超出范围i，请重新选择');
+			alert('当前选择的时间超出范围，请重新选择');
 			$('#result_rank_table').empty();
 		}
 		else{

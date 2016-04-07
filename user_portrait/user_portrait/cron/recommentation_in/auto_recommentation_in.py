@@ -3,6 +3,7 @@ import sys
 import json
 import time
 import random
+from sqlite_query import get_user_name
 reload(sys)
 sys.path.append('../../')
 from global_utils import R_RECOMMENTATION, es_tag, tag_index_name, tag_index_type,\
@@ -104,7 +105,8 @@ def get_hotspot_recommentation():
 # get admin user
 def get_admin_user():
     #test
-    user_list = ['admin', 'linhao.lh@qq.com']
+    #user_list = ['admin', 'linhao.lh@qq.com']
+    user_list = get_user_name()
     return user_list
 
 # get recomment history
@@ -412,4 +414,6 @@ if __name__=='__main__':
     #media_user = get_media_user()
     #print 'media_user:', media_user
     #results = get_hotspot_recommentation()
+    #print 'results:', results
+    #results = get_admin_user()
     #print 'results:', results

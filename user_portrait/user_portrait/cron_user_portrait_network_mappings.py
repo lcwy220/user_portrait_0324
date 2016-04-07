@@ -65,4 +65,4 @@ def network_es_mappings():
 
 if __name__ == '__main__':
     network_es_mappings()
-    #network_count_es_mappings()
+    network_count_es_mappings()
