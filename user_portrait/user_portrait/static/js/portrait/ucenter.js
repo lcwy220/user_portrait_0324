@@ -114,7 +114,7 @@ function Draw_rank_task_modal(data){
 	for(var i=0;i<data.length;i++){
 		html += '<tr>';
 		html += '<td style="text-align;">'+data[i][0].split('&').join(' ')+'</td>'
-		html += '<td style="text-align;">'+data[i][0]+'</td>'
+		html += '<td style="text-align;">'+scope_dict[data[i][4]]+'</td>'
 		html += '<td style="text-align;">'+norm_dict[data[i][1]]+'</td>'
 		html += '<td style="text-align;">'+data[i][2]+'</td>'
 		if(data[i][3] == '1'){
@@ -295,6 +295,7 @@ function modal_data_re(data){
 	return data;
 }
 
+var scope_dict ={'all_limit_keyword':'全网-按关键词','in_limit_keyword':'库内-按关键词','in_limit_hashtag':'库内-按微话题'}
 var norm_dict ={'weibo_num': '微博数','fans': '粉丝数','bci': '影响力','bci_change':'突发影响力变动','ses':'言论敏感度','ses_change':'突发敏感度变动','imp':'身份敏感度','imp_change':'突发重要度变动','act':'活跃度','act_change':'突发活跃度变动'}
 var dict_name = {'rank_task':'用户排行', 'sentiment_task':'情绪监测', 'network_task':'网络分析', 'recomment':'入库推荐','group_detect' :'群体发现', 'group_analysis':'群体分析', 'sensing_task':'社会感知'};
 modal_work();
