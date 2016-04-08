@@ -40,9 +40,9 @@ def social_sensing():
 @roles_required("socialsensing")
 def sensing_analysis():
     task_name = request.args.get('task_name','监督维权律师' )
-    keywords = request.args.get('keywords','律师,维权' )
+    user = request.args.get('user','admin' )
     ts = request.args.get('ts','1378567800' )
-    return render_template('portrait/sensing_analysis.html', task_name=task_name, keywords=keywords, ts=ts)
+    return render_template('portrait/sensing_analysis.html', task_name=task_name,user=user,ts=ts)
 
 @mod.route('/group/')
 @login_required
