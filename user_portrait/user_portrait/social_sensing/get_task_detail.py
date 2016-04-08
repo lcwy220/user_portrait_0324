@@ -208,13 +208,12 @@ def get_task_detail_2(task_name, ts, user):
                 temp.append(item['fields']['photo_url'][0])
                 temp.append(item['fields']['domain'][0])
                 temp.append(item['fields']['topic_string'][0].split('&'))
-                hot_count = count_hot_uid(item['fields']['uid'][0], start_time, stop_time)
-                temp.append(hot_count)
+                #hot_count = count_hot_uid(item['fields']['uid'][0], start_time, stop_time)
+                #temp.append(hot_count)
                 temp.append(math.ceil(item['fields']['importance'][0]/float(top_importance)*100))
                 temp.append(math.ceil(item['fields']['influence'][0]/float(top_influence)*100))
                 temp.append(math.ceil(item['fields']['activeness'][0]/float(top_activeness)*100))
                 user_detail_info.append(temp)
-                #print temp
     # 排序
     user_detail_info = sorted(user_detail_info, key=lambda x:x[6], reverse=True)
 
@@ -247,7 +246,6 @@ def get_task_detail_2(task_name, ts, user):
                     temp.append(0)
                 count += 1
             out_user_detail_info.append(temp)
-
 
     revise_time_series = []
     for item in time_series:
