@@ -872,6 +872,7 @@ function draw_mood_line_charts(data, div_name, legend_data){
 
 function draw_num_line_charts(data, div_name, legend_data){
 	//var line1 = data[1];
+   console.log(data); //
 	var line1 = data[1];
 	var line2 = data[2];
     //console.log(data[0],line1,line2);
