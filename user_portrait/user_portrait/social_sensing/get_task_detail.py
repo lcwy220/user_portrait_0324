@@ -88,6 +88,7 @@ def get_task_detail_2(task_name, ts, user):
     positive_sentiment_list = [] # 情绪列表
     neutral_sentiment_list = []
     negetive_sentiment_list = []
+    all_weibo_list = []
     origin_weibo_list = [] # 微博列表
     retweeted_weibo_list = []
     retweeted_weibo_count = [] # 别人转发他的数量
@@ -119,6 +120,7 @@ def get_task_detail_2(task_name, ts, user):
             neutral_sentiment_list.append(int(sentiment_distribution['0']))
             origin_weibo_list.append(item["origin_weibo_number"]) # real
             retweeted_weibo_list.append(item['retweeted_weibo_number']) # real
+            all_weibo_list.append(item["origin_weibo_number"]+item['retweeted_weibo_number'])
             retweeted_weibo_count.append(item['retweeted_weibo_count'])
             comment_weibo_count.append(item['comment_weibo_count'])
             total_number_count.append(item['weibo_total_number'])
@@ -258,6 +260,7 @@ def get_task_detail_2(task_name, ts, user):
     results['positive_sentiment_list'] = positive_sentiment_list
     results['negetive_sentiment_list'] = negetive_sentiment_list
     results['neutral_sentiment_list'] = neutral_sentiment_list
+    results['all_weibo_list'] = all_weibo_list
     results['origin_weibo_list'] = origin_weibo_list
     results['retweeted_weibo_list'] = retweeted_weibo_list
     results['comment_weibo_count'] = comment_weibo_count
