@@ -73,7 +73,7 @@ function draw_user_in_table(data){
     $('#mood_in_user').empty();
     if(data.length == 0){
         $('#showmore_inuser').css('display', 'none');
-        $('#mood_in_user').append('<h4 style="text-align:center;min-height: 100px;background-color: #cccccc;line-height: 100px;">暂无数据</h4>');
+        $('#mood_in_user').append('<h4 style="text-align:center;min-height: 100px;line-height: 100px;">暂无数据</h4>');
     }else{
         if(data.length > 5){
             show_more_inuser(data);
@@ -184,7 +184,7 @@ function draw_user_out_table(data){
             html += '</tr>';
         }
         html += '</table>';
-        html += '<p><span onclick="recom_in()" class="portrait_button" style="float:right;cursor:pointer;margin-right:20px;width: 60px;height: 25px;text-align: center;line-height: 25px;">推荐入库</span></p>'
+        html += '<p><span onclick="recom_in()" class="portrait_button" style="float:right;cursor:pointer;width: 60px;height: 25px;text-align: center;line-height: 25px;">推荐入库</span></p>'
         $('#mood_out_user').append(html);
     }
 }
@@ -199,7 +199,7 @@ function show_more_outuser(data){
     html += '<th style="text-align:center;">微博数</th>';
     html += '<th style="text-align:center;">粉丝数</th>';
     html += '<th style="text-align:center;">关注数</th>';
-    html += '<th><input name="mood_out_all_modal" id="mood_out_all_modal" type="checkbox" value="" onclick="choose_out_all_modal()" /></th></thead>';
+    html += '<th style="text-align:center;"><input name="mood_out_all_modal" id="mood_out_all_modal" type="checkbox" value="" onclick="choose_out_all_modal()" /></th></thead>';
     for(var i=0;i<data.length;i++){
         html += '<tr>';
         html += '<td style="text-align:center;">'+data[i][0]+'</td>';
@@ -451,7 +451,7 @@ function choose_related_weibo(url, index){
             var sort_type = $('input[name="sort_radio_weibo"]:checked').val();
             console.log(sort_type);
             if(sort_type == "time"){
-                alert('mmm')
+                //alert('mmm')
                 //Draw_get_top_weibo(data2, panel_name);
             };
             if(sort_type == "retweet"){
@@ -713,8 +713,9 @@ function Draw_all_keyword_detect_charts(data){
 
 function Draw_detect_charts(flag, data){
     console.log(data);
-    if(data["1"].length == 0){
-        $('#result_detect_charts').append('<h4 style="text-align:center;min-height: 100px;background-color: #cccccc;line-height: 100px;">暂无数据</h4>');
+    if(data == ''){
+      $('#result_detect_charts').empty();
+        $('#result_detect_charts').append('<h4 style="margin-left: 30px;width: 900px;text-align:center;min-height: 100px;background-color: #cccccc;line-height: 100px;">暂无数据</h4>');
     }else{ 
         var data_x_ = [];
         var data_y_1 = [];
@@ -1150,9 +1151,11 @@ $('.show_detect_key_result').live('click', function(){
     var id= $(this).prev().text();
     var keyword_submit = $(this).parent().prev().prev().prev().prev().text();
     scope_arg = keyword_submit;
+    var submit_ts = $(this).parent().prev().text();
     var keyword_date = $(this).parent().prev().prev().prev().text();
     var keyword_segment = $(this).parent().prev().prev().text();
-    var show_url = '/sentiment/show_sentiment_all_keywords_results/?task_id=' + id;
+    var submit_ts =Date.parse(new Date(submit_ts))/1000;
+    var show_url = '/sentiment/show_sentiment_all_keywords_results/?task_keyword=' + keyword_submit + '&submit_ts=' + submit_ts + '&submit_user=' + username;
     $('#detect_range').empty();
     $('#detect_detail').empty();
     $('#detect_rank_by').empty();
