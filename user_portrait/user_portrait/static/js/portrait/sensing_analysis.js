@@ -452,6 +452,9 @@ function page_group_weibo(start_row, end_row, data, div_name, sub_div_name){
         var sensor_words = weibo[7];
         var weibo_type = weibo[8];
         var weibo_type_s = '';
+        console.log(weibo);
+        var post_num = weibo[8];
+        var comment_num = weibo[9];
         if(weibo_type = 1){
             weibo_type_s = '原创';
 
@@ -500,8 +503,10 @@ function page_group_weibo(start_row, end_row, data, div_name, sub_div_name){
         html += '<div class="weibo_pz">';
         html += '<div class="m">';
         html += '<u>' + date + '</u>&nbsp;-&nbsp;';
-        html += '<a target="_blank" href="' + user_link + '">用户详情</a>&nbsp;-&nbsp;';
-        //html += '<span style="color:#666">传感词: ' + sensor_words +'</span>';
+        html += '<a target="_blank" href="' + user_link + '">用户详情</a>&nbsp;&nbsp;';
+        if(comment_num != undefined){
+        html += '<span style="margin-left:550px;color:#666">转发量: ' + post_num +'&nbsp;&nbsp;评论量：'+comment_num+'</span>';
+        }
         html += '</div>';
         html += '</div>';
         html += '</div>';
@@ -1091,7 +1096,7 @@ function draw_num_line_charts(data, div_name, legend_data){
                 //     index_type = 2
                 // };
                 var num_line_url = '/social_sensing/get_text_detail/?task_name=' + task_name + '&ts=' + num_click_time + '&text_type=' + index_type+'&user='+user+'&order=';
-                //console.log(num_line_url);
+                console.log(num_line_url);
                 var num_line_event_url = '/social_sensing/get_clustering_topic/?task_name='+ task_name +'&ts=' + num_click_time+'&user='+user;
                 call_sync_ajax_request(num_line_event_url, Draw_num_related_event);
 
