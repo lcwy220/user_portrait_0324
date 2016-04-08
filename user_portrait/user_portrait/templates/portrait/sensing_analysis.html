@@ -79,20 +79,28 @@
                   <input type="radio" name="num_select" checked value="0" /> 微博内容
                   <input type="radio" name="num_select" value="1" style="margin-left:5px" /> 感知事件             
                 </div>
-                <div id="num_related_weibo_all">
-                  <div id="num_related_weibo" style="padding:10px;float:left;background-color:whitesmoke;width:100%;"></div>
-                  <div id="pageGro" class="cb" style="float:left;width:600px;height:60px;margin-left:350px">
-                      <div class="pageUp">上一页</div>
-                      <div class="pageList">
-                          <ul>
-                              <li>1</li>
-                              <li>2</li>
-                              <li>3</li>
-                              <li>4</li>
-                              <li>5</li>
-                          </ul>
-                      </div>
-                      <div class="pageDown">下一页</div>
+                <div>
+                  <div id="select_style_order">
+                    <input type="radio" name="order_select" checked value="total" /> 按总数
+                    <input type="radio" name="order_select" value="comment" style="margin-left:5px" /> 按评论量   
+                    <input type="radio" name="order_select" value="retweeted" style="margin-left:5px" /> 按转发量
+                    <input type="radio" name="order_select" value="ts" style="margin-left:5px" /> 按时间   
+                  </div>                
+                  <div id="num_related_weibo_all">
+                    <div id="num_related_weibo" style="padding:10px;float:left;background-color:whitesmoke;width:100%;"></div>
+                    <div id="pageGro" class="cb" style="float:left;width:600px;height:60px;margin-left:350px">
+                        <div class="pageUp">上一页</div>
+                        <div class="pageList">
+                            <ul>
+                                <li>1</li>
+                                <li>2</li>
+                                <li>3</li>
+                                <li>4</li>
+                                <li>5</li>
+                            </ul>
+                        </div>
+                        <div class="pageDown">下一页</div>
+                    </div>
                   </div>
                 </div>
                 <div id="num_related_weibo_event" style="padding:10px;float:left;background-color:whitesmoke;width:100%;"></div>
@@ -166,9 +174,9 @@
       			<div id="sensing_participate" style="width:100%;float: left;margin-right:15px;">
         			<span style='font-size:14px;'><b>参与人群</b></span>
         			<hr style="width:100%">        		
-              <span style='font-size:12px;width:50%;display:inline-block;float:left'><b>已入库用户</b></span>	
+              <span style='font-size:12px;width:49%;display:inline-block;float:left;margin-left:10px;overflow-y:auto;'><b>已入库用户</b></span>	
               <span style='font-size:12px;float:left'><b>未入库用户</b></span>
-        			<div id="sensing_participate_table" style="padding:10px;width:49%;float: left;overflow-x: hidden;"></div>
+        			<div id="sensing_participate_table" style="padding:10px;width:49%;float: left;overflow-x: hidden;overflow-y:auto;;"></div>
               <div id="out_participate_table" style="padding:10px;width:49%;float: left;overflow-x: hidden;"></div>
             </div>
           </div>

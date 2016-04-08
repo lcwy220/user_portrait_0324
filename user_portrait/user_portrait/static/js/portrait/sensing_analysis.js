@@ -140,9 +140,9 @@ function sensing_sensors_table (head, data, div_name) {
 
 function sensing_participate_table (head, data, div_name) {
     $('#'+div_name).empty();
-	if(data.length>6){
-		$('#'+div_name).css("overflow-y", "auto");
-	}
+	// if(data.length>6){
+	// 	$('#'+div_name).css("overflow-y", "auto");
+	// }
 	var html = '';
 	html += '<table id="'+div_name+'_table"  class="table table-bordered table-striped table-condensed datatable">';
 	html += '<thead><tr>';
@@ -151,19 +151,19 @@ function sensing_participate_table (head, data, div_name) {
 	}
 	html += '</tr></thead>';
 	html += '<tbody>';
- //participate_head=['用户ID','昵称','领域','话题','热度','重要度','影响力','活跃度']
+ //participate_head=['用户ID','昵称','领域','话题','重要度','影响力','活跃度']
 	for(var i=0; i<data.length; i++){
 		//var s= i+1;
 		html += '<tr>';
 		html += '<td style="text-align:center;vertical-align:middle;"><a class="undlin" target="_blank" href="http://weibo.com/u/' + data[i][0] + '">'+ data[i][0] + '</a></td>';
 		html += '<td style="text-align:center;vertical-align:middle;"><a href="/index/personal/?uid='+data[i][0]+'" target="_blank">' + data[i][1] + '</a></td>';
 		html += '<td style="text-align:center;vertical-align:middle;">' + data[i][3] + '</td>';
-		//html += '<td class="sensing_topic" style="text-align:center;vertical-align:middle;">';
+		html += '<td class="sensing_topic" style="text-align:center;vertical-align:middle;">'+data[i][4][0]+'</td>';
 		//html +=  data[i][4].join(',');
 		//html += '</td><td style="text-align:center;vertical-align:middle;">' + data[i][5] + '</td>';
-		html += '<td style="text-align:center;vertical-align:middle;">' + data[i][5] + '</td>';
+		//html += '<td style="text-align:center;vertical-align:middle;">' + data[i][5] + '</td>';
         //html += '<td style="text-align:center;vertical-align:middle;">' + data[i][6] + '</td>';
-		html += '<td style="text-align:center;vertical-align:middle;">' + data[i][7] + '</td>';
+		html += '<td style="text-align:center;vertical-align:middle;">' + data[i][6] + '</td>';
 		//html += '<td style="text-align:center;vertical-align:middle;">' + data[i][8] + '</td>';
 		html += '</tr>';
 	}
@@ -178,28 +178,28 @@ function sensing_participate_table (head, data, div_name) {
     //    }
     // });
 	$('#'+div_name).append(html);
-	$('#'+div_name+'_table').DataTable({
-	   "sDom": "<'row'<'col-md-6'l ><'col-md-6'f>r>t<'row'<'col-md-12'i><'col-md-12 center-block'p>>",
-	   "sPaginationType": "bootstrap",
-        "aaSorting": [[ 4, "desc" ]],
-	   "oLanguage": {
-	       "sLengthMenu": "_MENU_ 每页"
-	   }
-	});
+	// $('#'+div_name+'_table').DataTable({
+	//    "sDom": "<'row'<'col-md-6'l ><'col-md-6'f>r>t<'row'<'col-md-12'i><'col-md-12 center-block'p>>",
+	//    "sPaginationType": "bootstrap",
+ //        "aaSorting": [[ 4, "desc" ]],
+	//    "oLanguage": {
+	//        "sLengthMenu": "_MENU_ 每页"
+	//    }
+	// });
 }
 
 function sen_out_table (head, data, div_name) {
     $('#'+div_name).empty();
-    if(data.length>6){
-        $('#'+div_name).css("overflow-y", "auto");
-    }
+    // if(data.length>6){
+    //     $('#'+div_name).css("overflow-y", "auto");
+    // }
     var html = '';
-    html += '<table id="'+div_name+'_table"  class="table table-bordered table-striped table-condensed datatable">';
+    html += '<div><table id="'+div_name+'_table"  class="table table-bordered table-striped table-condensed datatable">';
     html += '<thead><tr>';
     for(var i=0; i<head.length; i++){
         html += '<th style="text-align:center">'+head[i]+'</th>';
     }
-    html += '<th><input name="sen_out_choose_all" id="sen_out_choose_all" type="checkbox" value="" onclick="sen_out_choose_all()" /></th>'
+    html += '<th style="text-align:center"><input name="sen_out_choose_all" id="sen_out_choose_all" type="checkbox" value="" onclick="sen_out_choose_all()" /></th>'
     html += '</tr></thead>';
     html += '<tbody>';
  //participate_head=['用户ID','昵称','领域','话题','热度','重要度','影响力','活跃度']
@@ -219,7 +219,7 @@ function sen_out_table (head, data, div_name) {
         html += '<td style="text-align:center;vertical-align:middle;"><input name="sen_out_list_option" class="search_result_option" type="checkbox" value="' + data[i][0] + '" /></td>';
         html += '</tr>';
     }
-    html += '</tbody></table>';
+    html += '</tbody></table></div>';
     html += ' <button class="portrait_button" style="margin-left:10px;width:80px;height:40px;" name="sen_out_list_button" id="sen_out_list_button" title="推荐入库"  onclick="sen_out_list_button();">选择入库</button>';
     // $('#participate_table').dataTable({
     //  responsive: true,
@@ -230,14 +230,14 @@ function sen_out_table (head, data, div_name) {
     //    }
     // });
     $('#'+div_name).append(html);
-    $('#'+div_name+'_table').DataTable({
-       "sDom": "<'row'<'col-md-6'l ><'col-md-6'f>r>t<'row'<'col-md-12'i><'col-md-12 center-block'p>>",
-       "sPaginationType": "bootstrap",
-        "aaSorting": [[ 4, "desc" ]],
-       "oLanguage": {
-           "sLengthMenu": "_MENU_ 每页"
-       }
-    });
+    // $('#'+div_name+'_table').DataTable({
+    //    "sDom": "<'row'<'col-md-6'l ><'col-md-6'f>r>t<'row'<'col-md-12'i><'col-md-12 center-block'p>>",
+    //    "sPaginationType": "bootstrap",
+    //     "aaSorting": [[ 4, "desc" ]],
+    //    "oLanguage": {
+    //        "sLengthMenu": "_MENU_ 每页"
+    //    }
+    // });
 }
 
 function page_icon(page,count,eq, div_name){
@@ -501,7 +501,7 @@ function page_group_weibo(start_row, end_row, data, div_name, sub_div_name){
         html += '<div class="m">';
         html += '<u>' + date + '</u>&nbsp;-&nbsp;';
         html += '<a target="_blank" href="' + user_link + '">用户详情</a>&nbsp;-&nbsp;';
-        html += '<span style="color:#666">传感词: ' + sensor_words +'</span>';
+        //html += '<span style="color:#666">传感词: ' + sensor_words +'</span>';
         html += '</div>';
         html += '</div>';
         html += '</div>';
@@ -1094,7 +1094,7 @@ function draw_num_line_charts(data, div_name, legend_data){
                 // if(param.seriesIndex == 3){
                 //     index_type = 2
                 // };
-                var num_line_url = '/social_sensing/get_text_detail/?task_name=' + task_name + '&ts=' + num_click_time + '&text_type=' + index_type+'&user='+user;
+                var num_line_url = '/social_sensing/get_text_detail/?task_name=' + task_name + '&ts=' + num_click_time + '&text_type=' + index_type+'&user='+user+'&order=total';
                 //console.log(num_line_url);
                 var num_line_event_url = '/social_sensing/get_clustering_topic/?task_name='+ task_name +'&ts=' + num_click_time+'&user='+user;
                 call_sync_ajax_request(num_line_event_url, Draw_num_related_event);
@@ -1118,6 +1118,15 @@ function draw_num_line_charts(data, div_name, legend_data){
                         $('#num_related_weibo_all').css('display', 'block');
                     }
                 });	
+                $('input[name="order_select"]').click(function(){
+                    if($('input[name="order_select"]:checked').val()=='1'){ 
+                        $('#num_related_weibo_event').css('display', 'block');
+                        $('#num_related_weibo_all').css('display', 'none');
+                    }else{
+                        $('#num_related_weibo_event').css('display', 'none');
+                        $('#num_related_weibo_all').css('display', 'block');
+                    }
+                }); 
 			}
 		
 		myChart.on(ecConfig.EVENT.CLICK, eConsole);
@@ -1265,7 +1274,7 @@ function show_warning_time_all(div_name, data){
 	    //document.getElementById(contentID).innerHTML = content; 
 	} 
 
-var num_legend = ['原创', '被转发'];
+var num_legend = ['原创', '转发'];
 var sensi_legend = [ '转发', '评论','总数', {name:'重合点', icon :'image://../../static/img/arrow.png'}];
 var mood_legend = ['消极','中性', '积极', {name:'重合点', icon :'image://../../static/img/arrow.png'}];
 function social_sensing_all(data){
@@ -1348,11 +1357,11 @@ function social_sensing_all(data){
 	  
 
 	//参与人表格
-	// var participate_head=['用户ID','昵称','领域','话题','热度','重要度','影响力','活跃度']
+	// var participate_head=['用户ID','昵称','领域','话题','重要度','影响力','活跃度']
 	// var user_detail = new Array();
 	// user_detail = data.important_user_detail;
 	// sensing_participate_table(participate_head,user_detail,"sensing_participate_table");
-    var participate_head=['用户ID','昵称','领域','热度','影响力'];
+    var participate_head=['用户ID','昵称','领域','话题','影响力'];
     var out_head=['用户ID','昵称','注册地','粉丝数','影响力'];
     var user_detail = new Array();
     user_detail = data.important_user_detail;
