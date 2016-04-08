@@ -549,7 +549,7 @@ function draw_history(data){
 				warn = '事件跟踪';
 			}
 			item_time = new Date(item_his[i][0]*1000).format('yyyy/MM/dd hh:mm');
-	       html += '<tr><td style="text-align:center">' + item_time + '</td><td style="text-align:center">' + warn + '</td><td style="text-align:center"><a target="_blank" href="/index/sensing_analysis/?task_name='+data['task_name']+'&keywords='+data['keywords']+'&ts='+item_his[i][0]+'" id="show_detail">查看详情</a></td></tr>';
+	       html += '<tr><td style="text-align:center">' + item_time + '</td><td style="text-align:center">' + warn + '</td><td style="text-align:center"><a target="_blank" href="/index/sensing_analysis/?task_name='+data['task_name']+'&user='+user+'&ts='+item_his[i][0]+'" id="show_detail">查看详情</a></td></tr>';
 	 	}
 	    html += '</table>'; 
 	    html += '</div>';

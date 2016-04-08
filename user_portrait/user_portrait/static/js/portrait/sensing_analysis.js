@@ -473,10 +473,13 @@ function draw_sensi_line_charts(data, div_name, legend_data){
 	var line1 = data[1];
 	var line2 = data[2];
 	var line3 = data[3];
-	var line4 = data[4];
-	var markpoint = data[5];
-	var col_markpoint = data[6];
-	var col_line = data[7];
+    var markpoint = data[4];
+    var col_markpoint = data[5];
+	// var line4 = data[4];
+	// var markpoint = data[5];
+	// var col_markpoint = data[6];
+	var col_line = data[6];
+    console.log(data);
 	var myChart = echarts.init(document.getElementById(div_name)); 
 	var option = { 
         title : {
@@ -541,26 +544,19 @@ function draw_sensi_line_charts(data, div_name, legend_data){
 	            type: 'line',
 	            showAllSymbol : true,
                	symbolSize:1,
-               	symbol: 'circle',
-	           	markPoint : {
-    		    	data :markpoint,
-    		    	clickable: true,
-    		    	symbolSize:5,
-    		    	symbol: 'arrow',
-    		    	itemStyle:{
-    		    		normal: {
-    		                color: 'blue'
-    		            }
-    		    	},
-    		    	tooltip:{
-    		    		show : false
-    		    	}
-            	},
-	            clickable: true,	          
+               	symbol: 'circle',	          
 	            data: line1
 	        },
+	        // {
+	        //     name: legend_data[1],
+	        //     type: 'line',
+	        //     showAllSymbol : true,
+	        //     symbolSize:1,
+         //       	symbol: 'circle',
+	        //     data: line1
+	        // },
 	        {
-	            name: legend_data[1],
+	            name: legend_data[2],
 	            type: 'line',
 	            showAllSymbol : true,
 	            symbolSize:1,
@@ -568,20 +564,27 @@ function draw_sensi_line_charts(data, div_name, legend_data){
 	            data: line2
 	        },
 	        {
-	            name: legend_data[2],
-	            type: 'line',
-	            showAllSymbol : true,
-	            symbolSize:1,
-               	symbol: 'circle',
-	            data: line3
-	        },
-	        {
 	            name: legend_data[3],
 	            type: 'line',
 	            showAllSymbol : true,
 	            symbolSize:1,
                	symbol: 'circle',
-	            data: line4
+                markPoint : {
+                    data :markpoint,
+                    clickable: true,
+                    symbolSize:5,
+                    symbol: 'arrow',
+                    itemStyle:{
+                        normal: {
+                            color: 'blue'
+                        }
+                    },
+                    tooltip:{
+                        show : false
+                    }
+                },
+                clickable: true,
+	            data: line3
 	        },
 	        {
 	            name: legend_data[4],
@@ -594,7 +597,6 @@ function draw_sensi_line_charts(data, div_name, legend_data){
 	            		},		            
 	        		}
 		    	},
-	            
                	symbol: 'none',
 	            data: col_line
 	        }
@@ -624,8 +626,8 @@ function draw_sensi_line_charts(data, div_name, legend_data){
 			   		};
 
 				    //var data=[['人民日报',1,2,'条结论这里是一条结论这里里是一条结论','中国 北京 北京',param.name],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京',param.name],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京',param.name],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['0',1,2,'3neirong',4,44,6,7,8,9,0],['0',1,2,'3neirong',4,5,6,7,8,9,0],['0',1,2,'3neirong',4,5,6,7,8,9,0]]
-				    var sensi_line_url = '/social_sensing/get_text_detail/?task_name=' + task_name + '&ts=' + sensi_click_time + '&text_type=' + sensi_index;
-                    var sensi_line_event_url = '/social_sensing/get_clustering_topic/?task_name='+ task_name +'&ts=' + sensi_click_time;
+				    var sensi_line_url = '/social_sensing/get_text_detail/?task_name=' + task_name + '&ts=' + sensi_click_time + '&text_type=' + sensi_index+'&user='+user;
+                    var sensi_line_event_url = '/social_sensing/get_clustering_topic/?task_name='+ task_name +'&ts=' + sensi_click_time+'&user='+user;
                     console.log(sensi_line_url);
                     call_sync_ajax_request(sensi_line_event_url, Draw_sensi_related_event);
                     call_sync_ajax_request(sensi_line_url, Draw_sensi_weibo);
@@ -680,8 +682,8 @@ function draw_mood_line_charts(data, div_name, legend_data){
 	var line2 = data[2];
 	var line3 = data[3];
 	var markpoint = data[4];
-	var col_markpoint = data[5];
-	var col_line = data[6];
+	//var col_markpoint = data[5];
+	// var col_line = data[6];
 	var myChart = echarts.init(document.getElementById(div_name)); 
 	var option = {  
         title : {
@@ -778,21 +780,21 @@ function draw_mood_line_charts(data, div_name, legend_data){
 	            symbolSize:1,
                	symbol: 'circle',
 	            data: line3
-	        },
-	        {
-	            name: legend_data[3],
-	            type: 'line',
-	            itemStyle:{
-		    		normal: {
-						lineStyle: {
-	            			width: 0,
-	            			color: 'red'
-	            		},		            
-	        		}
-		    	},
-               	symbol: 'none',
-	            data: col_line
 	        }
+	     //    {
+	     //        name: legend_data[3],
+	     //        type: 'line',
+	     //        itemStyle:{
+		    // 		normal: {
+						// lineStyle: {
+	     //        			width: 0,
+	     //        			color: 'red'
+	     //        		},		            
+	     //    		}
+		    // 	},
+      //          	symbol: 'none',
+	     //        data: col_line
+	     //    }
 	    ]
 	};
 	 require([
@@ -816,8 +818,8 @@ function draw_mood_line_charts(data, div_name, legend_data){
 			   		}else if(param.seriesIndex == 2){
 			   			index_type = 4;
 			   		};
-				    var mood_line_url = '/social_sensing/get_text_detail/?task_name='+ task_name + '&ts=' + mood_click_time +'&text_type=' + index_type; 
-	   			    var mood_line_event_url = '/social_sensing/get_clustering_topic/?task_name='+task_name+'&ts=' + mood_click_time;
+				    var mood_line_url = '/social_sensing/get_text_detail/?task_name='+ task_name + '&ts=' + mood_click_time +'&text_type=' + index_type+'&user='+user; 
+	   			    var mood_line_event_url = '/social_sensing/get_clustering_topic/?task_name='+task_name+'&ts=' + mood_click_time+'&user='+user;
                     call_sync_ajax_request(mood_line_event_url, Draw_mood_related_event);
                     call_sync_ajax_request(mood_line_url, Draw_mood_weibo);
                     console.log(mood_line_url);
@@ -849,33 +851,34 @@ function draw_mood_line_charts(data, div_name, legend_data){
 	// 为echarts对象加载数据 
     myChart.setOption(option); 
 
-    myChart.addMarkPoint( 3, 
-		{ 	
-			data : col_markpoint,
-			clickable: true,
-	    	symbolSize: 5,
-	    	symbol: 'arrow',
-	    	itemStyle:{
-	    		normal: {
-	                color: 'red'
-	            }
-	    	},
-	    	tooltip:{
-	    		show : false
-	    	}
-		} 
-	); 
+ //    myChart.addMarkPoint( 3, 
+	// 	{ 	
+	// 		data : col_markpoint,
+	// 		clickable: true,
+	//     	symbolSize: 5,
+	//     	symbol: 'arrow',
+	//     	itemStyle:{
+	//     		normal: {
+	//                 color: 'red'
+	//             }
+	//     	},
+	//     	tooltip:{
+	//     		show : false
+	//     	}
+	// 	} 
+	// ); 
 
 }
 
 function draw_num_line_charts(data, div_name, legend_data){
+	//var line1 = data[1];
 	var line1 = data[1];
 	var line2 = data[2];
-	var line3 = data[3];
-	var line4 = data[4];
-	var markpoint  = data[5];
-	var col_markpoint = data[6];
-	var col_line = data[7];
+    console.log(data[0],line1,line2);
+	// var line4 = data[4];
+	// var markpoint  = data[5];
+	//var col_markpoint = data[6];
+	//var col_line = data[7];
 	var myChart = echarts.init(document.getElementById(div_name)); 
 	var option = {  
         title : {
@@ -934,36 +937,36 @@ function draw_num_line_charts(data, div_name, legend_data){
 	        }
 	    ],
 	    series : [
-	        {
-	            name: legend_data[0],
-	            type: 'line',	            
-	            showAllSymbol : true,
-	            symbolSize:1,
-               	symbol: 'circle',
-	           	markPoint : {
-    		    	data :markpoint,
-    		    	clickable: true,
-    		    	symbolSize:5,
-    		    	symbol: 'arrow',
-    		    	itemStyle:{
-    		    		normal: {
-    		                color: 'blue'
-    		            }
-    		    	},
-    		    	tooltip:{
-    		    		show : false
-    		    	}
-            	},
-	            clickable: true,	          
-	            data: line1
-	        },
+	        // {
+	        //     name: legend_data[0],
+	        //     type: 'line',	            
+	        //     showAllSymbol : true,
+	        //     symbolSize:1,
+         //       	symbol: 'circle',
+	        //    	markPoint : {
+    		   //  	data :markpoint,
+    		   //  	clickable: true,
+    		   //  	symbolSize:5,
+    		   //  	symbol: 'arrow',
+    		   //  	itemStyle:{
+    		   //  		normal: {
+    		   //              color: 'blue'
+    		   //          }
+    		   //  	},
+    		   //  	tooltip:{
+    		   //  		show : false
+    		   //  	}
+         //    	},
+	        //     clickable: true,	          
+	        //     data: line1
+	        // },
 	        {
 	            name: legend_data[1],
 	            type: 'line',
 	            showAllSymbol : true,
 	            symbolSize:1,
                	symbol: 'circle',
-	            data: line2
+	            data: line1
 	        },
 	        {
 	            name: legend_data[2],
@@ -971,31 +974,31 @@ function draw_num_line_charts(data, div_name, legend_data){
 	            symbolSize:1,
                	symbol: 'circle',
 	            showAllSymbol : true,
-	            data: line3
-	        },
-	        {
-	            name: legend_data[3],
-	            type: 'line',
-	            symbolSize:1,
-               	symbol: 'circle',
-	            showAllSymbol : true,
-	            data: line4
-	        },
-	        {
-	            name: legend_data[4],
-	            type: 'line',
-	            itemStyle:{
-		    		normal: {
-						lineStyle: {
-	            			width: 0,
-	            			color: 'red'
+	            data: line2
+	         }
+	        // {
+	        //     name: legend_data[3],
+	        //     type: 'line',
+	        //     symbolSize:1,
+         //       	symbol: 'circle',
+	        //     showAllSymbol : true,
+	        //     data: line4
+	        // }
+	     //    {
+	     //        name: legend_data[4],
+	     //        type: 'line',
+	     //        itemStyle:{
+		    // 		normal: {
+						// lineStyle: {
+	     //        			width: 0,
+	     //        			color: 'red'
 	            	
-	            		},		            
-	        		}
-		    	},
-               	symbol: 'none',
-	            data: col_line
-	        }
+	     //        		},		            
+	     //    		}
+		    // 	},
+      //          	symbol: 'none',
+	     //        data: col_line
+	     //    }
 	    ]
 	};
 	 require([
@@ -1018,24 +1021,24 @@ function draw_num_line_charts(data, div_name, legend_data){
 			    num_index = param.seriesIndex
 			    var index_type;
                 console.log(param.seriesIndex);
-			    if (param.seriesIndex == 4){
-			    	index_type = 0
-			    };
+			    // if (param.seriesIndex == 4){
+			    // 	index_type = 0
+			    // };
                 if (param.seriesIndex== 0){
 			    	index_type = 0
 			    };
                 if(param.seriesIndex == 1){
                     index_type = 0
                 };
-                if(param.seriesIndex == 2){
-                    index_type = 1
-                };
-                if(param.seriesIndex == 3){
-                    index_type = 2
-                };
-                var num_line_url = '/social_sensing/get_text_detail/?task_name=' + task_name + '&ts=' + num_click_time + '&text_type=' + index_type;
+                // if(param.seriesIndex == 2){
+                //     index_type = 1
+                // };
+                // if(param.seriesIndex == 3){
+                //     index_type = 2
+                // };
+                var num_line_url = '/social_sensing/get_text_detail/?task_name=' + task_name + '&ts=' + num_click_time + '&text_type=' + index_type+'&user='+user;
                 console.log(num_line_url);
-                var num_line_event_url = '/social_sensing/get_clustering_topic/?task_name='+ task_name +'&ts=' + num_click_time;
+                var num_line_event_url = '/social_sensing/get_clustering_topic/?task_name='+ task_name +'&ts=' + num_click_time+'&user='+user;
                 call_sync_ajax_request(num_line_event_url, Draw_num_related_event);
                 call_sync_ajax_request(num_line_url, Draw_num_weibo);
 
@@ -1065,26 +1068,26 @@ function draw_num_line_charts(data, div_name, legend_data){
 	// 为echarts对象加载数据 
     myChart.setOption(option);
 
-    myChart.addMarkPoint( 4, 
-		{ 	
-			data : col_markpoint,
-			clickable: true,
-	    	symbolSize: 5,
-	    	symbol: 'arrow',
-	    	itemStyle:{
-	    		normal: {
-	                color: 'red'
-	            }
-	    	},
-	    	tooltip:{
-	    		show : false
-	    	}
-		} 
-	);                   
+ //    myChart.addMarkPoint( 4, 
+	// 	{ 	
+	// 		data : col_markpoint,
+	// 		clickable: true,
+	//     	symbolSize: 5,
+	//     	symbol: 'arrow',
+	//     	itemStyle:{
+	//     		normal: {
+	//                 color: 'red'
+	//             }
+	//     	},
+	//     	tooltip:{
+	//     		show : false
+	//     	}
+	// 	} 
+	// );                   
 }
 
 function show_warning_time(div_name, data){
-
+//console.log(data);
 	$('#' + div_name).empty();	
 	var html = '';
 	for(var i=0;i<data.length;i++){
@@ -1175,7 +1178,7 @@ function show_warning_time_all(div_name, data){
 	    //document.getElementById(contentID).innerHTML = content; 
 	} 
 
-var num_legend = ['总数','原创', '被转发', '被评论', {name:'重合点', icon :'image://../../static/img/arrow.png'}];
+var num_legend = ['总数','原创', '被转发', {name:'重合点', icon :'image://../../static/img/arrow.png'}];
 var sensi_legend = ['总数','原创', '转发', '评论', {name:'重合点', icon :'image://../../static/img/arrow.png'}];
 var mood_legend = ['消极','积极', '中性', {name:'重合点', icon :'image://../../static/img/arrow.png'}];
 function social_sensing_all(data){
@@ -1183,37 +1186,44 @@ function social_sensing_all(data){
 	//异常点信息
 	var weibo_warning_num = data.variation_distribution[0].length;
 	var mood_abnormal_num = data.variation_distribution[1].length;
-	var sensing_abnormal_num = data.variation_distribution[2].length;
-	var total_abnormal_num = data.variation_distribution[3].length;
+	//var sensing_abnormal_num = data.variation_distribution[2].length;
+	var total_abnormal_num = data.variation_distribution[2].length;
 	$('#weibo_warning_num').empty();
 	$('#weibo_warning_num').append(weibo_warning_num);
 	$('#mood_abnormal_num').empty();
 	$('#mood_abnormal_num').append(mood_abnormal_num);
-	$('#sensing_abnormal_num').empty();
-	$('#sensing_abnormal_num').append(sensing_abnormal_num);	
+	//$('#sensing_abnormal_num').empty();
+	//$('#sensing_abnormal_num').append(sensing_abnormal_num);	
 	$('#total_abnormal_num').empty();
 	$('#total_abnormal_num').append(total_abnormal_num);
 
 	show_warning_time('modal_warning_weibo_content', data.variation_distribution[0]);
 	show_warning_time('modal_warning_mood_content', data.variation_distribution[1]);
-	show_warning_time('modal_warning_sensing_content', data.variation_distribution[2]);
-	show_warning_time('modal_warning_total_content', data.variation_distribution[3]);
+	//show_warning_time('modal_warning_sensing_content', data.variation_distribution[2]);
+	show_warning_time('modal_warning_total_content', data.variation_distribution[2]);
 	var col_line = [];
 	for(var i=0; i<data.time_series.length; i++){
 		col_line[i] = 0;
 	}
 
 	//微博数量走势图
-	var num_line_data = new Array();
-	num_line_data[0]= data.time_series;
-	num_line_data[1] = data.total_number_list;
-	num_line_data[2] = data.origin_weibo_list;
-	num_line_data[3] = data.retweeted_weibo_list;
-	num_line_data[4] = data.comment_weibo_list;
-	num_line_data[5] = deal_point(data.variation_distribution[0]);
-	num_line_data[6] = deal_point_col(data.variation_distribution[3], 1);
-	num_line_data[7] = col_line;
-	draw_num_line_charts(num_line_data, 'num_line_charts', num_legend);
+	// var num_line_data = new Array();
+	// num_line_data[0]= data.time_series;
+	// num_line_data[1] = data.total_number_list;
+	// num_line_data[2] = data.origin_weibo_list;
+	// num_line_data[3] = data.retweeted_weibo_list;
+	// num_line_data[4] = data.comment_weibo_list;
+	// num_line_data[5] = deal_point(data.variation_distribution[0]);
+	// num_line_data[6] = deal_point_col(data.variation_distribution[2], 1);
+	// num_line_data[7] = col_line;
+	// draw_num_line_charts(num_line_data, 'num_line_charts', num_legend);
+
+
+    var num_line_data = new Array();
+    num_line_data[0]= data.time_series;
+    num_line_data[1] = data.origin_weibo_list;
+    num_line_data[2] = data.retweeted_weibo_list;
+    draw_num_line_charts(num_line_data, 'num_line_charts', num_legend);
 
 	//情绪走势图
 	var mood_line_data = new Array();
@@ -1221,23 +1231,31 @@ function social_sensing_all(data){
 	mood_line_data[1] = data.negetive_sentiment_list;
 	mood_line_data[2] = data.neutral_sentiment_list;
 	mood_line_data[3] = data.positive_sentiment_list;
-	mood_line_data[4] = deal_point(data.variation_distribution[1]);
-	mood_line_data[5] = deal_point_col(data.variation_distribution[3],2);
+	mood_line_data[4] = deal_point(data.variation_distribution[2]);
+	mood_line_data[5] = deal_point_col(data.variation_distribution[2],1);
 	mood_line_data[6] = col_line;
 	draw_mood_line_charts(mood_line_data, 'mood_line_charts', mood_legend);
 
-	//敏感微博走势图
-	var sensi_line_data = new Array();
-	sensi_line_data[0] = data.time_series;
-	sensi_line_data[1] = data.sensitive_total_number_list;
-	sensi_line_data[2] = data.sensitive_origin_weibo_list;
-	sensi_line_data[3] = data.sensitive_retweeted_weibo_list;
-	sensi_line_data[4] = data.sensitive_comment_weibo_list;
-	sensi_line_data[5] = deal_point(data.variation_distribution[2]);
-	sensi_line_data[6] = deal_point_col(data.variation_distribution[3], 3);
-	sensi_line_data[7] = col_line;
-	draw_sensi_line_charts(sensi_line_data, 'sensi_line_charts', sensi_legend);
-
+	//微博热度走势
+	// var sensi_line_data = new Array();
+	// sensi_line_data[0] = data.time_series;
+	// sensi_line_data[1] = data.sensitive_total_number_list;
+	// sensi_line_data[2] = data.sensitive_origin_weibo_list;
+	// sensi_line_data[3] = data.sensitive_retweeted_weibo_list;
+	// sensi_line_data[4] = data.sensitive_comment_weibo_list;
+	// sensi_line_data[5] = deal_point(data.variation_distribution[2]);
+	// sensi_line_data[6] = deal_point_col(data.variation_distribution[2], 3);
+	// sensi_line_data[7] = col_line;
+	// draw_sensi_line_charts(sensi_line_data, 'sensi_line_charts', sensi_legend);
+    var sensi_line_data = new Array();
+    sensi_line_data[0] = data.time_series;
+    sensi_line_data[1] = data.retweeted_weibo_count;
+    sensi_line_data[2] = data.comment_weibo_count;
+    sensi_line_data[3] = data.total_number_list;
+    sensi_line_data[4] = deal_point(data.variation_distribution[1]);
+    sensi_line_data[5] = deal_point_col(data.variation_distribution[1], 2);    
+    sensi_line_data[6] = col_line;
+    draw_sensi_line_charts(sensi_line_data, 'sensi_line_charts', sensi_legend);
     //var data0=[['人民日报1111',1,2,'1111这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','param.name'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','param.name'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','param.name'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['0',1,2,'3neirong',4,44,6,7,8,9,0],['0',1,2,'3neirong',4,5,6,7,8,9,0],['0',1,2,'333333333neirong',4,5,6,7,8,9,0]]
     //var data1=[['人民日报2222',1,2,'2222这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','param.name'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','param.name'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','param.name'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['0',1,2,'3neirong',4,44,6,7,8,9,0],['0',1,2,'3neirong',4,5,6,7,8,9,0],['0',1,2,'333333333neirong',4,5,6,7,8,9,0]]
 	  
@@ -1260,17 +1278,17 @@ function social_sensing_all(data){
 	$('#remark_info').empty();
 	$('#remark_info').append(remark_info);
 
-    //事件传感关键词
-    var keywords_list = ''
-    keywords_list = data.keywords.join('&nbsp;&nbsp;');
-    $('#sensor_sensing_keywords').empty();
-    $('#sensor_sensing_keywords').append(keywords_list);   //事件关键词
+    // //事件传感关键词
+    // var keywords_list = ''
+    // keywords_list = data.keywords.join('&nbsp;&nbsp;');
+    // $('#sensor_sensing_keywords').empty();
+    // $('#sensor_sensing_keywords').append(keywords_list);   //事件关键词
 
-    //敏感关键词
-    var sensi_keywords_list = ''
-    sensi_keywords_list = data.sensitive_words.join('&nbsp;&nbsp;');
-    $('#sensing_keywords').empty();
-    $('#sensing_keywords').append(sensi_keywords_list);
+    // //敏感关键词
+    // var sensi_keywords_list = ''
+    // sensi_keywords_list = data.sensitive_words.join('&nbsp;&nbsp;');
+    // $('#sensing_keywords').empty();
+    // $('#sensing_keywords').append(sensi_keywords_list);
 
 }
 
@@ -1286,8 +1304,9 @@ var mood_click_time;
 var mood_index;
 var sensi_click_time;
 var sensi_index;
-
+user='admin';
 $('#sensing_task_name').append(task_name);
 var sensing_url = '';
-sensing_url += '/social_sensing/get_warning_detail/?task_name='+task_name+'&keywords='+keywords+'&ts='+ts;
+sensing_url += '/social_sensing/get_warning_detail/?task_name='+task_name+'&user='+user+'&ts='+ts;
+console.log(sensing_url);
 call_sync_ajax_request(sensing_url, social_sensing_all);

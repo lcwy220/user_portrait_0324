@@ -97,7 +97,7 @@ def get_origin_weibo_detail(ts, user, task_name, size, order, message_type=1):
         elif order == "comment":
             sorted_list = sorted(weibo_detail_list, key=lambda x:x[3], reverse=True)
         else:
-            print "order is lost"
+            sorted_list = weibo_detail_list
 
         count_n = 0
         for item in sorted_list:
@@ -121,11 +121,14 @@ def get_origin_weibo_detail(ts, user, task_name, size, order, message_type=1):
                 temp.append(iter_text['message_type'])
                 temp.append(item[2])
                 temp.append(item[3])
+                temp.append(iter_text['timestamp'])
                 count_n += 1
                 results.append(temp)
                 if count_n == size:
                     break
 
+        if results and order == "ts":
+            results = sorted(results, key=lambda x:x[-1], reverse=True)
     return results
 
 
