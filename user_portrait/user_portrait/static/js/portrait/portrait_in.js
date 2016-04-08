@@ -37,12 +37,19 @@ Search_weibo_recommend.prototype = {
     });
   },
   Re_Draw_table: function(data){
+    //console.log(data)
+    var type = $('input[name="recommend_type"]:checked').val();
     var div = that.div;
     $(div).empty();
     var user_url;
     html = '';
     html += '<table id="recommend_table_new" class="table table-striped table-bordered bootstrap-datatable datatable responsive">';
-    html += '<thead><tr><th style="width:140px">用户ID</th><th>昵称</th><th>注册地</th><th style="width:100px">粉丝数</th><th style="width:100px">微博数</th><th style="width:100px">影响力</th><th style="width:100px">网民详情</th><th>' + '<input name="page_all" id="page_all" type="checkbox" value="" onclick="recommend_all()" />' + '</th></tr></thead>';
+    html += '<thead><tr><th style="width:140px">用户ID</th><th style="width:150px;">昵称</th><th style="width:100px;">注册地</th>';
+    html += '<th style="width:90px">粉丝数</th><th style="width:90px">微博数</th><th style="width:90px">影响力</th>';
+    if (type == 'sensitive'){
+        html += '<th style="width:150px">敏感词</th>';
+    }
+    html += '<th style="width:100px">网民详情</th><th style="width:20px;">' + '<input name="page_all" id="page_all" type="checkbox" value="" onclick="recommend_all()" />' + '</th></tr></thead>';
     var item = data;
     html += '<tbody>';
     for(var i in item){
@@ -68,10 +75,13 @@ Search_weibo_recommend.prototype = {
       html += '<td class="center"><a href='+ user_url+ ' target="_blank">'+ item[i][0] +'</td>';
       html += '<td class="center">'+ item[i][1] +'</td>';
       html += '<td class="center">'+ item[i][2] +'</td>';
-      html += '<td class="center" style="width:100px">'+ item[i][3] +'</td>';
-      html += '<td class="center" style="width:100px">'+ item[i][4] +'</td>';
-      html += '<td class="center" style="width:100px">'+ item[i][5] +'</td>';
-      html += '<td class="center" style="width:100px"><a style="cursor:pointer;" name="details" id="'+ item[i][0] +'" title="'+ item[i][1] +'">详情</a></td>';
+      html += '<td class="center">'+ item[i][3] +'</td>';
+      html += '<td class="center">'+ item[i][4] +'</td>';
+      html += '<td class="center">'+ item[i][5] +'</td>';
+      if (type == 'sensitive'){
+          html += '<td class="center">'+ item[i][6] +'</td>';
+      }
+      html += '<td class="center"><a style="cursor:pointer;" name="details" id="'+ item[i][0] +'" title="'+ item[i][1] +'">详情</a></td>';
       html += '<td class="center"><input name="in_status" class="in_status" type="checkbox" value="' + item[i][0] + '" /></td>';
       html += '</tr>';
     }
@@ -224,21 +234,33 @@ function bindOption(){
 		      $('#recommend').append(waiting_html);
 		      var admin =$('#useremail').text();
 		      var recommend_confirm_url = '/recommentation/identify_in/?submit_user='+admin+'&date=' + recommend_date + '&uid_list=' + uids_trans;
-		      console.log(recommend_confirm_url);
 		      draw_table_recommend.call_sync_ajax_request(recommend_confirm_url, draw_table_recommend.ajax_method, confirm_ok);
-		      var recommend_type = $('input[name="recommend_type"]:checked').val();
 		      
-		      var url_recommend_new = '/recommentation/show_in/?submit_user='+admin+'&date=' + $("#recommend_date_select").val() + '&type=' + recommend_type;
-		      draw_table_recommend_new = new Search_weibo_recommend(url_recommend_new, '#recommend');
+              var recommend_type = $('input[name="recommend_type"]:checked').val();
+		      if (recommend_type == 'auto'){
+                  var url_recommend_new = '/recommentation/show_auto_in/?submit_user='+admin+'&date=' + $("#recommend_date_select").val();
+              }
+              else{
+                  var url_recommend_new = '/recommentation/show_in/?submit_user='+admin+'&date=' + $("#recommend_date_select").val() + '&type=' + recommend_type;
+              }
+              draw_table_recommend_new = new Search_weibo_recommend(url_recommend_new, '#recommend');
 		      draw_table_recommend_new.call_sync_ajax_request(url_recommend_new, draw_table_recommend_new.ajax_method, draw_table_recommend_new.Re_Draw_table);
 		  }
           }
       });
       
       $('#recommend_date_button').click(function(){
+          $('#recommend').empty();
+          var waiting_html = '<div style="text-align:center;vertical-align:middle;height:40px">数据正在加载中，请稍后...</div>';
+          $('#recommend').append(waiting_html);
           var recommend_type = $('input[name="recommend_type"]:checked').val();
           var admin =$('#useremail').text();
-          var url_recommend_new = '/recommentation/show_in/?submit_user='+admin+'&date=' + $("#recommend_date_select").val() + '&type=' + recommend_type;
+          if (recommend_type == 'auto'){
+              var url_recommend_new = '/recommentation/show_auto_in/?submit_user='+admin+'&date=' + $("#recommend_date_select").val();
+          }
+          else{
+              var url_recommend_new = '/recommentation/show_in/?submit_user='+admin+'&date=' + $("#recommend_date_select").val() + '&type=' + recommend_type;
+          }
           draw_table_recommend_new = new Search_weibo_recommend(url_recommend_new, '#recommend');
           draw_table_recommend_new.call_sync_ajax_request(url_recommend_new, draw_table_recommend_new.ajax_method, draw_table_recommend_new.Re_Draw_table);
       });
@@ -325,6 +347,9 @@ function file_callback(data){
     }
     else if(data == 'uname list valid'){
         alert('用户名不合法！');
+    }
+    else if(data == 'no valid input url'){
+        alert('URL不合法！');
     }
     else{
         alert('入库成功！');
