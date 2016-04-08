@@ -118,7 +118,7 @@ function Draw_rank_task_modal(data){
 		html += '<td style="text-align;">'+norm_dict[data[i][1]]+'</td>'
 		html += '<td style="text-align;">'+data[i][2]+'</td>'
 		if(data[i][3] == '1'){
-			html += '<td style="text-align;">'+'计算完成'+'</td>';
+			html += '<td style="text-align;">'+'<a href="/index/user_rank/"  target="_blank">计算完成'+'</a></td>';
 		}else{
 			html += '<td style="text-align;">'+'正在计算'+'</td>';
 		}
@@ -148,7 +148,7 @@ function Draw_sentiment_task_modal(data){
 		// html += '<td style="text-align;">'+data[i][3]+'</td>'
 		html += '<td style="text-align;">'+data[i][4]+'</td>'
 		if(data[i][5] == '1'){
-			html += '<td style="text-align;">'+'计算完成'+'</td>';
+			html += '<td style="text-align;">'+'<a href="/index/mood_detect/"  target="_blank">计算完成'+'</a></td>';
 		}else{
 			html += '<td style="text-align;">'+'正在计算'+'</td>';
 		}
@@ -177,7 +177,7 @@ function Draw_network_task_modal(data){
 		// html += '<td style="text-align;">'+data[i][3]+'</td>'
 		html += '<td style="text-align;">'+data[i][2]+'</td>'
 		if(data[i][5] == '1'){
-			html += '<td style="text-align;">'+'计算完成'+'</td>';
+			html += '<td style="text-align;">'+'<a href="/index/network/"  target="_blank">计算完成'+'</a></td>';
 		}else{
 			html += '<td style="text-align;">'+'正在计算'+'</td>';
 		}
@@ -196,7 +196,7 @@ function Draw_group_detect_modal(data){
 	// for(var i=0; i<title_list; i++){
 	// 	html += '<th>' + title_list[i] +'</th>';
 	// }
-	html += '<th>任务名称</th><th>任务类型</th><th>备注</th><th>提交时间</th><th>任务进度</th>';
+	html += '<th>任务名称</th><th>任务类型</th><th>备注</th><th>提交时间</th><th>任务进度</th><th>查看详情</th>';
 	html += '</tr></thead>';
 	html += '<tbody>';
 	for(var i=0;i<data.length;i++){
@@ -206,6 +206,11 @@ function Draw_group_detect_modal(data){
 		html += '<td style="text-align;">'+data[i][2]+'</td>'
 		html += '<td style="text-align;">'+data[i][1]+'</td>'
 		html += '<td style="text-align;"><progress value="'+data[i][4]+'" max="100"></progress>&nbsp;&nbsp;'+data[i][4]+'%</td>'
+		if(data[i][4] == 100){
+			html += '<td style="text-align;"><a href="/index/group/"  target="_blank">查看详情</a></td>';
+		}else{
+			html += '<td> -- </td>'
+		}
 		// html += '<td style="text-align;">'+data[i][2]+'</td>'
 		// html += '<td style="text-align;">'+data[i][3]+'</td>'
 		// html += '<td style="text-align;">'+data[i][2]+'</td>'
@@ -238,7 +243,7 @@ function Draw_group_analysis_modal(data){
 		// html += '<td style="text-align;">'+data[i][3]+'</td>'
 		// html += '<td style="text-align;">'+data[i][2]+'</td>'
 		if(data[i][3] == '1'){
-			html += '<td style="text-align;">'+'计算完成'+'</td>';
+			html += '<td style="text-align;">'+'<a href="/index/group_analysis/?name='+data[i][0]+'"  target="_blank">计算完成'+'</a></td>';
 		}else{
 			html += '<td style="text-align;">'+'正在计算'+'</td>';
 		}
@@ -265,7 +270,7 @@ function Draw_sensing_task_modal(data){
 		// html += '<td style="text-align;">'+data[i][3]+'</td>'
 		// html += '<td style="text-align;">'+data[i][2]+'</td>'
 		if(data[i][3] == '1'){
-			html += '<td style="text-align;">'+'计算完成'+'</td>';
+			html += '<td style="text-align;">'+'<a href="/index/social_sensing/"  target="_blank">计算完成'+'</a></td>';
 		}else{
 			html += '<td style="text-align;">'+'正在计算'+'</td>';
 		}
@@ -306,20 +311,5 @@ call_sync_ajax_request(url_recomment, modal_data_re);
 var url_else = '/ucenter/user_operation/?submit_user=admin';
 call_sync_ajax_request(url_else, modal_data);
 
-
-// $('.detail_button').click(function(){
-// 	var data = modal_data();
-// 	var data_re = modal_data_re();
-// 	var work_name = $(this).prev().text();
-// 	var title = dict_name[work_name];
-// 	if(work_name == 'recomment'){
-// 		Draw_modal(data_re[work_name], title)
-// 		// Draw_modal(data[])
-// 		// call_sync_ajax_request(url, function(data){Draw_modal(data, title, work_name)});
-// 	}else{
-// 		Draw_modal(data[work_name], title)
-// 	}
-
-// });
 
 
