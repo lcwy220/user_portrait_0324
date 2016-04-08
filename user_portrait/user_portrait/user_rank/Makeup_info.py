@@ -4,6 +4,8 @@ import sys
 import datetime
 from time_utils import ts2datetime, datetime2ts
 from INDEX_TABLE import *
+from parameter import RUN_TYPE
+from global_utils import es_user_portrait as es
 
 USER_INDEX_NAME = 'user_portrait_1222'
 USER_INDEX_TYPE = 'user'
@@ -12,15 +14,17 @@ WEBUSER_INDEX_NAME = "weibo_user"
 WEBUSER_INDEX_TYPE = "user"
 
 
-es = Elasticsearch(['219.224.134.213', '219.224.134.214'], timeout = 6000)
+#es = Elasticsearch(['219.224.134.213', '219.224.134.214'], timeout = 6000)
 
 def make_up_user_info(user_list = [] , isall = False, time = 1, sort_norm = "bci" ):
     result_info = []
     
-    today = str(datetime.date.today())
-    today = '2013-09-07'
+    if RUN_TYPE:
+        today = str(datetime.date.today())
+    else:
+        today = '2013-09-07'
     timestamp = datetime2ts(today)
-    print len(user_list)
+    #print len(user_list)
     if user_list:
         for id in user_list:
             item = {}
@@ -51,7 +55,7 @@ def all_makeup_info(id , sort_norm , time):
         item['weibo_count'] = None
     
     item['uid'] = id
-    query = {"query":{"bool":{"must":[{"term":{"user.uid":id}}],"must_not":[],"should":[]}},"from":0,"size":10,"sort":[],"facets":{},"fields":[]}
+    query = {"query":{"bool":{"must":[{"term":{"user.uid":id}}],"must_not":[],"should":[]}},"size":10,"sort":[],"facets":{},"fields":[]}
     result = es.search(index=USER_INDEX_NAME , doc_type=USER_INDEX_TYPE , body=query)['hits']
     if result['total'] != 0 :
         item['is_warehousing'] = True
@@ -68,7 +72,7 @@ def all_makeup_info(id , sort_norm , time):
 
 def in_makeup_info(id , sort_norm , time):
     item = {}
-    query = {"query":{"bool":{"must":[{"term":{"user.uid":id}}],"must_not":[],"should":[]}},"from":0,"size":10,"sort":[],"facets":{},"fields":["uid","uname","location","topic_string","domain","fansnum"]}
+    query = {"query":{"bool":{"must":[{"term":{"user.uid":id}}],"must_not":[],"should":[]}},"size":10,"sort":[],"facets":{},"fields":["uid","uname","location","topic_string","domain","fansnum"]}
     result = es.search(index=USER_INDEX_NAME , doc_type=USER_INDEX_TYPE , body=query)['hits']
     if result['total'] != 0 :
         item['domain'] = result['hits'][0]['fields']['domain'][0]

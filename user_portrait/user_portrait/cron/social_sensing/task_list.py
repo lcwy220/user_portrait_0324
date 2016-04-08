@@ -70,7 +70,7 @@ def create_task_list(ts):
 if __name__ == "__main__":
 
     ts = datetime2ts("2013-09-01")
-    count = 23
+    count = 4
     ts = ts + count*time_interval
     create_task_list(ts)
 

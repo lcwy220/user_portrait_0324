@@ -3,8 +3,8 @@
 import sys
 import time
 import json
-import pynlpir
-pynlpir.open()
+#import pynlpir
+#pynlpir.open()
 from aggregation_weibo import aggregation_sensor_keywords
 reload(sys)
 sys.path.append("./../")
@@ -17,19 +17,19 @@ from global_utils import flow_text_index_name_pre, flow_text_index_type, profile
 
 # based on nick_name search group
 # postname--nickname后缀
-def search_specified_group(postname="报"):
+def search_specified_group(postname="律师"):
     query_body = {
         "query":{
             "bool": {
                 "must": [
                     {"wildcard": {
-                        "uname": {
+                        "nick_name": {
                             "wildcard": "*" + postname
                         }
                     }},
                     {"range": {
                         "fansnum": {
-                            "gte": 100000
+                            "gte": 10000
                         }
                     }}
                 ]
@@ -38,12 +38,29 @@ def search_specified_group(postname="报"):
         "size": 10000
     }
 
-    search_results = es_profile.search(index="user_portrait_1222", doc_type="user", body=query_body)["hits"]["hits"]
+    search_results = es_profile.search(index="weibo_user", doc_type="user", body=query_body)["hits"]["hits"]
     uid_list = []
     for item in search_results:
         uid_list.append(item['_id'])
-        print item['_id'], item['_source']['uname'], '\n'
+        print item['_id'], item['_source']['nick_name'], '\n'
     print "该群体有：", len(uid_list)
+
+    result = dict()
+    result['social_sensors'] = json.dumps(uid_list)
+    result['stop_time'] = 1460086441
+    result['create_at'] = 1377964800
+    result['task_name'] = "top lawers"
+    result['remark'] = "粉丝10000以上的律师"
+    result["history_status"] = json.dumps([])
+    result['burst_reason'] = ''
+    result['processing_status'] = "1"
+    result["warning_status"] = '0'
+    result["finish"] = "0"
+    result["create_by"] = 'admin'
+
+    es_profile.index(index="manage_sensing_task", doc_type='task', id='admin-top lawers', body=result)
+    print "1"
+
     return uid_list
 
 

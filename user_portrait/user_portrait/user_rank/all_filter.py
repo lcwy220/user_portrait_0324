@@ -8,7 +8,8 @@ from INDEX_TABLE import *
 from time_utils import ts2datetime, datetime2ts
 from global_utils import es_user_portrait as es
 
-MAX_SIZE = 2 ** 10
+#MAX_SIZE = 2 ** 10
+MAX_SIZE = 100
 
 def all_sort_filter( uid_list = [] , sort_norm = 'imp' , time = 1 , key_search = False ):
     uid = []
@@ -52,17 +53,15 @@ def history_sort( prefix ,index_name , index_type , uid_list , time , ischange =
                             "terms": {
                                 "uid": uid_list
                             }
-                        }       
-                    }           
+                        }
+                    }
                 },
-                "sort": [{ sort_field : { "order": "desc" } }],
-                "fields" : [],
+                "sort": { sort_field : { "order": "desc" } },
                 "size" : MAX_SIZE
             }
     else :
-        query = {  
-            "sort": [{ sort_field : { "order": "desc" } }],
-            "fields" : [],
+        query = {
+            "sort": { sort_field : { "order": "desc" } },
             "size" : MAX_SIZE 
         }
     try:
@@ -78,11 +77,11 @@ def history_sort( prefix ,index_name , index_type , uid_list , time , ischange =
 
 
 def es_get_userlist_by_all(fieldname , uid, key_search = False):
-    sort = [{ fieldname : { "order": "desc" } }]
+    sort = { fieldname : { "order": "desc" } }
     query = {}
     if key_search:
         query = {
-                "query": {
+            "query": {
                 "filtered": {
                     "filter": {
                         "terms": {

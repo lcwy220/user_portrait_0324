@@ -381,6 +381,6 @@ def ajax_get_clustering_topic():
         if topic_list:
             topic_list = json.loads(topic_list)
 
-    return json.dumps(topic_list)
+    return json.dumps(topic_list[:5])
 
 

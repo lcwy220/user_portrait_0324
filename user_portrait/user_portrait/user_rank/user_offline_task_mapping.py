@@ -1,5 +1,10 @@
+# -*-coding:utf-8-*-
+import sys
+reload(sys)
+sys.path.append('./../')
 from elasticsearch import Elasticsearch
 from global_utils import es_user_portrait as es
+
 def user_rank_task_mapping():
     index_info = {
         "mappings":{
@@ -31,7 +36,6 @@ def user_rank_task_mapping():
                     },
                     "status":{
                         "type": "long",
-                        "index": "not_analyzed"
                     },
                     "range":{
                         "type": "string",
