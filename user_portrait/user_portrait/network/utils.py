@@ -62,7 +62,7 @@ def show_daily_rank(period, sort_type, count):
                 tmp.append(item['fansnum'])
             else:
                 tmp.extend([_id,'','','',''])
-            value = int(sort_list[index])
+            value = sort_list[index]
             tmp.append(value)
             results.append(tmp)
     
@@ -111,7 +111,7 @@ def show_keywords_rank(task_id, sort_type, count):
                 tmp.append(item['fansnum'])
             else:
                 tmp.extend([_id,'','','',''])
-            value = int(sort_list[index])
+            value = sort_list[index]
             tmp.append(value)
             results.append(tmp)
     
@@ -266,7 +266,7 @@ def retweet_dict2results(uid, item_results):
                 tmp.append(item['nick_name'])
             else:
                 tmp.extend([_id,''])
-            value = int(sort_list[index])
+            value = sort_list[index]
             tmp.append(value)
             results.append(tmp)
     return results
