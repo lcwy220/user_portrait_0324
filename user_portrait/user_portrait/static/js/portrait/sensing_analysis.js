@@ -158,7 +158,7 @@ function sensing_participate_table (head, data, div_name) {
 		html += '<td style="text-align:center;vertical-align:middle;"><a class="undlin" target="_blank" href="http://weibo.com/u/' + data[i][0] + '">'+ data[i][0] + '</a></td>';
 		html += '<td style="text-align:center;vertical-align:middle;"><a href="/index/personal/?uid='+data[i][0]+'" target="_blank">' + data[i][1] + '</a></td>';
 		html += '<td style="text-align:center;vertical-align:middle;">' + data[i][3] + '</td>';
-		html += '<td class="sensing_topic" style="text-align:center;vertical-align:middle;">'+data[i][4][0]+'</td>';
+		html += '<td style="text-align:center;vertical-align:middle;">'+data[i][4][0]+'</td>';
 		//html +=  data[i][4].join(',');
 		//html += '</td><td style="text-align:center;vertical-align:middle;">' + data[i][5] + '</td>';
 		//html += '<td style="text-align:center;vertical-align:middle;">' + data[i][5] + '</td>';
@@ -315,6 +315,7 @@ function pageGroup(pageNum,pageCount, div_name){
 }
 
 function Draw_num_weibo (data){
+    console.log(data);
 	Draw_group_weibo(data, 'num_weibo', 'num_related_weibo');
     $('#num_weibo').css("display", 'block');
 }
@@ -1094,11 +1095,12 @@ function draw_num_line_charts(data, div_name, legend_data){
                 // if(param.seriesIndex == 3){
                 //     index_type = 2
                 // };
-                var num_line_url = '/social_sensing/get_text_detail/?task_name=' + task_name + '&ts=' + num_click_time + '&text_type=' + index_type+'&user='+user+'&order=total';
+                var num_line_url = '/social_sensing/get_text_detail/?task_name=' + task_name + '&ts=' + num_click_time + '&text_type=' + index_type+'&user='+user+'&order=';
                 //console.log(num_line_url);
                 var num_line_event_url = '/social_sensing/get_clustering_topic/?task_name='+ task_name +'&ts=' + num_click_time+'&user='+user;
                 call_sync_ajax_request(num_line_event_url, Draw_num_related_event);
-                call_sync_ajax_request(num_line_url, Draw_num_weibo);
+
+                call_sync_ajax_request(num_line_url+'total', Draw_num_weibo);
 
                 if($('input[name="num_select"]:checked').val()=='1'){ 
                     $('#num_related_weibo_event').css('display', 'block');
@@ -1119,13 +1121,9 @@ function draw_num_line_charts(data, div_name, legend_data){
                     }
                 });	
                 $('input[name="order_select"]').click(function(){
-                    if($('input[name="order_select"]:checked').val()=='1'){ 
-                        $('#num_related_weibo_event').css('display', 'block');
-                        $('#num_related_weibo_all').css('display', 'none');
-                    }else{
-                        $('#num_related_weibo_event').css('display', 'none');
-                        $('#num_related_weibo_all').css('display', 'block');
-                    }
+                    var order = $('input[name="order_select"]:checked').val();
+                    console.log(num_line_url+order);
+                    call_sync_ajax_request(num_line_url+order, Draw_num_weibo);
                 }); 
 			}
 		
