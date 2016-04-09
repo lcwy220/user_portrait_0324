@@ -23,6 +23,8 @@ var change_period = '';
 var tab = 'time';
 date_init();
 var task_id = '';
+var choose_uid = '';
+var choose_uname = '';
 
 function hidden_keywords(){
     $('#show_keywords').addClass('hidden');
@@ -31,6 +33,7 @@ function hidden_keywords(){
 	$('#by_time').css('background-color','#3351B7');
 	$('#pr_diff').removeClass('hidden');
 	$('#dg_diff').removeClass('hidden');
+	$('#result_analysis').addClass('hidden');
 	tab = 'time';
 	$("input[name='mode_choose']").eq(0).attr("checked","checked");
 	var url = '/network/show_daily_rank/'
@@ -43,6 +46,7 @@ function hidden_time(){
 	$('#by_time').css('background-color','#6699FF');
     $('#show_keywords').removeClass('hidden');
 	$('#by_keywords').css('background-color','#3351B7');
+	$('#result_analysis').addClass('hidden');
 	tab = 'keyword';
 	$("input[name='mode_choose']").eq(0).attr("checked","checked");
 	var url = '/network/show_daily_rank/'
@@ -142,7 +146,6 @@ function search_task(){
 		}
     }
     var status = $('#search_status').val();
-    console.log(status);
     if(status != "2"){
 		if(count ==0){
 			search_url += '?status=' +status;
@@ -160,7 +163,6 @@ function search_task(){
 			search_url += '&start_date='+start_date+'&end_date='+end_date;
 			count += 1;
 		}
-       
     };
     if($(' #time_checkbox_submit').is(':checked')){
 		if(count ==0){
@@ -169,15 +171,11 @@ function search_task(){
 			search_url += '&submit_date='+submit_date;
 			count += 1;
 		}
-        
     }
-    console.log(search_url);
-
     call_sync_ajax_request(search_url, detect_task_status);
 }
 //提交监测
 $('#detect_submit').click(function(){
-	console.log('sas');
     var s = [];
     var keyword = $('#keyword_detect').val();
     var time_from =$('#detect_time_choose #weibo_from').val().split('/').join('-');
@@ -188,7 +186,6 @@ $('#detect_submit').click(function(){
         alert('起始时间不得大于终止时间！');
         return false;
     }
-    //console.log(keyword);
     if(keyword == ''){  //检查输入词是否为空
         alert('请输入关键词！');
     }else{
@@ -227,10 +224,10 @@ function temporal_rank_table(data){
 	$('#result_rank_table').empty();
 	var html = '';
 	html += '<table id="rank_table" class="table table-striped table-bordered bootstrap-datatable datatable responsive" style="margin-left:30px;width:900px;">';
-	html += '<thead><th style="text-align:center;">排名</th>';
+	html += '<thead><th style="text-align:center;min-width:40px;">排名</th>';
 	html += '<th style="text-align:center;">用户ID</th>';
 	html += '<th style="text-align:center;">昵称</th>';
-	html += '<th style="text-align:center;">是否入库</th>';
+	html += '<th style="text-align:center;min-width:50px;">是否入库</th>';
 	html += '<th style="text-align:center;">注册地</th>';
 	html += '<th style="text-align:center;">粉丝数</th>';
 	html += '<th style="text-align:center;">微博数</th>';
@@ -269,8 +266,8 @@ function temporal_rank_table(data){
 		html += '<td style="text-align:center;">'+sign_loca+'</td>';
 		html += '<td style="text-align:center;">'+data[i][4]+'</td>';
 		html += '<td style="text-align:center;">'+data[i][2]+'</td>';
-		html += '<td style="text-align:center;">'+data[i][5]+'</td>';
-		html += '<td style="text-align:center;"><a data-toggle="modal" data-target="#detail_network" >查看网络详情</a></td>';
+		html += '<td style="text-align:center;">'+data[i][5].toFixed(0)+'</td>';
+		html += '<td style="text-align:center;cursor:pointer"><a data-toggle="modal" data-target="#detail_network" id="show_net" >查看网络详情</a></td>';
 		html += '</tr>';
 	}
 	html += '</table>';
@@ -327,6 +324,7 @@ function show_trend(data){
 							change_period = event.point.x;
 							var table_url = '/network/show_daily_rank/?period='+event.point.x;
 							call_sync_ajax_request(table_url,temporal_rank_table);
+							$("input[name='mode_choose']").eq(0).attr("checked","checked");
 						}
 					}
 				}
@@ -387,15 +385,171 @@ $(function(){
 	if(tab=='keyword'){
 		var url = "/network/show_keywords_rank/?order="+sort_type+"&task_id="+task_id;
 	}
-	console.log(url);
     call_sync_ajax_request(url,temporal_rank_table);
 	});
 });
 
+
+
 //完成计算
 $('.show_detect_key_result').live('click', function(){
     task_id= $(this).prev().text();
+    var keywords = $(this).parent().prev().prev().prev().text();
+	var keyword_date = $(this).parent().prev().prev().text();
     var show_url = '/network/show_keywords_rank/?task_id=' + task_id;
-    call_sync_ajax_request(show_url, temporal_rank_table)
+    call_sync_ajax_request(show_url, temporal_rank_table);
+	$('#result_analysis').removeClass('hidden');
+	$('#detect_range').empty();
+    $('#detect_detail').empty();
+    $('#detect_time_range').empty();
+    $('#detect_range').append(keywords);
+    $('#detect_time_range').append(keyword_date);  
 });
 
+
+//网络详情
+$('a[id^=show_net]').live('click', function(){
+	$("input[name='tweet_choose']").eq(0).attr("checked","checked");
+	$('#networkDetail').empty();
+	if(tab=='time'){
+		choose_uid = $(this).parent().prev().prev().prev().prev().prev().prev().prev().text();
+		choose_uname = $(this).parent().prev().prev().prev().prev().prev().prev().text();
+		var url_show_net = '/network/search_retweet_network/?uid='+choose_uid;
+		call_sync_ajax_request(url_show_net, function(data){net_detail(data, choose_uid,choose_uname,'retweet')});
+	}
+	if(tab=='keyword'){
+		choose_uid = $(this).parent().prev().prev().prev().prev().prev().prev().prev().text();
+		choose_uname = $(this).parent().prev().prev().prev().prev().prev().prev().text();
+		var url_show_net = '/network/search_retweet_network/?uid='+choose_uid+'&task_id='+task_id;
+		call_sync_ajax_request(url_show_net, function(data){net_detail(data, choose_uid,choose_uname,'retweet')});
+	}
+});
+$(function(){
+	$('#netchoose').click(function(){
+	var box = document.getElementsByName('tweet_choose');
+	for(var i=0;i<box.length;i++){
+		if(box[i].checked){
+			var tweet_type = box[i].value;
+		}
+	}
+	if(tab=='time'){
+		var url = '/network/search_retweet_network/?uid='+choose_uid;
+		call_sync_ajax_request(url, function(data){net_detail(data, choose_uid,choose_uname,tweet_type)});
+	}
+	if(tab=='keyword'){
+		var url = '/network/search_retweet_network/?uid='+choose_uid+'&task_id='+task_id;
+		call_sync_ajax_request(url, function(data){net_detail(data, choose_uid,choose_uname,tweet_type)});
+	}
+	});
+});
+function net_detail(data,uid,uname,tweet_type){
+	if(tweet_type =='retweet'){
+		var net_data = data.retweet;
+	}else{
+		var net_data = data.be_retweet;
+	}
+	var Related_Node = [];
+	var Related_Link = [];
+	var names = [];
+	var uids = [];
+	var links = [];
+	for (var i=0;i<net_data.length;i++){
+        if(net_data[i][1]==''){
+			names.push(net_data[i][0]);
+		}else{
+			names.push(net_data[i][1]);
+		}
+		uids.push(net_data[i][0]);
+		links.push(net_data[i][2]);
+	}
+	Related_Node.push({'name':uname,'value':20,'category':0,'symbolSize':20,'itemStyle':{'normal':{'color':'rgba(255,215,0,0.4)'}}});
+	for(var i=0;i<net_data.length;i++ ){
+		Related_Node.push({'name':names[i], 'value':links[i], 'category':1,'symbolSize':5});
+        Related_Link.push({'source':uname, 'target':names[i], 'weight':links[i],'itemStyle':{'normal':{'width':10}}});
+	}
+	require.config({
+        paths: {
+            echarts: 'http://echarts.baidu.com/build/dist'
+        }
+    });
+	require([
+        'echarts',
+		'echarts/chart/force'
+    ],
+	function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+        var myChart = ec.init(document.getElementById('networkDetail')); 
+                
+        var option = {
+			tooltip : {
+				trigger: 'item',
+				formatter: '{a} : {b}'
+			},
+			toolbox: {
+				show : true,
+				feature : {
+					restore : {show: true},
+					magicType: {show: true, type: ['force', 'chord']},
+					saveAsImage : {show: true}
+				}
+			},
+			series : [
+			{
+				type:'force',
+				name : "网络关系",
+				ribbonType: false,
+				categories : [
+					{
+                        name:'',
+                        symbol:'circle',
+                    },
+                    {
+                        name:'',
+                        symbol:'circle',
+                    },
+            ],
+            itemStyle: {
+                normal: {
+                    label: {
+                        show: true,
+                        textStyle: {
+                            color: '#333'
+                        }
+                    },
+                    nodeStyle : {
+                        brushType : 'both',
+                        borderColor : 'rgba(255,215,0,0.4)',
+                        borderWidth : 1
+                    },
+                    linkStyle: {
+                        type: 'curve'
+                    }
+                },
+                emphasis: {
+                    label: {
+                        show: false
+                        // textStyle: null      // 默认使用全局文本样式，详见TEXTSTYLE
+                    },
+                    nodeStyle : {
+                        //r: 30
+                    },
+                    linkStyle : {}
+                }
+            },
+            useWorker: false,
+            minRadius : 15,
+            maxRadius : 25,
+            gravity: 1.1,
+            scaling: 1.1,
+            roam: 'move',
+            nodes: Related_Node,
+            links : Related_Link
+        }
+    ]
+                };
+        
+                // 为echarts对象加载数据 
+                myChart.setOption(option); 
+            }
+        );
+}

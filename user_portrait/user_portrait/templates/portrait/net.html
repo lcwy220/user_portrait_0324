@@ -64,6 +64,12 @@
 </div>
 
 <h4 style="float:left;width:100%;">结果分析</h4>
+<div id="result_analysis"class="hidden" style="float:left;margin-left: 30px;padding:10px;background-color:#E1E6FF;width: 900px;font-size:14px;border:1px solid #B0CEFB"><b>
+	<span>关键词：<span id="detect_range"></span></span>
+	<span id="detect_type"></span><span id='detect_detail'></span>
+	<span style="margin-left: 20px;">时间范围：<span id="detect_time_range"></span></span>
+</b></div>
+
 <div style="width:100%;margin-top:10px;">
 	    <!--<span style= "color:red;margin-left:20px;float:left;">相关微博</span>-->
 		<ul style="float:left;width:100%;" id="modechoose">
@@ -131,12 +137,18 @@
 
 <div class="modal fade" id="detail_network" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
-    <div class="modal-content" style="width: 500px;">
+    <div class="modal-content" style="width: 800px;">
+    <div class="modal-content" style="width: 800px;">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" style="font-size:18px" id="myModalLabel">网络详情</h4>
       </div>
-      <div class="modal-body" id='networkDrtail'>
+      <div class="modal-body" id='network' style="width: 800px;height:550px;">
+		<div id="netchoose">
+			<span style="margin-left:250px;"><input type="radio" name="tweet_choose" value="retweet" checked="checked"><span class="mode" style="">转发关系图</span></span>
+			<span style="margin-left:50px;"><input type="radio" name="tweet_choose" value="be_retweet"><span class="mode" style="">被转发关系图</span></span>
+		</div>
+		<div class="modal-body" id='networkDetail' style="width: 800px;height:500px;"></div>
       </div>
     </div>
   </div>
