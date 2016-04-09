@@ -158,7 +158,7 @@ function sensing_participate_table (head, data, div_name) {
 		html += '<td style="text-align:center;vertical-align:middle;"><a class="undlin" target="_blank" href="http://weibo.com/u/' + data[i][0] + '">'+ data[i][0] + '</a></td>';
 		html += '<td style="text-align:center;vertical-align:middle;"><a href="/index/personal/?uid='+data[i][0]+'" target="_blank">' + data[i][1] + '</a></td>';
 		html += '<td style="text-align:center;vertical-align:middle;">' + data[i][3] + '</td>';
-		html += '<td class="sensing_topic" style="text-align:center;vertical-align:middle;">'+data[i][4][0]+'</td>';
+		html += '<td style="text-align:center;vertical-align:middle;">'+data[i][4][0]+'</td>';
 		//html +=  data[i][4].join(',');
 		//html += '</td><td style="text-align:center;vertical-align:middle;">' + data[i][5] + '</td>';
 		//html += '<td style="text-align:center;vertical-align:middle;">' + data[i][5] + '</td>';
@@ -452,6 +452,9 @@ function page_group_weibo(start_row, end_row, data, div_name, sub_div_name){
         var sensor_words = weibo[7];
         var weibo_type = weibo[8];
         var weibo_type_s = '';
+        console.log(weibo);
+        var post_num = weibo[8];
+        var comment_num = weibo[9];
         if(weibo_type = 1){
             weibo_type_s = '原创';
 
@@ -500,8 +503,10 @@ function page_group_weibo(start_row, end_row, data, div_name, sub_div_name){
         html += '<div class="weibo_pz">';
         html += '<div class="m">';
         html += '<u>' + date + '</u>&nbsp;-&nbsp;';
-        html += '<a target="_blank" href="' + user_link + '">用户详情</a>&nbsp;-&nbsp;';
-        //html += '<span style="color:#666">传感词: ' + sensor_words +'</span>';
+        html += '<a target="_blank" href="' + user_link + '">用户详情</a>&nbsp;&nbsp;';
+        if(comment_num != undefined){
+        html += '<span style="margin-left:550px;color:#666">转发量: ' + post_num +'&nbsp;&nbsp;评论量：'+comment_num+'</span>';
+        }
         html += '</div>';
         html += '</div>';
         html += '</div>';
@@ -539,7 +544,7 @@ function draw_sensi_line_charts(data, div_name, legend_data){
 	var myChart = echarts.init(document.getElementById(div_name)); 
 	var option = { 
         title : {
-            text  :'注：蓝色箭头代表感知的异常点，红色箭头表示重合异常点',
+            text  :'注：箭头代表感知的异常点',
             // subtext:'    ',
             textStyle:{
                     fontSize: 12,
@@ -556,7 +561,7 @@ function draw_sensi_line_charts(data, div_name, legend_data){
 	        show : true,
 	        formatter:  function (params) {
 	            var res = params[0].name;
-	            for (var i = 0, l = params.length-1; i < l; i++) {
+	            for (var i = 0, l = params.length; i < l; i++) {
 	                res += '<br/>' + params[i].seriesName + ' : ' + params[i].value;
 	            }
 	           	return res;
@@ -612,7 +617,7 @@ function draw_sensi_line_charts(data, div_name, legend_data){
 	        //     data: line1
 	        // },
 	        {
-	            name: legend_data[2],
+	            name: legend_data[1],
 	            type: 'line',
 	            showAllSymbol : true,
 	            symbolSize:1,
@@ -620,7 +625,7 @@ function draw_sensi_line_charts(data, div_name, legend_data){
 	            data: line2
 	        },
 	        {
-	            name: legend_data[3],
+	            name: legend_data[2],
 	            type: 'line',
 	            showAllSymbol : true,
 	            symbolSize:1,
@@ -670,15 +675,11 @@ function draw_sensi_line_charts(data, div_name, legend_data){
 				    sensi_click_time = timestamp2;
                     var sensi_index;
 				    if (param.seriesIndex==0){
-			    		sensi_index = 6;
-			    	}else if(param.seriesIndex == 4){
-			    		sensi_index = 6;
-			    	}else if(param.seriesIndex == 3){
-			    		sensi_index = 8;
+			    		sensi_index = 2;
 			   		}else if(param.seriesIndex == 1){
-			   			sensi_index = 6;
+			   			sensi_index = 3;
 			   		}else if(param.seriesIndex == 2){
-			   			sensi_index = 7;
+			   			sensi_index = 2;
 			   		};
 
 				    //var data=[['人民日报',1,2,'条结论这里是一条结论这里里是一条结论','中国 北京 北京',param.name],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京',param.name],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京',param.name],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['人民日报',1,2,'这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论这里是一条结论','中国 北京 北京','2013-09-07 20:00'],['0',1,2,'3neirong',4,44,6,7,8,9,0],['0',1,2,'3neirong',4,5,6,7,8,9,0],['0',1,2,'3neirong',4,5,6,7,8,9,0]]
@@ -734,6 +735,7 @@ function draw_sensi_line_charts(data, div_name, legend_data){
 }
 
 function draw_mood_line_charts(data, div_name, legend_data){
+    //消极，中性，积极
 	var line1 = data[1];
 	var line2 = data[2];
 	var line3 = data[3];
@@ -743,7 +745,7 @@ function draw_mood_line_charts(data, div_name, legend_data){
 	var myChart = echarts.init(document.getElementById(div_name)); 
 	var option = {  
         title : {
-            text  :'注：蓝色箭头代表感知的异常点，红色箭头表示重合异常点',
+            text  :'注：箭头代表感知的异常点',
             // subtext:'    ',
             textStyle:{
                     fontSize: 12,
@@ -754,12 +756,13 @@ function draw_mood_line_charts(data, div_name, legend_data){
                     color: '#555555'
             },            x: 'right',
             y: 37
-        },	    tooltip : {
+        },	    
+        tooltip : {
 	        trigger: 'axis',
 	        show : true,
 	        formatter:  function (params) {
 	            var res = params[0].name;
-	            for (var i = 0, l = params.length-1; i < l; i++) {
+	            for (var i = 0, l = params.length; i < l; i++) {
 	                res += '<br/>' + params[i].seriesName + ' : ' + params[i].value;
 	            }
 	           	return res;
@@ -810,7 +813,6 @@ function draw_mood_line_charts(data, div_name, legend_data){
     		    	symbolSize:5,
     		    	symbol: 'arrow',
     		    	itemStyle:{
-
     		    		normal: {
     		                color: '#FF7F7F'
     		            }
@@ -866,12 +868,10 @@ function draw_mood_line_charts(data, div_name, legend_data){
 				    mood_click_time = timestamp2;
 				    // mood_index = param.seriesIndex+4;
 				    var index_type;
-				    if (param.seriesIndex==3){
-			    		index_type = 5;
-			    	}else if(param.seriesIndex==0){
-			    		index_type = 5;
+                    if(param.seriesIndex==0){
+			    		index_type = 6;
 			   		}else if(param.seriesIndex == 1){
-			   			index_type = 3;
+			   			index_type = 5;
 			   		}else if(param.seriesIndex == 2){
 			   			index_type = 4;
 			   		};
@@ -939,24 +939,25 @@ function draw_num_line_charts(data, div_name, legend_data){
 	//var col_line = data[7];
 	var myChart = echarts.init(document.getElementById(div_name)); 
 	var option = {  
-        title : {
-            text  :'注：蓝色箭头代表感知的异常点，红色箭头表示重合异常点',
-            // subtext:'    ',
-            textStyle:{
-                    fontSize: 12,
-                    color: '#555555'
-            },
-            subtextStyle:{
-                    fontSize: 12,
-                    color: '#555555'
-            },            x: 'right',
-            y: 37
-        }, 	    tooltip : {
+        // title : {
+        //     //text  :'注：蓝色箭头代表感知的异常点，红色箭头表示重合异常点',
+        //     // subtext:'    ',
+        //     textStyle:{
+        //             fontSize: 12,
+        //             color: '#555555'
+        //     },
+        //     subtextStyle:{
+        //             fontSize: 12,
+        //             color: '#555555'
+        //     },            x: 'right',
+        //     y: 37
+        // }, 	    
+        tooltip : {
 	        trigger: 'axis',
 	        show : true,
 	        formatter:  function (params) {
 	            var res = params[0].name;
-	            for (var i = 0, l = params.length-1; i < l; i++) {
+	            for (var i = 0, l = params.length; i < l; i++) {
 	                res += '<br/>' + params[i].seriesName + ' : ' + params[i].value;
 	            }
 	           	return res;
@@ -1019,7 +1020,7 @@ function draw_num_line_charts(data, div_name, legend_data){
 	        //     data: line1
 	        // },
 	        {
-	            name: legend_data[1],
+	            name: legend_data[0],
 	            type: 'line',
 	            showAllSymbol : true,
 	            symbolSize:1,
@@ -1027,7 +1028,7 @@ function draw_num_line_charts(data, div_name, legend_data){
 	            data: line1
 	        },
 	        {
-	            name: legend_data[2],
+	            name: legend_data[1],
 	            type: 'line',
 	            symbolSize:1,
                	symbol: 'circle',
@@ -1086,7 +1087,7 @@ function draw_num_line_charts(data, div_name, legend_data){
 			    	index_type = 0
 			    };
                 if(param.seriesIndex == 1){
-                    index_type = 0
+                    index_type = 1
                 };
                 // if(param.seriesIndex == 2){
                 //     index_type = 1
@@ -1094,11 +1095,12 @@ function draw_num_line_charts(data, div_name, legend_data){
                 // if(param.seriesIndex == 3){
                 //     index_type = 2
                 // };
-                var num_line_url = '/social_sensing/get_text_detail/?task_name=' + task_name + '&ts=' + num_click_time + '&text_type=' + index_type+'&user='+user+'&order=total';
-                //console.log(num_line_url);
+                var num_line_url = '/social_sensing/get_text_detail/?task_name=' + task_name + '&ts=' + num_click_time + '&text_type=' + index_type+'&user='+user+'&order=';
+                console.log(num_line_url);
                 var num_line_event_url = '/social_sensing/get_clustering_topic/?task_name='+ task_name +'&ts=' + num_click_time+'&user='+user;
                 call_sync_ajax_request(num_line_event_url, Draw_num_related_event);
-                call_sync_ajax_request(num_line_url, Draw_num_weibo);
+
+                call_sync_ajax_request(num_line_url+'total', Draw_num_weibo);
 
                 if($('input[name="num_select"]:checked').val()=='1'){ 
                     $('#num_related_weibo_event').css('display', 'block');
@@ -1119,13 +1121,9 @@ function draw_num_line_charts(data, div_name, legend_data){
                     }
                 });	
                 $('input[name="order_select"]').click(function(){
-                    if($('input[name="order_select"]:checked').val()=='1'){ 
-                        $('#num_related_weibo_event').css('display', 'block');
-                        $('#num_related_weibo_all').css('display', 'none');
-                    }else{
-                        $('#num_related_weibo_event').css('display', 'none');
-                        $('#num_related_weibo_all').css('display', 'block');
-                    }
+                    var order = $('input[name="order_select"]:checked').val();
+                    console.log(num_line_url+order);
+                    call_sync_ajax_request(num_line_url+order, Draw_num_weibo);
                 }); 
 			}
 		
@@ -1275,8 +1273,10 @@ function show_warning_time_all(div_name, data){
 	} 
 
 var num_legend = ['原创', '转发'];
-var sensi_legend = [ '转发', '评论','总数', {name:'重合点', icon :'image://../../static/img/arrow.png'}];
-var mood_legend = ['消极','中性', '积极', {name:'重合点', icon :'image://../../static/img/arrow.png'}];
+var sensi_legend = [ '转发', '评论','总数'];
+var mood_legend = ['消极','中性', '积极'];
+// var sensi_legend = [ '转发', '评论','总数', {name:'异常点', icon :'image://../../static/img/arrow.png'}];
+// var mood_legend = ['消极','中性', '积极', {name:'异常点', icon :'image://../../static/img/arrow.png'}];
 function social_sensing_all(data){
 
 	//异常点信息
@@ -1328,8 +1328,8 @@ function social_sensing_all(data){
 	mood_line_data[2] = data.neutral_sentiment_list;
 	mood_line_data[3] = data.positive_sentiment_list;
 	mood_line_data[4] = deal_point(data.variation_distribution[1]);
-	// mood_line_data[5] = deal_point_col(data.variation_distribution[2],1);
-	// mood_line_data[6] = col_line;
+	mood_line_data[5] = deal_point_col(data.variation_distribution[2],1);
+	mood_line_data[6] = col_line;
 	draw_mood_line_charts(mood_line_data, 'mood_line_charts', mood_legend);
 
 	//微博热度走势
