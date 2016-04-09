@@ -492,7 +492,8 @@ def social_sensing(task_detail):
                     temp_dict["mid"] = iter_mid
                     temp_dict["text"] = iter_text
                     text_list.append(temp_dict)
-
+            for item in text_list:
+                print item['text']
             if len(text_list) == 1:
                 top_word = freq_word(text_list[0])
                 topic_list = [top_word.keys()]

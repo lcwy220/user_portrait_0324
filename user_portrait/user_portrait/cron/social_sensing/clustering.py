@@ -109,7 +109,6 @@ def tfidf(inputs):
     result_tfidf = [(k,v)for k,v in sorted_tfidf]
     #result_tfidf = sorted_tfidf
 
-    print result_tfidf
     topk = int(math.ceil(float(len(result_tfidf))*0.2))#取前20%的tfidf词
     return result_tfidf[:topk],input_word_dict
 
@@ -333,7 +332,7 @@ def text_classify(inputs, word_label, tfidf_word):
 
     return inputs
 
-def cluster_evaluation(items, min_size=10):
+def cluster_evaluation(items, min_size=2):
     """
     只保留文本数大于num的类
     输入数据：

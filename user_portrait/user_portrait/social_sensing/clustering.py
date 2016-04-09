@@ -323,7 +323,7 @@ def text_classify(inputs, word_label, tfidf_word):
 
     return inputs
 
-def cluster_evaluation(items, min_size=100):
+def cluster_evaluation(items, min_size=10):
     """
     只保留文本数大于num的类
     输入数据：

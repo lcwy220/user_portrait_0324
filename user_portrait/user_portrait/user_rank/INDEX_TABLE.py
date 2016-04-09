@@ -1,3 +1,5 @@
+# -*-coding:utf-8-*-
+
 BCI_INDEX_NAME = 'copy_user_portrait_influence'
 BCI_INDEX_TYPE = 'bci'
 

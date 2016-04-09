@@ -5,15 +5,17 @@ import json
 import datetime
 from time_utils import ts2datetime, datetime2ts
 from parameter import DAY, LOW_INFLUENCE_THRESHOULD
+from global_utils import es_user_portrait as es_9200
+from global_utils import es_flow_text as es_9206
+from global_utils import portrait_index_name as USER_INDEX_NAME
+from global_utils import portrait_index_type as USER_INDEX_TYPE
 from in_filter import in_sort_filter
 from all_filter import all_sort_filter
 from Makeup_info import make_up_user_info
 
-USER_INDEX_NAME = 'user_portrait_1222'
-USER_INDEX_TYPE = 'user'
+#USER_INDEX_NAME = 'user_portrait_1222'
+#USER_INDEX_TYPE = 'user'
 
-es_9200 = Elasticsearch(['219.224.134.213', '219.224.134.214'], timeout = 6000)
-es_9206 = Elasticsearch(['219.224.134.213:9206', '219.224.134.214:9206'], timeout = 6000)
 
 USER_RANK_KEYWORD_TASK_INDEX = 'user_rank_keyword_task'
 USER_RANK_KEYWORD_TASK_TYPE = 'user_rank_task'
@@ -22,6 +24,14 @@ USER_RANK_KEYWORD_TASK_TYPE = 'user_rank_task'
 MAX_ITEMS = 2**28
 
 def key_words_search( search_type , pre , during , start_time , keyword , search_key = '' , sort_norm = '', sort_scope = ''  ,time = 1 , isall = False):
+    query = {"query":{"bool":{"must":[{"term":{"user_rank_task.user_ts":search_key}}],"must_not":[],"should":[]}},"from":0,"size":10,"sort":[],"facets":{}}
+    result = es_9200.search(index = USER_RANK_KEYWORD_TASK_INDEX , doc_type = USER_RANK_KEYWORD_TASK_TYPE , body = query)['hits']['hits']
+    search_id = result[0]['_id']
+    item = result[0]['_source']
+    item['status'] = -1 # 任务
+    item['result'] = json.dumps(results)
+    es_9200.index(index = USER_RANK_KEYWORD_TASK_INDEX , doc_type=USER_RANK_KEYWORD_TASK_TYPE , id=search_id,  body=item)
+
     keywords = keyword.split(",")
     should = []
     for key in keywords:
@@ -112,8 +122,4 @@ def scan_offlice_task():
 if __name__ == "__main__":
     while 1:
         scan_offlice_task();
-    
 
-    
-            
-    
