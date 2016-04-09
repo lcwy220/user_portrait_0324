@@ -17,7 +17,7 @@ def get_es_num(timestamp):
     date = ts2datetime(timestamp)
     date_ts = datetime2ts(date)
     num = int((timestamp - date_ts) / (3 * HOUR))
-    return 5
+    return num
 
 def save_count_results(all_uids_count, es_num):
     index_name = "user_portrait_network_count"
