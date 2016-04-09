@@ -235,10 +235,13 @@ def search_retweet_network(uid):
     # item_results = retweet_redis.hgetall('retweet_'+uid)
     item_results = retweet_redis.hgetall('comment_'+uid)
     results = retweet_dict2results(uid, item_results)
+    print 'retweet_results'
     network_results['retweet'] = results
     # be_retweet
     item_results = retweet_redis.hgetall('be_comment_'+uid)
+    print 'be_retweet_item_results'
     results = retweet_dict2results(uid, item_results)
+    print 'be_retweet_results'
     network_results['be_retweet'] = results
 
     return network_results 
@@ -247,12 +250,16 @@ def retweet_dict2results(uid, item_results):
     results = []
     uid_list = []
     sort_list = []
-    for key in item_results:
+    sorted_list = sorted(item_results.iteritems(), key = lambda x:x[0], reverse=True)
+    count = 0
+    for key, value in sorted_list:
         if (key == uid):
             continue
+        count += 1
         uid_list.append(key)
-        sort_list.append(item_results[key])
-    
+        sort_list.append(value)
+        if (count == 100):
+            break
     # 查看背景信息
     if uid_list:
         profile_result = es_user_profile.mget(index=profile_index_name, doc_type=profile_index_type, body={"ids":uid_list})["docs"]
