@@ -14,12 +14,12 @@ var day = myDate.getDate();
 var show_day = month.toString() +'月'+ day.toString() +'日';
 var hh = myDate.getHours();
 var mm =myDate.getMinutes();
-var count_hh = Math.floor(hh/3);
+var count_hh = Math.ceil(hh/3);
 var show_hh = [];
 for(var i=0;i<count_hh;i++){
-	show_hh.push((i+1)*3);
+	show_hh.push(i*3);
 }
-var change_period = count_hh;
+var change_period = count_hh-1;
 var tab = 'time';
 date_init();
 var task_id = '';
@@ -287,13 +287,14 @@ call_sync_ajax_request(url, show_trend);
 //节点趋势图
 function show_trend(data){
 	var daily_data = [];
-	for(var j=1;j<count_hh+1;j++){
+	for(var j=0;j<count_hh;j++){
         var period = 'period_'+j;
         if(data[period]){
 			daily_data.push(data[period]);
 		}else{
 			daily_data.push(0);
 		}
+        console.log(daily_data)
 		
 	}
 	$(function () {
