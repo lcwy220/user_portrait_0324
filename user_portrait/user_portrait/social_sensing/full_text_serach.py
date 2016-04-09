@@ -173,7 +173,8 @@ def get_retweet_weibo_detail(ts, user, task_name, size, text_type, type_value):
     if text_type == "message_type":
         query_body['query']['filtered']['filter']['bool']['must'].append({"term":{text_type: type_value}})
     if text_type == "sentiment":
-        if len(text_value) == 1:
+        #if isinstance(type_value, str):
+        if len(type_value) == 1:
             query_body['query']['filtered']['filter']['bool']['must'].append({"term":{text_type: type_value}})
         else:
             query_body['query']['filtered']['filter']['bool']['must'].append({"terms":{text_type: type_value}})
