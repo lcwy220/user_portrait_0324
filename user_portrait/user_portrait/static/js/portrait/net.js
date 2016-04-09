@@ -33,6 +33,7 @@ function hidden_keywords(){
 	$('#by_time').css('background-color','#3351B7');
 	$('#pr_diff').removeClass('hidden');
 	$('#dg_diff').removeClass('hidden');
+	$('#result_analysis').addClass('hidden');
 	tab = 'time';
 	$("input[name='mode_choose']").eq(0).attr("checked","checked");
 	var url = '/network/show_daily_rank/'
@@ -45,6 +46,7 @@ function hidden_time(){
 	$('#by_time').css('background-color','#6699FF');
     $('#show_keywords').removeClass('hidden');
 	$('#by_keywords').css('background-color','#3351B7');
+	$('#result_analysis').addClass('hidden');
 	tab = 'keyword';
 	$("input[name='mode_choose']").eq(0).attr("checked","checked");
 	var url = '/network/show_daily_rank/'
@@ -161,7 +163,6 @@ function search_task(){
 			search_url += '&start_date='+start_date+'&end_date='+end_date;
 			count += 1;
 		}
-       
     };
     if($(' #time_checkbox_submit').is(':checked')){
 		if(count ==0){
@@ -170,9 +171,7 @@ function search_task(){
 			search_url += '&submit_date='+submit_date;
 			count += 1;
 		}
-        
     }
-
     call_sync_ajax_request(search_url, detect_task_status);
 }
 //提交监测
@@ -225,10 +224,10 @@ function temporal_rank_table(data){
 	$('#result_rank_table').empty();
 	var html = '';
 	html += '<table id="rank_table" class="table table-striped table-bordered bootstrap-datatable datatable responsive" style="margin-left:30px;width:900px;">';
-	html += '<thead><th style="text-align:center;">排名</th>';
+	html += '<thead><th style="text-align:center;min-width:40px;">排名</th>';
 	html += '<th style="text-align:center;">用户ID</th>';
 	html += '<th style="text-align:center;">昵称</th>';
-	html += '<th style="text-align:center;">是否入库</th>';
+	html += '<th style="text-align:center;min-width:50px;">是否入库</th>';
 	html += '<th style="text-align:center;">注册地</th>';
 	html += '<th style="text-align:center;">粉丝数</th>';
 	html += '<th style="text-align:center;">微博数</th>';
@@ -268,7 +267,7 @@ function temporal_rank_table(data){
 		html += '<td style="text-align:center;">'+data[i][4]+'</td>';
 		html += '<td style="text-align:center;">'+data[i][2]+'</td>';
 		html += '<td style="text-align:center;">'+data[i][5].toFixed(0)+'</td>';
-		html += '<td style="text-align:center;"><a data-toggle="modal" data-target="#detail_network" id="show_net" >查看网络详情</a></td>';
+		html += '<td style="text-align:center;cursor:pointer"><a data-toggle="modal" data-target="#detail_network" id="show_net" >查看网络详情</a></td>';
 		html += '</tr>';
 	}
 	html += '</table>';
@@ -395,17 +394,23 @@ $(function(){
 //完成计算
 $('.show_detect_key_result').live('click', function(){
     task_id= $(this).prev().text();
+    var keywords = $(this).parent().prev().prev().prev().text();
+	var keyword_date = $(this).parent().prev().prev().text();
     var show_url = '/network/show_keywords_rank/?task_id=' + task_id;
-    call_sync_ajax_request(show_url, temporal_rank_table)
+    call_sync_ajax_request(show_url, temporal_rank_table);
+	$('#result_analysis').removeClass('hidden');
+	$('#detect_range').empty();
+    $('#detect_detail').empty();
+    $('#detect_time_range').empty();
+    $('#detect_range').append(keywords);
+    $('#detect_time_range').append(keyword_date);  
 });
-//test net_detail data
-var net_data = [1733095707,2143638605,2105431670,2235612453,2241683325,2302781822,2407164627,2693119412,1785425230,1645817972]
-
 
 
 //网络详情
 $('a[id^=show_net]').live('click', function(){
 	$("input[name='tweet_choose']").eq(0).attr("checked","checked");
+	$('#networkDetail').empty();
 	if(tab=='time'){
 		choose_uid = $(this).parent().prev().prev().prev().prev().prev().prev().prev().text();
 		choose_uname = $(this).parent().prev().prev().prev().prev().prev().prev().text();
@@ -476,11 +481,6 @@ function net_detail(data,uid,uname,tweet_type){
         var myChart = ec.init(document.getElementById('networkDetail')); 
                 
         var option = {
-            title : {
-				text: '网络详情',
-				x:'right',
-				y:'bottom'
-			},
 			tooltip : {
 				trigger: 'item',
 				formatter: '{a} : {b}'
