@@ -195,5 +195,7 @@ def logmanage():
 
 
 @mod.route('/network/')
+@login_required
+@roles_required("network")
 def net():
     return render_template('portrait/net.html')
