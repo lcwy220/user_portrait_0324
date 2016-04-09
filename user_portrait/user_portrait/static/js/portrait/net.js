@@ -3,7 +3,7 @@ function call_sync_ajax_request(url, callback){
       url: url,
       type: 'GET',
       dataType: 'json',
-      async: true,
+      async: false,
       success:callback
     });
 }
@@ -294,7 +294,6 @@ function show_trend(data){
 		}else{
 			daily_data.push(0);
 		}
-        console.log(daily_data)
 		
 	}
 	$(function () {
@@ -308,7 +307,7 @@ function show_trend(data){
 			},
 			yAxis: {
 				title: {
-					text: '节点度 '
+					text: '节点数 '
 				},
 				plotLines: [{
 					value: 0,
@@ -461,49 +460,38 @@ function net_detail(data,uid,uname,tweet_type){
 	}
 	Related_Node.push({'name':uname,'value':20,'category':0,'symbolSize':20,'itemStyle':{'normal':{'color':'rgba(255,215,0,0.4)'}}});
 	for(var i=0;i<net_data.length;i++ ){
-		Related_Node.push({'name':names[i], 'value':links[i], 'category':1,'symbolSize':5});
-        Related_Link.push({'source':uname, 'target':names[i], 'weight':links[i],'itemStyle':{'normal':{'width':10}}});
+		Related_Node.push({'name':names[i], 'value':links[i], 'category':1,'symbolSize':10});
+        Related_Link.push({'source':uname, 'target':names[i], 'weight':links[i],'itemStyle':{'normal':{'width':links[i]}}});
 	}
-	require.config({
-        paths: {
-            echarts: 'http://echarts.baidu.com/build/dist'
-        }
-    });
-	require([
-        'echarts',
-		'echarts/chart/force'
-    ],
-	function (ec) {
-                // 基于准备好的dom，初始化echarts图表
-        var myChart = ec.init(document.getElementById('networkDetail')); 
-                
-        var option = {
-			tooltip : {
-				trigger: 'item',
-				formatter: '{a} : {b}'
-			},
-			toolbox: {
-				show : true,
-				feature : {
-					restore : {show: true},
-					magicType: {show: true, type: ['force', 'chord']},
-					saveAsImage : {show: true}
-				}
-			},
-			series : [
-			{
-				type:'force',
-				name : "网络关系",
-				ribbonType: false,
-				categories : [
-					{
-                        name:'',
-                        symbol:'circle',
-                    },
-                    {
-                        name:'',
-                        symbol:'circle',
-                    },
+    var myChart = echarts.init(document.getElementById('networkDetail')); 
+            
+    var option = {
+        tooltip : {
+            trigger: 'item',
+            formatter: '{b}({c}次)'
+        },
+        toolbox: {
+            show : true,
+            feature : {
+                restore : {show: true},
+                magicType: {show: true, type: ['force', 'chord']},
+                saveAsImage : {show: true}
+            }
+        },
+        series : [
+        {
+            type:'force',
+            name : "网络关系",
+            ribbonType: false,
+            categories : [
+                {
+                    name:'',
+                    symbol:'circle',
+                },
+                {
+                    name:'',
+                    symbol:'circle',
+                },
             ],
             itemStyle: {
                 normal: {
@@ -541,12 +529,9 @@ function net_detail(data,uid,uname,tweet_type){
             roam: 'move',
             nodes: Related_Node,
             links : Related_Link
-        }
-    ]
-                };
-        
-                // 为echarts对象加载数据 
-                myChart.setOption(option); 
-            }
-        );
+        }]
+    };
+
+    // 为echarts对象加载数据 
+    myChart.setOption(option); 
 }
