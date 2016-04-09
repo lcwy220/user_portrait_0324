@@ -144,13 +144,16 @@ def recommentation_in(input_ts, recomment_type, submit_user):
     return results
 
 # get auto recommentation result
-def recommentation_in_auto(seatch_date, submit_user):
+def recommentation_in_auto(search_date, submit_user):
     results = []
     #run type
+    '''
     if RUN_TYPE == 1:
         now_date = ts2datetime(time.time() - DAY)
     else:
         now_date = ts2datetime(datetime2ts(RUN_TEST_TIME) - DAY)
+    '''
+    now_date = search_date
     recomment_hash_name = 'recomment_' + now_date + '_auto'
     recomment_influence_hash_name = 'recomment_' + now_date + '_influence'
     recomment_sensitive_hash_name = 'recomment_' + now_date + '_sensitive'
