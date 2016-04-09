@@ -7,6 +7,7 @@ from INDEX_TABLE import *
  
 from time_utils import ts2datetime, datetime2ts
 from global_utils import es_user_portrait as es
+from user_portrait.global_utils import es_user_profile
 
 #MAX_SIZE = 2 ** 10
 MAX_SIZE = 100
@@ -30,6 +31,7 @@ def all_sort_filter( uid_list = [] , sort_norm = 'imp' , time = 1 , key_search =
 
 
 def history_sort( prefix ,index_name , index_type , uid_list , time , ischange = False ,key_search = False):
+    es = es_user_profile
     sort_field = prefix
     if time == 1 :
         sort_field += "day_change"
@@ -114,6 +116,7 @@ def es_get_userlist_by_all(fieldname , uid, key_search = False):
 
     try:
         print str(query).replace("\'","\"")
+        es = es_user_profile
         result = es.search(index = WEIBO_USER_INDEX_NAME , doc_type = WEIBO_USER_INDEX_TYPE , body = query)['hits']['hits']
         uid_list = []
         for item in result :
