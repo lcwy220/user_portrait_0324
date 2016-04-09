@@ -28,11 +28,15 @@ def show_daily_trend():
 def show_daily_rank(period, sort_type, count):
     index_name = 'user_portrait_network'
     index_type = 'network'
-    sort = sort_type + '_' + str(period)   #pr_0
+    if (len(sort_type.split('_')) > 1):
+        sort = 'rank_' + sort_type + '_' + str(period)   #pr_0
+    else:
+        sort = sort_type + '_' + str(period)   #pr_0
     query_body = {
         'sort':[{sort:{'order': 'desc'}}],
         'size': count
         }
+
     try:
         search_results = es_network_task.search(index=index_name, doc_type=index_type, body=query_body)['hits']['hits']
     except:

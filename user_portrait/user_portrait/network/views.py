@@ -21,7 +21,7 @@ def ajax_show_daily_trend():
 #use to show daily rank 
 @mod.route('/show_daily_rank/')
 def ajax_show_daily_rank():
-    period = request.args.get('period', '5')
+    period = request.args.get('period', '')
     sort_type = request.args.get('order', 'pr')
     count = request.args.get('count', 100)
 

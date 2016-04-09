@@ -19,7 +19,7 @@ var show_hh = [];
 for(var i=0;i<count_hh;i++){
 	show_hh.push((i+1)*3);
 }
-var change_period = '';
+var change_period = count_hh;
 var tab = 'time';
 date_init();
 var task_id = '';
@@ -36,7 +36,7 @@ function hidden_keywords(){
 	$('#result_analysis').addClass('hidden');
 	tab = 'time';
 	$("input[name='mode_choose']").eq(0).attr("checked","checked");
-	var url = '/network/show_daily_rank/'
+	var url = '/network/show_daily_rank/?period='+change_period;
     call_sync_ajax_request(url, temporal_rank_table);
 }
 function hidden_time(){
@@ -49,7 +49,7 @@ function hidden_time(){
 	$('#result_analysis').addClass('hidden');
 	tab = 'keyword';
 	$("input[name='mode_choose']").eq(0).attr("checked","checked");
-	var url = '/network/show_daily_rank/'
+	var url = '/network/show_daily_rank/?period='+change_period;
     call_sync_ajax_request(url, temporal_rank_table);
 	
 }
@@ -198,7 +198,7 @@ $('#detect_submit').click(function(){
 
 
 $(function(){
-    var url = '/network/show_daily_rank/'
+    var url = '/network/show_daily_rank/?period='+change_period;
     call_sync_ajax_request(url, temporal_rank_table);
 });
 //画表
@@ -376,11 +376,7 @@ $(function(){
 		}
 	}
 	if(tab=='time'){
-		if(change_period==''){
-			var url = "/network/show_daily_rank/?order="+sort_type;
-		}else{
-			var url = '/network/show_daily_rank/?order='+sort_type+'&period='+change_period;
-		}
+        var url = '/network/show_daily_rank/?order='+sort_type+'&period='+change_period;
 	}
 	if(tab=='keyword'){
 		var url = "/network/show_keywords_rank/?order="+sort_type+"&task_id="+task_id;
