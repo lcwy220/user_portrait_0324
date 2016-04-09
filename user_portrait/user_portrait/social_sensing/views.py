@@ -379,8 +379,15 @@ def ajax_get_clustering_topic():
     if burst_reason:
         topic_list = task_detail.get("clustering_topic", [])
         if topic_list:
+            filter_list = []
             topic_list = json.loads(topic_list)
+            for item in topic_list:
+                tmp = []
+                for word in item:
+                    if len(word) > 3:
+                        tmp.append(word)
+                filter_list.append(tmp)
 
-    return json.dumps(topic_list[:5])
+    return json.dumps(filter_list[:5])
 
 
