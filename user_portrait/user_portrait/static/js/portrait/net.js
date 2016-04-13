@@ -17,7 +17,7 @@ var mm =myDate.getMinutes();
 var count_hh = Math.ceil(hh/3);
 var show_hh = [];
 for(var i=0;i<count_hh;i++){
-	show_hh.push(i*3);
+	show_hh.push((i*3).toString()+':00');
 }
 var change_period = count_hh-1;
 var tab = 'time';
@@ -86,6 +86,7 @@ function date_init(){
 var url = '/network/search_all_keywords/';
 call_sync_ajax_request(url, detect_task_status);
 function detect_task_status(data) {
+    console.log(data);
     var html = '';
     html += '<span style="float:right;margin-right:0px;margin-bottom: 10px;cursor:pointer;" type="button" data-toggle="modal" data-target="#detect_search_modal" ><u>任务搜索</u></span>';
     html += '<span id="show_all_task" style="float:right;margin-right: 20px;margin-bottom: 10px;cursor:pointer;"><u>显示全部任务</u></span>';
@@ -195,7 +196,24 @@ $('#detect_submit').click(function(){
         call_sync_ajax_request(show_url, detect_task_status);
     }
 })
-
+$(' #time_checkbox').click(function(){
+	if($(this).is(':checked')){
+		$('#detect_time_choose_modal #weibo_from_modal').attr('disabled',false);
+		$('#detect_time_choose_modal #weibo_to_modal').attr('disabled',false);
+	}
+	else{
+		$('#detect_time_choose_modal #weibo_from_modal').attr('disabled',true);
+		$('#detect_time_choose_modal #weibo_to_modal').attr('disabled',true);
+	}
+});
+$('#time_checkbox_submit').click(function(){
+	if($(this).is(':checked')){
+		$('#search_date #weibo_modal').attr('disabled',false);
+	}
+	else{
+		$('#search_date #weibo_modal').attr('disabled', true);
+		}
+});
 
 $(function(){
     var url = '/network/show_daily_rank/?period='+change_period;
@@ -323,6 +341,15 @@ function show_trend(data){
 							//point2weibo(event.point.x, trend[event.point.x]);
 							change_period = event.point.x;
 							var table_url = '/network/show_daily_rank/?period='+event.point.x;
+							var rang_date = (event.point.x*3).toString() + ':00';
+							$('#result_analysis').removeClass('hidden');
+							$('#detect_range').empty();
+							$('#detect_detail').empty();
+							$('#detect_time_range').empty();
+							$('#keyDescrip').empty();
+							$('#keyDescrip').append('节点度');
+							$('#detect_range').append(event.point.y);
+							$('#detect_time_range').append(rang_date);
 							call_sync_ajax_request(table_url,temporal_rank_table);
 							$("input[name='mode_choose']").eq(0).attr("checked","checked");
 						}
@@ -398,6 +425,8 @@ $('.show_detect_key_result').live('click', function(){
 	$('#detect_range').empty();
     $('#detect_detail').empty();
     $('#detect_time_range').empty();
+	$('#keyDescrip').empty();
+	$('#keyDescrip').append('关键词');
     $('#detect_range').append(keywords);
     $('#detect_time_range').append(keyword_date);  
 });
