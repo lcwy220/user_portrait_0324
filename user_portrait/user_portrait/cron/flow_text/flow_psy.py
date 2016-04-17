@@ -34,7 +34,7 @@ def start_p(data_time):
 
 def find_label(text,ds_dict,ds_count):
     #change text type from unicode to utf-8
-    text = text.encode('utf-8')
+    #text = text.encode('utf-8')
     s_data = ['anger','anx','sad','awful']#第二层分类标签
     domain_s = start_p(s_data)
 
